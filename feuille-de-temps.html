@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Feuille de temps">
+<meta name="theme-color" content="#121317">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23121317'/%3E%3Crect x='42' y='34' width='96' height='112' rx='10' fill='%23f0f1f3'/%3E%3Crect x='58' y='58' width='64' height='8' rx='4' fill='%23ff8c1a'/%3E%3Crect x='58' y='80' width='64' height='8' rx='4' fill='%239aa0ab'/%3E%3Crect x='58' y='102' width='44' height='8' rx='4' fill='%239aa0ab'/%3E%3C/svg%3E">
+<title>Feuille de temps</title>
+<style>
+:root{
+  --bg:#121317; --bg2:#181a20; --card:#1f232b; --card2:#262b35;
+  --line:#2f343f; --line2:#3b4250;
+  --txt:#eceef2; --dim:#98a0ad; --faint:#646b78;
+  --amber:#ff8c1a; --amber2:#ffb066;
+  --insp:#ffb020; --rep:#5b8def; --call:#2fd27a;
+  --ok:#37c97f; --dbl:#ffd166; --warn:#ff6b6b;
+  --r:14px; --maxw:640px;
+  --gut:max(14px, calc((100% - var(--maxw)) / 2));
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt)}
+body{
+  font-family:ui-rounded,-apple-system,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;
+  font-size:16px;line-height:1.35;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 92px) env(safe-area-inset-left);
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--dim);font-weight:700}
+
+/* ---------- sticky header: brand + readout + day rail ---------- */
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 10px) var(--gut) 8px;}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .led{width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber),0 0 2px var(--amber);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45;box-shadow:0 0 4px var(--amber)}}
+@media (prefers-reduced-motion:reduce){.brand .led{animation:none}}
+.brand h1{font-size:16px;font-weight:800;margin:0;letter-spacing:.2px;flex:1}
+.brand .wk{font-size:12px;color:var(--amber2);font-weight:700}
+
+.readout{display:flex;align-items:baseline;gap:12px;margin-top:10px;padding:10px 14px;
+  background:linear-gradient(180deg,#14161b,#1b1e25);border:1px solid var(--line);border-radius:12px}
+.readout .big{font-size:30px;font-weight:800;color:var(--ok);letter-spacing:.5px;line-height:1}
+.readout .big small{font-size:13px;color:var(--dim);font-weight:700;margin-left:2px}
+.readout .split{margin-left:auto;text-align:right;font-size:12px;color:var(--dim);line-height:1.5}
+.readout .split b{color:var(--txt);font-weight:700}
+.readout .split .d{color:var(--dbl)}
+
+/* ---------- day rail: the panel readout / day picker ---------- */
+.rail{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:8px}
+.rail .ch{appearance:none;border:1px solid var(--line);background:var(--card);border-radius:9px;
+  padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
+  color:var(--faint);font-family:inherit;transition:border-color .12s,background .12s}
+.rail .ch .dn{font-size:10px;font-weight:800;letter-spacing:.5px}
+.rail .ch .hh{font-size:11px;font-weight:700}
+.rail .ch.has{color:var(--txt);background:var(--card2)}
+.rail .ch.has .dn{color:var(--amber2)}
+.rail .ch.active{border-color:var(--amber);box-shadow:0 0 0 2px rgba(255,140,26,.18)}
+.rail .ch:active{transform:scale(.96)}
+
+main{padding:6px var(--gut) 0}
+
+/* ---------- meta card ---------- */
+.meta{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-top:12px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld.full{grid-column:1/-1}
+.fld label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:700}
+input,select{width:100%;background:var(--card);border:1px solid var(--line2);color:var(--txt);
+  border-radius:10px;padding:11px 12px;font-size:16px;font-family:inherit;appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,140,26,.18)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2398a0ad' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.weekrow{display:flex;align-items:center;gap:8px}
+.weekrow input[type=date]{flex:1;min-width:0}
+.step{flex:0 0 44px;height:44px;border:1px solid var(--line2);background:var(--card);color:var(--amber2);
+  border-radius:10px;font-size:20px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.step:active{background:var(--card2)}
+.rangeout{font-size:12px;color:var(--amber2);font-weight:700;margin-top:2px}
+.datefield{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--line2);color:var(--txt);border-radius:10px;padding:11px 12px;font-size:16px;
+  font-family:inherit;font-weight:600;cursor:pointer;text-align:left}
+.datefield:active{background:var(--card2)}
+.datefield .cal{margin-left:auto;flex:0 0 auto;color:var(--dim)}
+.datefield .dt{font-variant-numeric:tabular-nums}
+@media(hover:hover){.rail .ch:hover{border-color:var(--line2);background:var(--card2)}}
+/* custom Monday-first calendar popover */
+.calpop{position:fixed;z-index:70;width:288px;background:var(--bg2);border:1px solid var(--line2);
+  border-radius:14px;padding:12px;box-shadow:0 14px 36px rgba(0,0,0,.55);display:none}
+.calpop.show{display:block}
+.calhead{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.calhead .my{flex:1;text-align:center;font-weight:800;font-size:14px;text-transform:capitalize}
+.calhead button{flex:0 0 34px;height:34px;border:1px solid var(--line2);background:var(--card);color:var(--amber2);
+  border-radius:9px;font-size:18px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.calhead button:active{background:var(--card2)}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.calgrid .wd{font-size:10px;color:var(--dim);text-align:center;font-weight:800;padding:2px 0}
+.calgrid .dy{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;
+  border-radius:8px;cursor:pointer;color:var(--txt);font-variant-numeric:tabular-nums;border:1px solid transparent}
+.calgrid .dy.oth{color:var(--faint)}
+.calgrid .dy:hover{background:var(--card2)}
+.calgrid .dy.inwk{background:rgba(255,140,26,.16)}
+.calgrid .dy.sel{background:var(--amber);color:#1a1205;font-weight:800}
+.calgrid .dy.today{border-color:var(--line2)}
+.caltoday{margin-top:10px;width:100%;border:1px solid var(--line2);background:var(--card);color:var(--amber2);
+  border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.caltoday:active{background:var(--card2)}
+.empty .cta{margin-top:16px;border:none;border-radius:12px;padding:13px 22px;font-size:15px;font-weight:800;
+  font-family:inherit;cursor:pointer;background:linear-gradient(135deg,var(--amber),#ff9a3d);color:#1a1205;
+  box-shadow:0 6px 18px rgba(255,140,26,.3)}
+.empty .cta:active{transform:translateY(1px)}
+.empty .hint{display:block;margin-top:14px;font-size:12px;color:var(--faint)}
+
+/* ---------- day group + entry cards ---------- */
+.daygroup{margin-top:18px}
+.dayhead{display:flex;align-items:center;gap:9px;margin:0 2px 9px}
+.dayhead .bar{height:2px;flex:0 0 16px;background:var(--amber);border-radius:2px;opacity:.7}
+.dayhead .name{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--amber2)}
+.dayhead .tot{font-size:11px;color:var(--faint);margin-left:auto;font-weight:600}
+
+.entry{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 12px 15px;
+  margin-bottom:10px;position:relative;overflow:hidden}
+.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line2)}
+.entry.t-insp::before{background:var(--insp)}
+.entry.t-rep::before{background:var(--rep)}
+.entry.t-call::before{background:var(--call)}
+.entry.incomplete{border-color:#5a4a2a}
+
+.r1{display:grid;grid-template-columns:1.2fr 1fr;gap:8px;align-items:end;padding-right:62px}
+.r2{display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-top:9px}
+.r3{margin-top:9px}
+.mini label{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);font-weight:700;display:block;margin-bottom:4px}
+.mini input,.mini select{padding:10px 11px;font-size:16px;border-radius:9px}
+.hrwrap{display:flex;gap:6px}
+.hrwrap input{flex:1;min-width:0;text-align:center}
+.x2{flex:0 0 48px;border:1px solid var(--line2);background:var(--card2);border-radius:9px;color:var(--dim);
+  font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.x2.on{background:var(--dbl);color:#3a2c00;border-color:var(--dbl);box-shadow:0 0 12px rgba(255,209,102,.35)}
+
+.typewrap{position:relative}
+.typewrap .tled{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;pointer-events:none}
+.typewrap select{padding-left:26px}
+.tled.t-insp{background:var(--insp);box-shadow:0 0 7px var(--insp)}
+.tled.t-rep{background:var(--rep);box-shadow:0 0 7px var(--rep)}
+.tled.t-call{background:var(--call);box-shadow:0 0 7px var(--call)}
+
+.tools{position:absolute;top:9px;right:9px;display:flex;gap:4px}
+.tool{width:28px;height:28px;border:none;background:transparent;color:var(--faint);font-size:15px;
+  border-radius:7px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.tool:active{background:var(--card2);color:var(--txt)}
+.tool.del:active{background:rgba(255,107,107,.16);color:var(--warn)}
+.flag{display:inline-flex;align-items:center;gap:4px;margin-top:9px;font-size:10px;font-weight:700;
+  color:var(--dbl);text-transform:uppercase;letter-spacing:.6px}
+.flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--dbl)}
+
+.addday{width:100%;border:1px dashed var(--line2);background:transparent;color:var(--dim);border-radius:11px;
+  padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.addday:active{border-color:var(--amber);color:var(--amber2)}
+.empty{color:var(--faint);font-size:14px;text-align:center;padding:40px 24px;line-height:1.6}
+.empty b{color:var(--amber2)}
+.spacer{height:8px}
+
+/* ---------- footer ---------- */
+footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
+  padding:10px var(--gut) calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,var(--bg) 78%,rgba(18,19,23,0));display:flex;gap:10px}
+.btn{border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.3px}
+.btn.export{flex:1;background:linear-gradient(135deg,var(--amber),#ff9a3d);color:#1a1205;box-shadow:0 6px 20px rgba(255,140,26,.32)}
+.btn.export:active{transform:translateY(1px)}
+.btn.sec{flex:0 0 auto;background:var(--card);color:var(--dim);border:1px solid var(--line2);padding:15px 17px}
+
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--card2);
+  border:1px solid var(--line2);color:var(--txt);padding:11px 18px;border-radius:30px;font-size:14px;font-weight:600;
+  opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;align-items:flex-end;justify-content:center}
+.sheet-backdrop.show{display:flex}
+.sheet{background:var(--bg2);width:100%;max-width:var(--maxw);border-radius:20px 20px 0 0;border-top:1px solid var(--line2);
+  padding:8px 16px calc(20px + env(safe-area-inset-bottom));max-height:80vh;overflow:auto}
+.sheet .grip{width:40px;height:4px;background:var(--line2);border-radius:3px;margin:8px auto 14px}
+.sheet h2{font-size:15px;margin:0 0 12px;font-weight:800}
+.wk{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+.wk .wk-r{font-size:14px;font-weight:700}
+.wk .wk-h{font-size:11px;color:var(--dim);margin-top:2px}
+.wk .wk-act{margin-left:auto;display:flex;gap:6px}
+.wk button{border:1px solid var(--line2);background:var(--card2);color:var(--dim);border-radius:8px;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.wk button.load{color:var(--amber2);border-color:var(--amber)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--dim);margin-top:2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="led"></span><h1>Feuille de temps</h1><span class="wk mono" id="wkMini"></span></div>
+  <div class="readout">
+    <span class="big mono" id="totVal">0<small>h</small></span>
+    <span class="split mono">rég <b id="regVal">0</b> h · <span class="d">×2 <b id="dblVal">0</b> h</span></span>
+  </div>
+  <div class="rail" id="rail"></div>
+</header>
+
+<main id="main"></main>
+
+<footer>
+  <button class="btn sec" id="weeksBtn" title="Semaines enregistrées" aria-label="Semaines enregistrées">☰</button>
+  <button class="btn export" id="exportBtn">Générer l'Excel</button>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="sheet-backdrop" id="weeksSheet">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Semaines enregistrées</h2>
+    <div id="weeksList"></div>
+  </div>
+</div>
+
+<script>
+/* ====================== XLSX WRITER (offline, no deps) ====================== */
+function crc32(buf){let t=crc32.t;if(!t){t=crc32.t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}let crc=0xFFFFFFFF;for(let i=0;i<buf.length;i++)crc=(crc>>>8)^t[(crc^buf[i])&0xFF];return(crc^0xFFFFFFFF)>>>0}
+function s2u(s){return new TextEncoder().encode(s)}
+function zipStore(files){const enc=[];let off=0;const cen=[];for(const f of files){const nb=s2u(f.name);const d=typeof f.data==='string'?s2u(f.data):f.data;const crc=crc32(d);const lh=new Uint8Array(30+nb.length);const dv=new DataView(lh.buffer);dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(8,0,true);dv.setUint16(12,0x21,true);dv.setUint32(14,crc,true);dv.setUint32(18,d.length,true);dv.setUint32(22,d.length,true);dv.setUint16(26,nb.length,true);lh.set(nb,30);enc.push(lh,d);const ch=new Uint8Array(46+nb.length);const cv=new DataView(ch.buffer);cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(14,0x21,true);cv.setUint32(16,crc,true);cv.setUint32(20,d.length,true);cv.setUint32(24,d.length,true);cv.setUint16(28,nb.length,true);cv.setUint32(42,off,true);ch.set(nb,46);cen.push(ch);off+=lh.length+d.length}let cs=0;for(const c of cen)cs+=c.length;const eo=new Uint8Array(22);const ev=new DataView(eo.buffer);ev.setUint32(0,0x06054b50,true);ev.setUint16(8,cen.length,true);ev.setUint16(10,cen.length,true);ev.setUint32(12,cs,true);ev.setUint32(16,off,true);const parts=[...enc,...cen,eo];let tot=0;for(const p of parts)tot+=p.length;const out=new Uint8Array(tot);let pos=0;for(const p of parts){out.set(p,pos);pos+=p.length}return out}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+const CT='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+const RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+const WB='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Dep Alarme" sheetId="1" r:id="rId1"/></sheets></workbook>';
+/* FIX: styles.xml must be related to the workbook (rId2). Without this relationship,
+   Excel can't link the stylesheet that every cell's s="" references, and shows
+   "We found a problem with some content ... recover?" on open. */
+const WBR='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="9"/><name val="Times New Roman"/></font><font><b/><sz val="9"/><name val="Times New Roman"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right><top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+function xc(col,row,val,st,isNum){const ref=col+row;if(val===''||val==null)return '<c r="'+ref+'" s="'+st+'"/>';if(isNum)return '<c r="'+ref+'" s="'+st+'"><v>'+val+'</v></c>';return '<c r="'+ref+'" s="'+st+'" t="inlineStr"><is><t xml:space="preserve">'+esc(val)+'</t></is></c>'}
+const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const DAYS_SHORT=['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+function heureLabel(e){if(e.heures===''||e.heures==null)return '';return e.mult===2?(e.heures+'H x 2'):(e.heures+'H')}
+
+function buildSheet(data){
+  const rows=[],merges=[];let r=1;
+  rows.push('<row r="'+r+'" ht="18" customHeight="1">'+xc('A',r,'RAPPORT DE TRAVAIL',1)+xc('B',r,'',1)+xc('C',r,'',1)+xc('D',r,'',1)+xc('E',r,'',1)+'</row>');merges.push('A'+r+':E'+r);r++;
+  rows.push('<row r="'+r+'"></row>');r++;
+  rows.push('<row r="'+r+'">'+xc('A',r,'NOM: '+data.nom,1)+xc('B',r,'',1)+xc('C',r,'',0)+xc('D',r,'CODE : '+data.code,1)+xc('E',r,'',0)+'</row>');merges.push('A'+r+':B'+r);r++;
+  rows.push('<row r="'+r+'"></row>');r++;
+  rows.push('<row r="'+r+'">'+xc('A',r,'SEMAINE DE',1)+xc('B',r,data.semaine,1)+xc('C',r,'',1)+xc('D',r,'',1)+xc('E',r,'',0)+'</row>');merges.push('B'+r+':D'+r);r++;
+  rows.push('<row r="'+r+'"></row>');r++;
+  rows.push('<row r="'+r+'" ht="22" customHeight="1">'+xc('A',r,'JOUR',2)+xc('B',r,'CONTROLE',2)+xc('C',r,'HEURE',2)+xc('D',r,'TYPE DE TRAVAILLE',2)+xc('E',r,'ADDRESSE',2)+'</row>');r++;
+  let total=0;
+  for(const day of DAYS){
+    const de=data.entries.filter(e=>e.jour===day);
+    const n=Math.max(1,de.length);const start=r;
+    for(let i=0;i<n;i++){
+      const e=de[i]||{};const lab=i===0?day:'';
+      const ctrl=(e.controle!=null&&e.controle!=='')?e.controle:'';
+      const isn=ctrl!==''&&/^\d+$/.test(String(ctrl));
+      if(e.heures!==''&&e.heures!=null&&!isNaN(parseFloat(e.heures)))total+=parseFloat(e.heures)*(e.mult===2?2:1);
+      rows.push('<row r="'+r+'" ht="20" customHeight="1">'+xc('A',r,lab,2)+xc('B',r,ctrl,3,isn)+xc('C',r,heureLabel(e),3)+xc('D',r,e.type||'',3)+xc('E',r,e.adresse||'',4)+'</row>');r++;
+    }
+    if(n>1)merges.push('A'+start+':A'+(r-1));
+  }
+  const tt=Math.round(total*100)/100;
+  rows.push('<row r="'+r+'" ht="20" customHeight="1">'+xc('A',r,'',0)+xc('B',r,"Total d'heures",3)+xc('C',r,'',3)+xc('D',r,tt,3,true)+xc('E',r,'',0)+'</row>');merges.push('B'+r+':C'+r);
+  const cols='<cols><col min="1" max="1" width="11.7" customWidth="1"/><col min="2" max="2" width="19.3" customWidth="1"/><col min="3" max="3" width="9.6" customWidth="1"/><col min="4" max="4" width="30.7" customWidth="1"/><col min="5" max="5" width="50.3" customWidth="1"/></cols>';
+  const mx='<mergeCells count="'+merges.length+'">'+merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:E'+r+'"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="14.25"/>'+cols+'<sheetData>'+rows.join('')+'</sheetData>'+mx+'<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>';
+}
+function genXlsx(data){return zipStore([
+  {name:'[Content_Types].xml',data:CT},{name:'_rels/.rels',data:RELS},
+  {name:'xl/workbook.xml',data:WB},{name:'xl/_rels/workbook.xml.rels',data:WBR},
+  {name:'xl/styles.xml',data:STYLES},{name:'xl/worksheets/sheet1.xml',data:buildSheet(data)}
+])}
+
+/* ====================== APP STATE ====================== */
+const TYPES=['Inspection','Réparations','Appel de service'];
+const LS_CUR='fdt_current', LS_ARCH='fdt_weeks';
+let state=load();
+let focusDay=null;            // day group to scroll to after a render
+
+function monday(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
+function blankWeek(){return {nom:'Hachemi',code:'64',weekstart:iso(monday(new Date())),entries:[]}}
+function load(){try{const c=localStorage.getItem(LS_CUR);if(c)return JSON.parse(c)}catch(e){}return blankWeek()}
+function save(){try{localStorage.setItem(LS_CUR,JSON.stringify(state))}catch(e){}}
+function iso(d){return new Date(d).toISOString().slice(0,10)}
+function fmtDM(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+String(d.getFullYear()).slice(2)}
+const MOIS=['janv.','févr.','mars','avr.','mai','juin','juill.','août','sept.','oct.','nov.','déc.'];
+const MOIS_FULL=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+function fmtLong(d){return d.getDate()+' '+MOIS_FULL[d.getMonth()]+' '+d.getFullYear()} // 22 juin 2026
+function weekRange(){
+  if(!state.weekstart)return{label:'',file:'',pretty:'',long:'',range:''};
+  const s=new Date(state.weekstart+'T00:00:00');const e=new Date(s);e.setDate(e.getDate()+6);
+  const pretty=s.getDate()+'–'+e.getDate()+' '+MOIS[e.getMonth()];
+  let range;
+  if(s.getMonth()===e.getMonth()&&s.getFullYear()===e.getFullYear())
+    range=s.getDate()+' → '+e.getDate()+' '+MOIS_FULL[e.getMonth()]+' '+e.getFullYear();
+  else if(s.getFullYear()===e.getFullYear())
+    range=s.getDate()+' '+MOIS_FULL[s.getMonth()]+' → '+e.getDate()+' '+MOIS_FULL[e.getMonth()]+' '+e.getFullYear();
+  else
+    range=fmtLong(s)+' → '+fmtLong(e);
+  return{label:fmtDM(s)+' AU '+fmtDM(e),file:fmtDM(s)+'AU'+fmtDM(e),pretty,long:fmtLong(s),range};
+}
+function dayForToday(){
+  const ws=new Date(state.weekstart+'T00:00:00');const we=new Date(ws);we.setDate(we.getDate()+6);
+  const now=new Date();now.setHours(0,0,0,0);
+  if(now>=ws&&now<=we)return DAYS[(now.getDay()+6)%7];
+  return 'Lundi';
+}
+const isNum=v=>v!==''&&v!=null&&!isNaN(parseFloat(v));
+function entryHrs(e){return isNum(e.heures)?parseFloat(e.heures)*(e.mult===2?2:1):0}
+function dayHrs(day){return state.entries.filter(e=>e.jour===day).reduce((a,e)=>a+entryHrs(e),0)}
+function round2(n){return Math.round(n*100)/100}
+function splitTotals(){let reg=0,dbl=0;for(const e of state.entries){if(!isNum(e.heures))continue;const h=parseFloat(e.heures);if(e.mult===2)dbl+=h;else reg+=h}return{reg:round2(reg),dbl:round2(dbl),tot:round2(reg+dbl*2)}}
+function incompleteCount(){return state.entries.filter(e=>!isNum(e.heures)).length}
+
+/* ====================== RENDER ====================== */
+const $=id=>document.getElementById(id);
+function render(){
+  const wr=weekRange();
+  $('wkMini').textContent=wr.pretty;
+  const tt=splitTotals();
+  $('totVal').innerHTML=tt.tot+'<small>h</small>';
+  $('regVal').textContent=tt.reg;$('dblVal').textContent=tt.dbl;
+  renderRail();
+  const main=$('main');main.innerHTML='';
+
+  // meta card (nom / code / week stepper)
+  const meta=document.createElement('div');meta.className='meta';
+  meta.innerHTML=
+    '<div class="fld"><label>Nom</label><input id="nom" type="text" autocomplete="off"></div>'+
+    '<div class="fld"><label>Code</label><input id="code" type="text" inputmode="numeric" autocomplete="off"></div>'+
+    '<div class="fld full"><label>Semaine de (lundi)</label>'+
+      '<div class="weekrow">'+
+        '<button class="step" id="prevWk" aria-label="Semaine précédente">‹</button>'+
+        '<button class="datefield" id="dateField" aria-label="Choisir la semaine"><span class="dt" id="dateText"></span>'+
+          '<svg class="cal" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>'+
+        '</button>'+
+        '<button class="step" id="nextWk" aria-label="Semaine suivante">›</button>'+
+      '</div>'+
+      '<div class="rangeout" id="rangeOut"></div></div>';
+  main.appendChild(meta);
+  $('nom').value=state.nom||'';$('code').value=state.code||'';
+  $('dateText').textContent=wr.long;
+  $('rangeOut').textContent=wr.range;
+  $('nom').oninput=e=>{state.nom=e.target.value;save()};
+  $('code').oninput=e=>{state.code=e.target.value;save()};
+  $('dateField').onclick=ev=>{ev.stopPropagation();toggleCal()};
+  $('prevWk').onclick=()=>weekStep(-1);
+  $('nextWk').onclick=()=>weekStep(1);
+
+  // day groups — only days that have entries (+ a freshly focused day)
+  const shown=DAYS.filter(d=>state.entries.some(e=>e.jour===d)||d===focusDay);
+  if(!shown.length){
+    const em=document.createElement('div');em.className='empty';
+    em.innerHTML='Aucune entrée cette semaine.<br>'+
+      '<button class="cta" id="emptyAdd">+ Ajouter une intervention</button>'+
+      '<span class="hint">ou touchez un jour dans la barre ci-dessus</span>';
+    main.appendChild(em);
+    $('emptyAdd').onclick=()=>addEntry(dayForToday());
+  }
+  shown.forEach(day=>{
+    const de=state.entries.filter(e=>e.jour===day);
+    const grp=document.createElement('div');grp.className='daygroup';grp.dataset.day=day;
+    const dt=round2(dayHrs(day));
+    grp.innerHTML='<div class="dayhead"><span class="bar"></span><span class="name">'+day+'</span>'+
+      (de.length?'<span class="tot mono">'+dt+' h · '+de.length+'</span>':'')+'</div>';
+    de.forEach(e=>grp.appendChild(entryEl(e)));
+    const add=document.createElement('button');add.className='addday';add.textContent='+ Ajouter une entrée';
+    add.onclick=()=>addEntry(day);
+    grp.appendChild(add);main.appendChild(grp);
+  });
+  main.appendChild(Object.assign(document.createElement('div'),{className:'spacer'}));
+
+  if(focusDay){const g=main.querySelector('.daygroup[data-day="'+focusDay+'"]');if(g)g.scrollIntoView({behavior:'smooth',block:'center'});focusDay=null}
+}
+
+function renderRail(){
+  const rail=$('rail');rail.innerHTML='';
+  DAYS.forEach((day,i)=>{
+    const h=round2(dayHrs(day));const has=state.entries.some(e=>e.jour===day);
+    const ch=document.createElement('button');ch.className='ch'+(has?' has':'');
+    ch.innerHTML='<span class="dn">'+DAYS_SHORT[i]+'</span><span class="hh mono">'+(has?h:'—')+'</span>';
+    ch.onclick=()=>{
+      if(state.entries.some(e=>e.jour===day)){focusDay=day;render()} else {addEntry(day)}
+    };
+    rail.appendChild(ch);
+  });
+}
+
+function addEntry(day){
+  state.entries.push({id:Date.now()+Math.random(),jour:day,controle:'',heures:'',mult:1,type:'Inspection',adresse:''});
+  focusDay=day;save();render();
+}
+
+function entryEl(e){
+  const card=document.createElement('div');
+  const cls=e.type==='Inspection'?'t-insp':e.type==='Réparations'?'t-rep':'t-call';
+  card.className='entry '+cls+(isNum(e.heures)?'':' incomplete');
+  card.innerHTML=
+    '<div class="tools">'+
+      '<button class="tool dup" aria-label="Dupliquer">⧉</button>'+
+      '<button class="tool del" aria-label="Supprimer">✕</button>'+
+    '</div>'+
+    '<div class="r1">'+
+      '<div class="mini"><label>Contrôle</label><input class="f-ctrl" inputmode="numeric" autocomplete="off" value="'+escAttr(e.controle)+'"></div>'+
+      '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" inputmode="decimal" autocomplete="off" placeholder="0" value="'+escAttr(e.heures)+'"><div class="x2'+(e.mult===2?' on':'')+'" role="button" aria-label="Temps double">×2</div></div></div>'+
+    '</div>'+
+    '<div class="r2">'+
+      '<div class="mini"><label>Type de travail</label><div class="typewrap"><span class="tled '+cls+'"></span><select class="f-type">'+TYPES.map(t=>'<option'+(t===e.type?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
+      '<div class="mini"><label>Jour</label><select class="f-day">'+DAYS.map(d=>'<option'+(d===e.jour?' selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
+    '</div>'+
+    '<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" autocomplete="off" value="'+escAttr(e.adresse)+'"></div></div>'+
+    (e.mult===2?'<span class="flag">Temps double</span>':'');
+  card.querySelector('.del').onclick=()=>{state.entries=state.entries.filter(x=>x!==e);save();render()};
+  card.querySelector('.dup').onclick=()=>{
+    const copy={id:Date.now()+Math.random(),jour:e.jour,controle:e.controle,heures:'',mult:1,type:e.type,adresse:e.adresse};
+    const idx=state.entries.indexOf(e);state.entries.splice(idx+1,0,copy);focusDay=e.jour;save();render();
+  };
+  card.querySelector('.f-ctrl').oninput=ev=>{e.controle=ev.target.value;save()};
+  const hr=card.querySelector('.f-hr');
+  hr.oninput=ev=>{e.heures=ev.target.value.replace(',','.');save();updateTotals();card.classList.toggle('incomplete',!isNum(e.heures))};
+  card.querySelector('.x2').onclick=ev=>{e.mult=e.mult===2?1:2;save();render()};
+  card.querySelector('.f-type').onchange=ev=>{e.type=ev.target.value;save();render()};
+  card.querySelector('.f-day').onchange=ev=>{e.jour=ev.target.value;save();render()};
+  card.querySelector('.f-addr').oninput=ev=>{e.adresse=ev.target.value;save()};
+  return card;
+}
+function escAttr(v){return v==null?'':String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function updateTotals(){
+  const tt=splitTotals();
+  $('totVal').innerHTML=tt.tot+'<small>h</small>';
+  $('regVal').textContent=tt.reg;$('dblVal').textContent=tt.dbl;
+}
+
+/* ====================== WEEK NAVIGATION ====================== */
+function gotoWeek(key){
+  archive();
+  const a=getArch();const found=a.find(w=>w.weekstart===key);
+  state=found?JSON.parse(JSON.stringify(found)):{nom:state.nom,code:state.code,weekstart:key,entries:[]};
+  save();render();
+}
+function weekStep(delta){
+  const cur=new Date((state.weekstart||iso(monday(new Date())))+'T00:00:00');
+  cur.setDate(cur.getDate()+7*delta);
+  gotoWeek(iso(cur));
+}
+
+/* ====================== CALENDAR (Monday-first, custom) ====================== */
+const JOURS_MIN=['L','M','M','J','V','S','D'];
+let calMonth=null; // Date pointing at the displayed month's 1st
+const calPop=document.createElement('div');calPop.className='calpop';calPop.id='calPop';
+calPop.onclick=e=>e.stopPropagation();
+document.body.appendChild(calPop);
+function calOpen(){return calPop.classList.contains('show')}
+function toggleCal(){calOpen()?closeCal():openCal()}
+function openCal(){
+  const ws=new Date((state.weekstart||iso(monday(new Date())))+'T00:00:00');
+  calMonth=new Date(ws.getFullYear(),ws.getMonth(),1);
+  buildCal();
+  calPop.classList.add('show');
+  const f=$('dateField').getBoundingClientRect();
+  const w=calPop.offsetWidth,h=calPop.offsetHeight;
+  let left=Math.min(f.left, window.innerWidth-w-8);left=Math.max(8,left);
+  let top=f.bottom+6; if(top+h>window.innerHeight-8) top=Math.max(8,f.top-h-6);
+  calPop.style.left=left+'px';calPop.style.top=top+'px';
+}
+function closeCal(){calPop.classList.remove('show')}
+function buildCal(){
+  const y=calMonth.getFullYear(),m=calMonth.getMonth();
+  const first=monday(new Date(y,m,1));           // Monday on/before the 1st
+  const sel=new Date(state.weekstart+'T00:00:00');// selected Monday
+  const wkEnd=new Date(sel);wkEnd.setDate(wkEnd.getDate()+6);
+  const today=new Date();today.setHours(0,0,0,0);
+  let html='<div class="calhead"><button id="calPrev" aria-label="Mois précédent">‹</button>'+
+    '<span class="my">'+MOIS_FULL[m]+' '+y+'</span>'+
+    '<button id="calNext" aria-label="Mois suivant">›</button></div><div class="calgrid">';
+  for(const d of JOURS_MIN)html+='<span class="wd">'+d+'</span>';
+  for(let i=0;i<42;i++){
+    const cur=new Date(first);cur.setDate(first.getDate()+i);
+    const cls=['dy'];
+    if(cur.getMonth()!==m)cls.push('oth');
+    if(cur>=sel&&cur<=wkEnd)cls.push('inwk');
+    if(+cur===+sel)cls.push('sel');
+    if(+cur===+today)cls.push('today');
+    html+='<span class="'+cls.join(' ')+'" data-d="'+iso(cur)+'">'+cur.getDate()+'</span>';
+  }
+  html+='</div><button class="caltoday" id="calToday">Cette semaine</button>';
+  calPop.innerHTML=html;
+  calPop.querySelector('#calPrev').onclick=e=>{e.stopPropagation();calMonth=new Date(y,m-1,1);buildCal()};
+  calPop.querySelector('#calNext').onclick=e=>{e.stopPropagation();calMonth=new Date(y,m+1,1);buildCal()};
+  calPop.querySelector('#calToday').onclick=e=>{e.stopPropagation();pickDate(iso(monday(new Date())))};
+  calPop.querySelectorAll('.dy').forEach(el=>el.onclick=e=>{e.stopPropagation();pickDate(el.dataset.d)});
+}
+function pickDate(isoStr){
+  closeCal();
+  gotoWeek(iso(monday(new Date(isoStr+'T00:00:00'))));
+}
+document.addEventListener('click',()=>{if(calOpen())closeCal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&calOpen())closeCal()});
+
+/* ====================== EXPORT ====================== */
+async function exportXlsx(){
+  if(!state.entries.length){toast('Aucune entrée à exporter');return}
+  const wr=weekRange();
+  const data={nom:state.nom||'',code:state.code||'',semaine:wr.label,entries:state.entries};
+  const bytes=genXlsx(data);
+  const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const fname=(wr.file||'feuille')+'.xlsx';
+  archive();
+  const inc=incompleteCount();
+  const note=inc?(' · '+inc+' sans heures'):'';
+  const file=new File([blob],fname,{type:blob.type});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:fname});toast('Fichier prêt à envoyer'+note);return}catch(err){if(err&&err.name==='AbortError')return}
+  }
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast('Excel généré : '+fname+note);
+}
+$('exportBtn').onclick=exportXlsx;
+
+/* ====================== ARCHIVE / WEEKS ====================== */
+function getArch(){try{return JSON.parse(localStorage.getItem(LS_ARCH))||[]}catch(e){return[]}}
+function setArch(a){try{localStorage.setItem(LS_ARCH,JSON.stringify(a))}catch(e){}}
+function archive(){
+  if(!state.entries.length)return;
+  const a=getArch();const key=state.weekstart;
+  const snap=JSON.parse(JSON.stringify(state));
+  const i=a.findIndex(w=>w.weekstart===key);
+  if(i>=0)a[i]=snap;else a.unshift(snap);
+  a.sort((x,y)=>(y.weekstart||'').localeCompare(x.weekstart||''));
+  setArch(a.slice(0,40));
+}
+$('weeksBtn').onclick=()=>{renderWeeks();$('weeksSheet').classList.add('show')};
+$('weeksSheet').onclick=e=>{if(e.target===$('weeksSheet'))$('weeksSheet').classList.remove('show')};
+function renderWeeks(){
+  archive();const a=getArch();const list=$('weeksList');list.innerHTML='';
+  if(!a.length){list.innerHTML='<div class="empty">Aucune semaine enregistrée.<br>Les semaines avec des entrées apparaîtront ici.</div>';return}
+  a.forEach((w)=>{
+    const s=new Date(w.weekstart+'T00:00:00');const e=new Date(s);e.setDate(e.getDate()+6);
+    let t=0;for(const en of w.entries)t+=isNum(en.heures)?parseFloat(en.heures)*(en.mult===2?2:1):0;
+    const cur=w.weekstart===state.weekstart;
+    const row=document.createElement('div');row.className='wk';
+    row.innerHTML='<div><div class="wk-r mono">'+fmtDM(s)+' AU '+fmtDM(e)+(cur?'  •':'')+'</div><div class="wk-h">'+round2(t)+' h · '+w.entries.length+' entrées</div></div>'+
+      '<div class="wk-act"><button class="load">Ouvrir</button><button class="rm" aria-label="Supprimer">✕</button></div>';
+    row.querySelector('.load').onclick=()=>{archive();state=JSON.parse(JSON.stringify(w));save();render();$('weeksSheet').classList.remove('show');toast('Semaine chargée')};
+    row.querySelector('.rm').onclick=()=>{const arr=getArch().filter(x=>x.weekstart!==w.weekstart);setArch(arr);renderWeeks()};
+    list.appendChild(row);
+  });
+}
+
+/* ====================== TOAST ====================== */
+let tT;function toast(m){const el=$('toast');el.textContent=m;el.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2200)}
+
+render();
+</script>
+</body>
+</html>
