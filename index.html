@@ -130,7 +130,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .entry.incomplete{border-color:#5a4a2a}
 
 .r1{display:grid;grid-template-columns:1.2fr 1fr;gap:8px;align-items:end;padding-right:62px}
-.r2{display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-top:9px}
+.r2{display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px}
 .r3{margin-top:9px}
 .mini label{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);font-weight:700;display:block;margin-bottom:4px}
 .mini input,.mini select{padding:10px 11px;font-size:16px;border-radius:9px}
@@ -193,6 +193,13 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.backup-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.bkbtn{border-radius:10px;padding:12px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:var(--card2)}
+.bkbtn:active{opacity:.75}
+.setup-info{font-size:12px;color:var(--dim);margin:0 0 12px;line-height:1.5}
+.setup-hint{font-size:11px;color:var(--faint);margin:12px 0 0;line-height:1.6;padding:10px;
+  background:var(--card);border-radius:9px;border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -209,6 +216,7 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 
 <footer>
   <button class="btn sec" id="weeksBtn" title="Semaines enregistrées" aria-label="Semaines enregistrées">☰</button>
+  <button class="btn sec" id="syncBtn" title="Sync GitHub" aria-label="Synchroniser avec GitHub" style="font-size:18px">☁</button>
   <button class="btn export" id="exportBtn">Générer l'Excel</button>
 </footer>
 
@@ -219,6 +227,27 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
     <div class="grip"></div>
     <h2>Semaines enregistrées</h2>
     <div id="weeksList"></div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="setupSheet">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>☁ Sync GitHub</h2>
+    <p class="setup-info" id="tokenStatus"></p>
+    <div class="fld" style="margin-bottom:12px">
+      <label>Personal Access Token</label>
+      <input id="tokenInput" type="password" autocomplete="off" placeholder="github_pat_...">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="bkbtn" id="tokenSave" style="flex:1;color:var(--ok);border-color:var(--ok)">💾 Enregistrer + Sync</button>
+      <button class="bkbtn" id="tokenClear" style="color:var(--warn);border-color:var(--warn)">Effacer</button>
+    </div>
+    <p class="setup-hint">
+      Créer le token : github.com → Settings → Developer settings →
+      Personal access tokens → Fine-grained tokens → Generate new token →
+      Repository: Feuille-de-temps → Permissions → Contents: <b>Read and write</b> → Generate
+    </p>
   </div>
 </div>
 
@@ -281,7 +310,8 @@ function genXlsx(data){return zipStore([
 const TYPES=['Inspection','Réparations','Appel de service'];
 const LS_CUR='fdt_current', LS_ARCH='fdt_weeks';
 let state=load();
-let focusDay=null;            // day group to scroll to after a render
+let focusDay=null;   // scroll target after render
+let activeDay=null;  // rail filter — null = show all days
 
 function monday(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
 function blankWeek(){return {nom:'Hachemi',code:'64',weekstart:iso(monday(new Date())),entries:[]}}
@@ -353,8 +383,11 @@ function render(){
   $('prevWk').onclick=()=>weekStep(-1);
   $('nextWk').onclick=()=>weekStep(1);
 
-  // day groups — only days that have entries (+ a freshly focused day)
-  const shown=DAYS.filter(d=>state.entries.some(e=>e.jour===d)||d===focusDay);
+  // days to show: if a day is selected in the rail, show only that day
+  const shown=activeDay
+    ?[activeDay]
+    :DAYS.filter(d=>state.entries.some(e=>e.jour===d));
+
   if(!shown.length){
     const em=document.createElement('div');em.className='empty';
     em.innerHTML='Aucune entrée cette semaine.<br>'+
@@ -383,10 +416,16 @@ function renderRail(){
   const rail=$('rail');rail.innerHTML='';
   DAYS.forEach((day,i)=>{
     const h=round2(dayHrs(day));const has=state.entries.some(e=>e.jour===day);
-    const ch=document.createElement('button');ch.className='ch'+(has?' has':'');
+    const isActive=activeDay===day;
+    const ch=document.createElement('button');
+    ch.className='ch'+(has?' has':'')+(isActive?' active':'');
     ch.innerHTML='<span class="dn">'+DAYS_SHORT[i]+'</span><span class="hh mono">'+(has?h:'—')+'</span>';
     ch.onclick=()=>{
-      if(state.entries.some(e=>e.jour===day)){focusDay=day;render()} else {addEntry(day)}
+      // toggle: click active day → show all; click another day → filter to it
+      activeDay=(activeDay===day)?null:day;
+      // if the day has no entries yet and we just selected it, add one
+      if(activeDay&&!state.entries.some(e=>e.jour===activeDay)){addEntry(activeDay);return}
+      render();
     };
     rail.appendChild(ch);
   });
@@ -394,7 +433,8 @@ function renderRail(){
 
 function addEntry(day){
   state.entries.push({id:Date.now()+Math.random(),jour:day,controle:'',heures:'',mult:1,type:'Inspection',adresse:''});
-  focusDay=day;save();render();
+  activeDay=day; // filter to the day we just added to
+  save();render();
 }
 
 function entryEl(e){
@@ -439,7 +479,7 @@ function updateTotals(){
 
 /* ====================== WEEK NAVIGATION ====================== */
 function gotoWeek(key){
-  archive();
+  archive();activeDay=null;
   const a=getArch();const found=a.find(w=>w.weekstart===key);
   state=found?JSON.parse(JSON.stringify(found)):{nom:state.nom,code:state.code,weekstart:key,entries:[]};
   save();render();
@@ -555,6 +595,93 @@ function renderWeeks(){
 
 /* ====================== TOAST ====================== */
 let tT;function toast(m){const el=$('toast');el.textContent=m;el.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2200)}
+
+/* ====================== GITHUB SYNC ====================== */
+const GH_OWNER='Hachemizz',GH_REPO='Feuille-de-temps',GH_FILE='fdt-data.json';
+const LS_TOKEN='fdt_gh_token',LS_SHA='fdt_gh_sha';
+
+function getToken(){return localStorage.getItem(LS_TOKEN)||''}
+function setToken(t){localStorage.setItem(LS_TOKEN,t.trim())}
+function clearToken(){localStorage.removeItem(LS_TOKEN);localStorage.removeItem(LS_SHA)}
+function b64enc(str){return btoa(unescape(encodeURIComponent(str)))}
+function b64dec(b64){return decodeURIComponent(escape(atob(b64.replace(/\n/g,''))))}
+
+async function ghGet(){
+  const tok=getToken();if(!tok)return null;
+  try{
+    const r=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE,
+      {headers:{Authorization:'token '+tok,Accept:'application/vnd.github.v3+json'}});
+    if(r.status===404)return{content:null,sha:null};
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    return{content:JSON.parse(b64dec(j.content)),sha:j.sha};
+  }catch(e){return null}
+}
+
+async function ghPut(content,sha){
+  const tok=getToken();if(!tok)return false;
+  try{
+    const body={message:'sync '+new Date().toISOString().slice(0,16),content:b64enc(JSON.stringify(content,null,2))};
+    if(sha)body.sha=sha;
+    const r=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE,
+      {method:'PUT',headers:{Authorization:'token '+tok,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    localStorage.setItem(LS_SHA,j.content.sha);
+    return true;
+  }catch(e){return false}
+}
+
+async function syncFromGH(){
+  setSyncIcon('⏳',true);
+  const res=await ghGet();
+  if(!res){setSyncIcon('⚠',false);toast('Erreur GitHub — vérifier le token');return}
+  if(res.content){
+    if(res.content.current){state=res.content.current;save()}
+    if(res.content.weeks)setArch(res.content.weeks);
+    if(res.sha)localStorage.setItem(LS_SHA,res.sha);
+    render();toast('✓ Données chargées depuis GitHub');
+  }else{toast('GitHub connecté — aucune donnée encore')}
+  setSyncIcon('☁',false);
+}
+
+async function syncToGH(){
+  setSyncIcon('⏳',true);
+  archive();
+  const content={current:state,weeks:getArch()};
+  let sha=localStorage.getItem(LS_SHA)||null;
+  if(!sha){const r=await ghGet();if(r&&r.sha)sha=r.sha;}
+  const ok=await ghPut(content,sha);
+  setSyncIcon('☁',false);
+  toast(ok?'✓ Sauvegardé sur GitHub':'✗ Erreur sync — vérifier le token');
+}
+
+function setSyncIcon(icon,disabled){const b=$('syncBtn');b.textContent=icon;b.disabled=disabled}
+
+$('syncBtn').onclick=()=>{
+  if(!getToken()){renderSetup();$('setupSheet').classList.add('show')}
+  else syncToGH()
+};
+$('setupSheet').onclick=e=>{if(e.target===$('setupSheet'))$('setupSheet').classList.remove('show')};
+$('tokenSave').onclick=()=>{
+  const t=$('tokenInput').value.trim();
+  if(!t){toast('Token vide');return}
+  setToken(t);$('setupSheet').classList.remove('show');
+  syncFromGH();
+};
+$('tokenClear').onclick=()=>{
+  clearToken();$('setupSheet').classList.remove('show');
+  toast('Token supprimé');setSyncIcon('☁',false);
+};
+function renderSetup(){
+  $('tokenInput').value=getToken()||'';
+  $('tokenStatus').textContent=getToken()
+    ?'Token enregistré dans ce navigateur. Remplacez ou effacez.'
+    :'Aucun token — entrez-le une fois par navigateur/appareil.';
+}
+
+// auto-pull on load if token already saved in this browser
+if(getToken())syncFromGH();
 
 render();
 </script>
