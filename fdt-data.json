@@ -3,7 +3,70 @@
     "nom": "Hachemi",
     "code": "64",
     "weekstart": "2026-06-22",
-    "entries": []
+    "entries": [
+      {
+        "id": 1782665705214.6775,
+        "jour": "Samedi",
+        "controle": "221702",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "Rue de la Commune Est, Montréal QC"
+      },
+      {
+        "id": 1782665734450.1536,
+        "jour": "Samedi",
+        "controle": "221703",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "3725 rue jean Mance Montreal"
+      },
+      {
+        "id": 1782665980619.1604,
+        "jour": "Vendredi",
+        "controle": "",
+        "heures": "",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": ""
+      }
+    ]
   },
-  "weeks": []
+  "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-06-22",
+      "entries": [
+        {
+          "id": 1782665705214.6775,
+          "jour": "Samedi",
+          "controle": "221702",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "Rue de la Commune Est, Montréal QC"
+        },
+        {
+          "id": 1782665734450.1536,
+          "jour": "Samedi",
+          "controle": "221703",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "3725 rue jean Mance Montreal"
+        },
+        {
+          "id": 1782665980619.1604,
+          "jour": "Vendredi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        }
+      ]
+    }
+  ]
 }
