@@ -56,7 +56,11 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
   padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
   color:var(--faint);font-family:inherit;transition:border-color .12s,background .12s}
 .rail .ch .dn{font-size:10px;font-weight:800;letter-spacing:.5px}
-.rail .ch .hh{font-size:11px;font-weight:700}
+.rail .ch .dt{font-size:15px;font-weight:800;line-height:1;color:var(--faint)}
+.rail .ch.has .dt{color:var(--txt)}
+.rail .ch.active .dt{color:var(--amber2)}
+.rail .ch.today .dt{color:var(--ok)}
+.rail .ch .hh{font-size:10px;font-weight:700}
 .rail .ch.has{color:var(--txt);background:var(--card2)}
 .rail .ch.has .dn{color:var(--amber2)}
 .rail .ch.active{border-color:var(--amber);box-shadow:0 0 0 2px rgba(255,140,26,.18)}
@@ -427,16 +431,21 @@ function render(){
 
 function renderRail(){
   const rail=$('rail');rail.innerHTML='';
+  const ws=new Date((state.weekstart||iso(monday(new Date())))+'T00:00:00');
+  const todayStr=iso(new Date());
   DAYS.forEach((day,i)=>{
+    const chipDate=new Date(ws);chipDate.setDate(ws.getDate()+i);
+    const dateNum=chipDate.getDate();
+    const isToday=iso(chipDate)===todayStr;
     const h=round2(dayHrs(day));const has=state.entries.some(e=>e.jour===day);
     const isActive=activeDay===day;
     const ch=document.createElement('button');
-    ch.className='ch'+(has?' has':'')+(isActive?' active':'');
-    ch.innerHTML='<span class="dn">'+DAYS_SHORT[i]+'</span><span class="hh mono">'+(has?h:'—')+'</span>';
+    ch.className='ch'+(has?' has':'')+(isActive?' active':'')+(isToday?' today':'');
+    ch.innerHTML='<span class="dn">'+DAYS_SHORT[i]+'</span>'+
+      '<span class="dt">'+dateNum+'</span>'+
+      '<span class="hh mono">'+(has?h+'h':'')+'</span>';
     ch.onclick=()=>{
-      // toggle: click active day → show all; click another day → filter to it
       activeDay=(activeDay===day)?null:day;
-      // if the day has no entries yet and we just selected it, add one
       if(activeDay&&!state.entries.some(e=>e.jour===activeDay)){addEntry(activeDay);return}
       render();
     };
