@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Feuille de temps">
 <meta name="theme-color" content="#121317">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23121317'/%3E%3Crect x='42' y='34' width='96' height='112' rx='10' fill='%23f0f1f3'/%3E%3Crect x='58' y='58' width='64' height='8' rx='4' fill='%23ff8c1a'/%3E%3Crect x='58' y='80' width='64' height='8' rx='4' fill='%239aa0ab'/%3E%3Crect x='58' y='102' width='44' height='8' rx='4' fill='%239aa0ab'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="ati" sizes="180x180" href="">
+<link rel="icon" id="fav" type="image/png" sizes="32x32" href="">
 <title>Feuille de temps</title>
 <style>
 :root{
@@ -682,6 +683,38 @@ function renderSetup(){
 
 // auto-pull on load if token already saved in this browser
 if(getToken())syncFromGH();
+
+/* ====================== ICON (PNG via canvas — Safari + 1Password) ====================== */
+(function(){
+  try{
+    const S=180,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+    const g=cv.getContext('2d');
+    function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.lineTo(x+w-r,y);g.arcTo(x+w,y,x+w,y+r,r);g.lineTo(x+w,y+h-r);g.arcTo(x+w,y+h,x+w-r,y+h,r);g.lineTo(x+r,y+h);g.arcTo(x,y+h,x,y+h-r,r);g.lineTo(x,y+r);g.arcTo(x,y,x+r,y,r);g.closePath();}
+    function rrT(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.lineTo(x+w-r,y);g.arcTo(x+w,y,x+w,y+r,r);g.lineTo(x+w,y+h);g.lineTo(x,y+h);g.lineTo(x,y+r);g.arcTo(x,y,x+r,y,r);g.closePath();}
+    // dark rounded background
+    g.fillStyle='#121317';rr(0,0,S,S,38);g.fill();
+    // white document
+    g.fillStyle='#eef0f3';rr(34,26,112,128,13);g.fill();
+    // orange header bar
+    g.fillStyle='#ff8c1a';rrT(34,26,112,36,13);g.fill();
+    // "FDT" label in header
+    g.fillStyle='#1a1205';
+    g.font='bold 21px -apple-system,ui-rounded,system-ui,sans-serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText('FDT',90,44);
+    // timesheet rows
+    [[48,76,84,8],[48,96,84,8],[48,116,60,8]].forEach(([x,y,w,h])=>{g.fillStyle='#c0c8d0';rr(x,y,w,h,3);g.fill();});
+    // orange LED dot (fire alarm indicator)
+    g.shadowColor='#ff8c1a';g.shadowBlur=10;
+    g.fillStyle='#ff8c1a';
+    g.beginPath();g.arc(150,30,7,0,Math.PI*2);g.fill();
+    g.shadowBlur=0;
+    // set both apple-touch-icon and favicon
+    const png=cv.toDataURL('image/png');
+    document.getElementById('ati').href=png;
+    document.getElementById('fav').href=png;
+  }catch(e){}
+})();
 
 render();
 </script>
