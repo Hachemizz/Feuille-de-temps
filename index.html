@@ -201,6 +201,17 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 .setup-info{font-size:12px;color:var(--dim);margin:0 0 12px;line-height:1.5}
 .setup-hint{font-size:11px;color:var(--faint);margin:12px 0 0;line-height:1.6;padding:10px;
   background:var(--card);border-radius:9px;border:1px solid var(--line)}
+/* address autocomplete */
+.addr-drop{position:fixed;z-index:90;background:var(--card2);border:1px solid var(--line2);
+  border-radius:11px;overflow:hidden;display:none;max-height:230px;overflow-y:auto;
+  box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.addr-drop.show{display:block}
+.addr-sug{padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--line)}
+.addr-sug:last-child{border-bottom:none}
+.addr-sug:hover,.addr-sug:active{background:var(--card)}
+.sug-main{font-size:13px;font-weight:600;color:var(--txt)}
+.sug-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.addr-attr{padding:5px 13px;font-size:10px;color:var(--faint);border-top:1px solid var(--line);text-align:right}
 </style>
 </head>
 <body>
@@ -222,6 +233,7 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 </footer>
 
 <div class="toast" id="toast"></div>
+<div class="addr-drop" id="addrDrop"></div>
 
 <div class="sheet-backdrop" id="weeksSheet">
   <div class="sheet">
@@ -438,6 +450,73 @@ function addEntry(day){
   save();render();
 }
 
+/* ====================== ADDRESS AUTOCOMPLETE (Nominatim/OSM) ====================== */
+let acTimer,acCurrent=null;
+function aDrop(){return $('addrDrop')}
+function acPos(input){
+  const d=aDrop(),r=input.getBoundingClientRect();
+  d.style.top=(r.bottom+4)+'px';d.style.left=r.left+'px';d.style.width=r.width+'px';
+}
+function acClose(){aDrop().classList.remove('show');acCurrent=null}
+async function photonQuery(q){
+  const url='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+
+    '&limit=8&lang=fr&lat=45.50&lon=-73.57'+
+    '&bbox=-79.8,44.9,-57.0,62.6'; // Quebec + eastern Canada box, filters out France/Guadeloupe
+  const r=await fetch(url,{headers:{'Accept':'application/json'}});
+  const data=await r.json();
+  return (data.features||[]).filter(f=>{
+    const t=f.properties.type;const cc=f.properties.countrycode;
+    if(cc&&cc!=='CA')return false;
+    return t!=='country'&&t!=='state';
+  });
+}
+async function acFetch(q,input,onSelect){
+  try{
+    let feats=await photonQuery(q);
+    // if a number+street query returns nothing, retry anchored to Quebec
+    if(!feats.length&&/\d/.test(q)&&!/montr|qu[eé]bec|laval|longueuil/i.test(q)){
+      feats=await photonQuery(q+' Québec');
+    }
+    const d=aDrop();
+    if(!feats.length){d.classList.remove('show');return}
+    d.innerHTML='';
+    feats.slice(0,5).forEach(f=>{
+      const pr=f.properties;
+      const street=pr.street||pr.name||'';
+      const num=pr.housenumber||'';
+      const main=(num?num+' ':'')+street || pr.name || '';
+      const city=pr.city||pr.town||pr.village||pr.county||'';
+      const pc=pr.postcode||'';
+      const sub=[city,pr.state,pc].filter(Boolean).join(', ');
+      const label=main||[pr.name,city].filter(Boolean).join(', ');
+      // full value written into the field on select: street, city QC
+      const cityProv=[city,pr.state==='Québec'?'QC':pr.state].filter(Boolean).join(' ');
+      const full=[label,cityProv].filter(Boolean).join(', ');
+      const div=document.createElement('div');div.className='addr-sug';
+      div.innerHTML='<div class="sug-main">'+esc(label)+'</div>'+(sub?'<div class="sug-sub">'+esc(sub)+'</div>':'');
+      div.onmousedown=ev=>{ev.preventDefault();onSelect(full);acClose()};
+      d.appendChild(div);
+    });
+    const attr=document.createElement('div');attr.className='addr-attr';attr.textContent='© OpenStreetMap';
+    d.appendChild(attr);
+    acPos(input);d.classList.add('show');acCurrent=input;
+  }catch(e){acClose()}
+}
+function acBind(input,onSelect){
+  input.oninput=ev=>{
+    onSelect(ev.target.value); // live save
+    clearTimeout(acTimer);
+    const q=ev.target.value.trim();
+    if(q.length<3){acClose();return}
+    acTimer=setTimeout(()=>acFetch(q,input,(val)=>{input.value=val;onSelect(val)}),350);
+  };
+  input.onfocus=()=>{if((input.value||'').trim().length>=3){acPos(input);aDrop().classList.add('show')}};
+  input.onblur=()=>setTimeout(acClose,180);
+}
+document.addEventListener('click',()=>acClose());
+document.addEventListener('scroll',()=>acCurrent&&acPos(acCurrent),true);
+window.addEventListener('resize',()=>acCurrent&&acPos(acCurrent));
+
 function entryEl(e){
   const card=document.createElement('div');
   const cls=e.type==='Inspection'?'t-insp':e.type==='Réparations'?'t-rep':'t-call';
@@ -468,7 +547,7 @@ function entryEl(e){
   card.querySelector('.x2').onclick=ev=>{e.mult=e.mult===2?1:2;save();render()};
   card.querySelector('.f-type').onchange=ev=>{e.type=ev.target.value;save();render()};
   card.querySelector('.f-day').onchange=ev=>{e.jour=ev.target.value;save();render()};
-  card.querySelector('.f-addr').oninput=ev=>{e.adresse=ev.target.value;save()};
+  acBind(card.querySelector('.f-addr'),val=>{e.adresse=val;save()});
   return card;
 }
 function escAttr(v){return v==null?'':String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
