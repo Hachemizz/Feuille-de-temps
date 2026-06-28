@@ -375,8 +375,8 @@ function render(){
   // meta card (nom / code / week stepper)
   const meta=document.createElement('div');meta.className='meta';
   meta.innerHTML=
-    '<div class="fld"><label>Nom</label><input id="nom" type="text" autocomplete="off"></div>'+
-    '<div class="fld"><label>Code</label><input id="code" type="text" inputmode="numeric" autocomplete="off"></div>'+
+    '<div class="fld"><label>Nom</label><input id="nom" type="text" name="nom-employe" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"></div>'+
+    '<div class="fld"><label>Code</label><input id="code" type="text" name="code-employe" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"></div>'+
     '<div class="fld full"><label>Semaine de (lundi)</label>'+
       '<div class="weekrow">'+
         '<button class="step" id="prevWk" aria-label="Semaine précédente">‹</button>'+
@@ -527,14 +527,14 @@ function entryEl(e){
       '<button class="tool del" aria-label="Supprimer">✕</button>'+
     '</div>'+
     '<div class="r1">'+
-      '<div class="mini"><label>Contrôle</label><input class="f-ctrl" inputmode="numeric" autocomplete="off" value="'+escAttr(e.controle)+'"></div>'+
-      '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" inputmode="decimal" autocomplete="off" placeholder="0" value="'+escAttr(e.heures)+'"><div class="x2'+(e.mult===2?' on':'')+'" role="button" aria-label="Temps double">×2</div></div></div>'+
+      '<div class="mini"><label>Contrôle</label><input class="f-ctrl" type="text" name="controle" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="'+escAttr(e.controle)+'"></div>'+
+      '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" type="text" name="heures" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="0" value="'+escAttr(e.heures)+'"><div class="x2'+(e.mult===2?' on':'')+'" role="button" aria-label="Temps double">×2</div></div></div>'+
     '</div>'+
     '<div class="r2">'+
       '<div class="mini"><label>Type de travail</label><div class="typewrap"><span class="tled '+cls+'"></span><select class="f-type">'+TYPES.map(t=>'<option'+(t===e.type?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
       '<div class="mini"><label>Jour</label><select class="f-day">'+DAYS.map(d=>'<option'+(d===e.jour?' selected':'')+'>'+d+'</option>').join('')+'</select></div>'+
     '</div>'+
-    '<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" autocomplete="off" value="'+escAttr(e.adresse)+'"></div></div>'+
+    '<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" type="text" name="adresse-libre" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="'+escAttr(e.adresse)+'"></div></div>'+
     (e.mult===2?'<span class="flag">Temps double</span>':'');
   card.querySelector('.del').onclick=()=>{state.entries=state.entries.filter(x=>x!==e);save();render()};
   card.querySelector('.dup').onclick=()=>{
