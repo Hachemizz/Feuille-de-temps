@@ -464,7 +464,20 @@ let acTimer,acCurrent=null;
 function aDrop(){return $('addrDrop')}
 function acPos(input){
   const d=aDrop(),r=input.getBoundingClientRect();
-  d.style.top=(r.bottom+4)+'px';d.style.left=r.left+'px';d.style.width=r.width+'px';
+  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;
+  const spaceBelow=vh-r.bottom-8;
+  const spaceAbove=r.top-8;
+  const dropH=Math.min(230,d.scrollHeight||230);
+  d.style.left=r.left+'px';d.style.width=r.width+'px';
+  if(spaceBelow>=dropH||spaceBelow>=spaceAbove){
+    // enough room below — open downward
+    d.style.top=(r.bottom+4)+'px';d.style.bottom='auto';
+    d.style.maxHeight=Math.max(120,spaceBelow)+'px';
+  }else{
+    // flip upward
+    d.style.top='auto';d.style.bottom=(vh-r.top+4)+'px';
+    d.style.maxHeight=Math.max(120,spaceAbove)+'px';
+  }
 }
 function acClose(){aDrop().classList.remove('show');acCurrent=null}
 async function photonQuery(q){
