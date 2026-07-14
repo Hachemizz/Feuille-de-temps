@@ -8,7 +8,7 @@
         "id": 1782844481961.7007,
         "jour": "Lundi",
         "controle": "221753",
-        "heures": "7",
+        "heures": "8",
         "mult": 1,
         "type": "Inspection",
         "adresse": "5650 Rue du Hautbois, Montréal QC"
@@ -17,7 +17,7 @@
         "id": 1782844519136.1804,
         "jour": "Mardi",
         "controle": "221753",
-        "heures": "",
+        "heures": "8",
         "mult": 1,
         "type": "Inspection",
         "adresse": "5650 Rue du Hautbois, Montréal QC"
@@ -26,7 +26,7 @@
         "id": 1782848382094.3093,
         "jour": "Mardi",
         "controle": "221504",
-        "heures": "2",
+        "heures": "3",
         "mult": 1,
         "type": "Appel de service",
         "adresse": "11989 Avenue Monty, Montréal QC"
@@ -70,7 +70,7 @@
           "id": 1782844481961.7007,
           "jour": "Lundi",
           "controle": "221753",
-          "heures": "7",
+          "heures": "8",
           "mult": 1,
           "type": "Inspection",
           "adresse": "5650 Rue du Hautbois, Montréal QC"
@@ -79,7 +79,7 @@
           "id": 1782844519136.1804,
           "jour": "Mardi",
           "controle": "221753",
-          "heures": "",
+          "heures": "8",
           "mult": 1,
           "type": "Inspection",
           "adresse": "5650 Rue du Hautbois, Montréal QC"
@@ -88,7 +88,7 @@
           "id": 1782848382094.3093,
           "jour": "Mardi",
           "controle": "221504",
-          "heures": "2",
+          "heures": "3",
           "mult": 1,
           "type": "Appel de service",
           "adresse": "11989 Avenue Monty, Montréal QC"
