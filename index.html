@@ -6,7 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Feuille de temps">
-<meta name="theme-color" content="#121317">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121317">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f5f7">
 <link rel="apple-touch-icon" id="ati" sizes="180x180" href="">
 <link rel="icon" id="fav" type="image/png" sizes="32x32" href="">
 <title>Feuille de temps</title>
@@ -18,8 +19,24 @@
   --amber:#ff8c1a; --amber2:#ffb066;
   --insp:#ffb020; --rep:#5b8def; --call:#2fd27a;
   --ok:#37c97f; --dbl:#ffd166; --warn:#ff6b6b;
+  --bgt:rgba(18,19,23,0);
+  --readout1:#14161b; --readout2:#1b1e25;
+  --x2txt:#3a2c00; --seltxt:#1a1205;
   --r:14px; --maxw:640px;
   --gut:max(14px, calc((100% - var(--maxw)) / 2));
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f4f5f7; --bg2:#ffffff; --card:#ffffff; --card2:#eef0f4;
+    --line:#dde1e8; --line2:#c6ccd6;
+    --txt:#1c1e24; --dim:#5c6470; --faint:#8b93a1;
+    --amber:#e67300; --amber2:#c96400;
+    --insp:#d99000; --rep:#3d6fd6; --call:#1fa864;
+    --ok:#1e9e5f; --dbl:#c98f00; --warn:#d94848;
+    --bgt:rgba(244,245,247,0);
+    --readout1:#ffffff; --readout2:#f4f6f9;
+    --x2txt:#3a2c00; --seltxt:#ffffff;
+  }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--txt)}
@@ -43,7 +60,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 .brand .wk{font-size:12px;color:var(--amber2);font-weight:700}
 
 .readout{display:flex;align-items:baseline;gap:12px;margin-top:10px;padding:10px 14px;
-  background:linear-gradient(180deg,#14161b,#1b1e25);border:1px solid var(--line);border-radius:12px}
+  background:linear-gradient(180deg,var(--readout1),var(--readout2));border:1px solid var(--line);border-radius:12px}
 .readout .big{font-size:30px;font-weight:800;color:var(--ok);letter-spacing:.5px;line-height:1}
 .readout .big small{font-size:13px;color:var(--dim);font-weight:700;margin-left:2px}
 .readout .split{margin-left:auto;text-align:right;font-size:12px;color:var(--dim);line-height:1.5}
@@ -108,7 +125,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .calgrid .dy.oth{color:var(--faint)}
 .calgrid .dy:hover{background:var(--card2)}
 .calgrid .dy.inwk{background:rgba(255,140,26,.16)}
-.calgrid .dy.sel{background:var(--amber);color:#1a1205;font-weight:800}
+.calgrid .dy.sel{background:var(--amber);color:var(--seltxt);font-weight:800}
 .calgrid .dy.today{border-color:var(--line2)}
 .caltoday{margin-top:10px;width:100%;border:1px solid var(--line2);background:var(--card);color:var(--amber2);
   border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -143,7 +160,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .hrwrap input{flex:1;min-width:0;text-align:center}
 .x2{flex:0 0 48px;border:1px solid var(--line2);background:var(--card2);border-radius:9px;color:var(--dim);
   font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
-.x2.on{background:var(--dbl);color:#3a2c00;border-color:var(--dbl);box-shadow:0 0 12px rgba(255,209,102,.35)}
+.x2.on{background:var(--dbl);color:var(--x2txt);border-color:var(--dbl);box-shadow:0 0 12px rgba(255,209,102,.35)}
 
 .typewrap{position:relative}
 .typewrap .tled{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;pointer-events:none}
@@ -171,7 +188,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* ---------- footer ---------- */
 footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
   padding:10px var(--gut) calc(10px + env(safe-area-inset-bottom));
-  background:linear-gradient(0deg,var(--bg) 78%,rgba(18,19,23,0));display:flex;gap:10px}
+  background:linear-gradient(0deg,var(--bg) 78%,var(--bgt));display:flex;gap:10px}
 .btn{border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.3px}
 .btn.export{flex:1;background:linear-gradient(135deg,var(--amber),#ff9a3d);color:#1a1205;box-shadow:0 6px 20px rgba(255,140,26,.32)}
 .btn.export:active{transform:translateY(1px)}
@@ -181,6 +198,8 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
   border:1px solid var(--line2);color:var(--txt);padding:11px 18px;border-radius:30px;font-size:14px;font-weight:600;
   opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast .toast-act{border:none;background:transparent;color:var(--amber2);font-weight:800;font-size:14px;
+  font-family:inherit;cursor:pointer;padding:0 0 0 10px;text-decoration:underline}
 
 .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;align-items:flex-end;justify-content:center}
 .sheet-backdrop.show{display:flex}
@@ -200,7 +219,7 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .backup-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .bkbtn{border-radius:10px;padding:12px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:var(--card2)}
+  display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:var(--card2);color:var(--txt)}
 .bkbtn:active{opacity:.75}
 .setup-info{font-size:12px;color:var(--dim);margin:0 0 12px;line-height:1.5}
 .setup-hint{font-size:11px;color:var(--faint);margin:12px 0 0;line-height:1.6;padding:10px;
@@ -238,11 +257,16 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 
 <div class="toast" id="toast"></div>
 <div class="addr-drop" id="addrDrop"></div>
+<input type="file" id="bkFile" accept="application/json,.json" style="display:none">
 
 <div class="sheet-backdrop" id="weeksSheet">
   <div class="sheet">
     <div class="grip"></div>
     <h2>Semaines enregistrées</h2>
+    <div class="backup-row">
+      <button class="bkbtn" id="bkExport">⭳ Exporter JSON</button>
+      <button class="bkbtn" id="bkImport">⭱ Importer JSON</button>
+    </div>
     <div id="weeksList"></div>
   </div>
 </div>
@@ -278,8 +302,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 const CT='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
 const RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
 const WB='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Dep Alarme" sheetId="1" r:id="rId1"/></sheets></workbook>';
-/* FIX: styles.xml must be related to the workbook (rId2). Without this relationship,
-   Excel can't link the stylesheet that every cell's s="" references, and shows
+/* styles.xml must be related to the workbook (rId2), otherwise Excel shows
    "We found a problem with some content ... recover?" on open. */
 const WBR='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
 const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="9"/><name val="Times New Roman"/></font><font><b/><sz val="9"/><name val="Times New Roman"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right><top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
@@ -305,13 +328,15 @@ function buildSheet(data){
     for(let i=0;i<n;i++){
       const e=de[i]||{};const lab=i===0?day:'';
       const ctrl=(e.controle!=null&&e.controle!=='')?e.controle:'';
-      const isn=ctrl!==''&&/^\d+$/.test(String(ctrl));
+      /* numeric export only if pure digits AND no leading zero — "0064" must stay text
+         or Excel silently strips the zeros */
+      const isn=ctrl!==''&&/^\d+$/.test(String(ctrl))&&!/^0\d/.test(String(ctrl));
       if(e.heures!==''&&e.heures!=null&&!isNaN(parseFloat(e.heures)))total+=parseFloat(e.heures)*(e.mult===2?2:1);
       rows.push('<row r="'+r+'" ht="20" customHeight="1">'+xc('A',r,lab,2)+xc('B',r,ctrl,3,isn)+xc('C',r,heureLabel(e),3)+xc('D',r,e.type||'',3)+xc('E',r,e.adresse||'',4)+'</row>');r++;
     }
     if(n>1)merges.push('A'+start+':A'+(r-1));
   }
-  const tt=Math.round(total*100)/100;
+  const tt=round2(total);
   rows.push('<row r="'+r+'" ht="20" customHeight="1">'+xc('A',r,'',0)+xc('B',r,"Total d'heures",3)+xc('C',r,'',3)+xc('D',r,tt,3,true)+xc('E',r,'',0)+'</row>');merges.push('B'+r+':C'+r);
   const cols='<cols><col min="1" max="1" width="11.7" customWidth="1"/><col min="2" max="2" width="19.3" customWidth="1"/><col min="3" max="3" width="9.6" customWidth="1"/><col min="4" max="4" width="30.7" customWidth="1"/><col min="5" max="5" width="50.3" customWidth="1"/></cols>';
   const mx='<mergeCells count="'+merges.length+'">'+merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>';
@@ -334,7 +359,8 @@ function monday(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.get
 function blankWeek(){return {nom:'Hachemi',code:'64',weekstart:iso(monday(new Date())),entries:[]}}
 function load(){try{const c=localStorage.getItem(LS_CUR);if(c)return JSON.parse(c)}catch(e){}return blankWeek()}
 function save(){try{localStorage.setItem(LS_CUR,JSON.stringify(state))}catch(e){}}
-function iso(d){return new Date(d).toISOString().slice(0,10)}
+/* local-date ISO — toISOString() converts to UTC and shifts the date in UTC+ timezones */
+function iso(d){const x=new Date(d);const p=n=>String(n).padStart(2,'0');return x.getFullYear()+'-'+p(x.getMonth()+1)+'-'+p(x.getDate())}
 function fmtDM(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+String(d.getFullYear()).slice(2)}
 const MOIS=['janv.','févr.','mars','avr.','mai','juin','juill.','août','sept.','oct.','nov.','déc.'];
 const MOIS_FULL=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -361,7 +387,8 @@ function dayForToday(){
 const isNum=v=>v!==''&&v!=null&&!isNaN(parseFloat(v));
 function entryHrs(e){return isNum(e.heures)?parseFloat(e.heures)*(e.mult===2?2:1):0}
 function dayHrs(day){return state.entries.filter(e=>e.jour===day).reduce((a,e)=>a+entryHrs(e),0)}
-function round2(n){return Math.round(n*100)/100}
+/* EPSILON guards the 1.005-style float edge cases */
+function round2(n){return Math.round((n+Number.EPSILON)*100)/100}
 function splitTotals(){let reg=0,dbl=0;for(const e of state.entries){if(!isNum(e.heures))continue;const h=parseFloat(e.heures);if(e.mult===2)dbl+=h;else reg+=h}return{reg:round2(reg),dbl:round2(dbl),tot:round2(reg+dbl*2)}}
 function incompleteCount(){return state.entries.filter(e=>!isNum(e.heures)).length}
 
@@ -459,8 +486,8 @@ function addEntry(day){
   save();render();
 }
 
-/* ====================== ADDRESS AUTOCOMPLETE (Nominatim/OSM) ====================== */
-let acTimer,acCurrent=null;
+/* ====================== ADDRESS AUTOCOMPLETE (Photon/OSM) ====================== */
+let acTimer,acCurrent=null,acCtl=null,acSeq=0;
 function aDrop(){return $('addrDrop')}
 function acPos(input){
   const d=aDrop(),r=input.getBoundingClientRect();
@@ -480,11 +507,11 @@ function acPos(input){
   }
 }
 function acClose(){aDrop().classList.remove('show');acCurrent=null}
-async function photonQuery(q){
+async function photonQuery(q,signal){
   const url='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+
     '&limit=8&lang=fr&lat=45.50&lon=-73.57'+
     '&bbox=-79.8,44.9,-57.0,62.6'; // Quebec + eastern Canada box, filters out France/Guadeloupe
-  const r=await fetch(url,{headers:{'Accept':'application/json'}});
+  const r=await fetch(url,{headers:{'Accept':'application/json'},signal});
   const data=await r.json();
   return (data.features||[]).filter(f=>{
     const t=f.properties.type;const cc=f.properties.countrycode;
@@ -493,12 +520,18 @@ async function photonQuery(q){
   });
 }
 async function acFetch(q,input,onSelect){
+  // cancel any in-flight request; sequence guard drops stale responses that
+  // resolve out of order (fast typing + slow API)
+  if(acCtl)acCtl.abort();
+  acCtl=new AbortController();
+  const seq=++acSeq;
   try{
-    let feats=await photonQuery(q);
+    let feats=await photonQuery(q,acCtl.signal);
     // if a number+street query returns nothing, retry anchored to Quebec
     if(!feats.length&&/\d/.test(q)&&!/montr|qu[eé]bec|laval|longueuil/i.test(q)){
-      feats=await photonQuery(q+' Québec');
+      feats=await photonQuery(q+' Québec',acCtl.signal);
     }
+    if(seq!==acSeq)return; // a newer request superseded this one
     const d=aDrop();
     if(!feats.length){d.classList.remove('show');return}
     d.innerHTML='';
@@ -522,7 +555,10 @@ async function acFetch(q,input,onSelect){
     const attr=document.createElement('div');attr.className='addr-attr';attr.textContent='© OpenStreetMap';
     d.appendChild(attr);
     acPos(input);d.classList.add('show');acCurrent=input;
-  }catch(e){acClose()}
+  }catch(e){
+    if(e&&e.name==='AbortError')return; // superseded, not an error
+    acClose();
+  }
 }
 function acBind(input,onSelect){
   input.oninput=ev=>{
@@ -550,7 +586,7 @@ function entryEl(e){
     '</div>'+
     '<div class="r1">'+
       '<div class="mini"><label>Contrôle</label><input class="f-ctrl" type="text" name="controle" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="'+escAttr(e.controle)+'"></div>'+
-      '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" type="text" name="heures" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="0" value="'+escAttr(e.heures)+'"><div class="x2'+(e.mult===2?' on':'')+'" role="button" aria-label="Temps double">×2</div></div></div>'+
+      '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" type="text" name="heures" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="0" value="'+escAttr(e.heures)+'"><div class="x2'+(e.mult===2?' on':'')+'" role="button" tabindex="0" aria-label="Temps double" aria-pressed="'+(e.mult===2)+'">×2</div></div></div>'+
     '</div>'+
     '<div class="r2">'+
       '<div class="mini"><label>Type de travail</label><div class="typewrap"><span class="tled '+cls+'"></span><select class="f-type">'+TYPES.map(t=>'<option'+(t===e.type?' selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
@@ -558,7 +594,14 @@ function entryEl(e){
     '</div>'+
     '<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" type="text" name="adresse-libre" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="'+escAttr(e.adresse)+'"></div></div>'+
     (e.mult===2?'<span class="flag">Temps double</span>':'');
-  card.querySelector('.del').onclick=()=>{state.entries=state.entries.filter(x=>x!==e);save();render()};
+  card.querySelector('.del').onclick=()=>{
+    const idx=state.entries.indexOf(e);
+    state.entries.splice(idx,1);save();render();
+    toastAction('Entrée supprimée','Annuler',()=>{
+      state.entries.splice(Math.min(idx,state.entries.length),0,e);
+      focusDay=e.jour;save();render();
+    });
+  };
   card.querySelector('.dup').onclick=()=>{
     const copy={id:Date.now()+Math.random(),jour:e.jour,controle:e.controle,heures:'',mult:1,type:e.type,adresse:e.adresse};
     const idx=state.entries.indexOf(e);state.entries.splice(idx+1,0,copy);focusDay=e.jour;save();render();
@@ -566,17 +609,21 @@ function entryEl(e){
   card.querySelector('.f-ctrl').oninput=ev=>{e.controle=ev.target.value;save()};
   const hr=card.querySelector('.f-hr');
   hr.oninput=ev=>{e.heures=ev.target.value.replace(',','.');save();updateTotals();card.classList.toggle('incomplete',!isNum(e.heures))};
-  card.querySelector('.x2').onclick=ev=>{e.mult=e.mult===2?1:2;save();render()};
+  const x2=card.querySelector('.x2');
+  const x2toggle=()=>{e.mult=e.mult===2?1:2;save();render()};
+  x2.onclick=x2toggle;
+  x2.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();x2toggle()}};
   card.querySelector('.f-type').onchange=ev=>{e.type=ev.target.value;save();render()};
   card.querySelector('.f-day').onchange=ev=>{e.jour=ev.target.value;save();render()};
   acBind(card.querySelector('.f-addr'),val=>{e.adresse=val;save()});
   return card;
 }
-function escAttr(v){return v==null?'':String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function escAttr(v){return v==null?'':String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function updateTotals(){
   const tt=splitTotals();
   $('totVal').innerHTML=tt.tot+'<small>h</small>';
   $('regVal').textContent=tt.reg;$('dblVal').textContent=tt.dbl;
+  renderRail(); // keep day-chip totals live while typing
 }
 
 /* ====================== WEEK NAVIGATION ====================== */
@@ -695,8 +742,45 @@ function renderWeeks(){
   });
 }
 
+/* ====================== LOCAL BACKUP (JSON export / import) ====================== */
+$('bkExport').onclick=()=>{
+  archive();
+  const payload={version:1,exported:new Date().toISOString(),current:state,weeks:getArch()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='fdt-backup-'+iso(new Date())+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast('Sauvegarde exportée');
+};
+$('bkImport').onclick=()=>$('bkFile').click();
+$('bkFile').onchange=async ev=>{
+  const f=ev.target.files&&ev.target.files[0];ev.target.value='';
+  if(!f)return;
+  try{
+    const j=JSON.parse(await f.text());
+    if(!j||typeof j!=='object'||(!j.current&&!j.weeks))throw new Error('format');
+    if(j.weeks&&Array.isArray(j.weeks))setArch(j.weeks);
+    if(j.current&&j.current.weekstart){state=j.current;save()}
+    render();renderWeeks();
+    toast('✓ Sauvegarde importée');
+  }catch(e){toast('Fichier invalide — import annulé')}
+};
+
 /* ====================== TOAST ====================== */
-let tT;function toast(m){const el=$('toast');el.textContent=m;el.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2200)}
+let tT;
+function toast(m){const el=$('toast');el.textContent=m;el.style.pointerEvents='none';
+  el.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2200)}
+function toastAction(msg,label,fn){
+  const el=$('toast');el.innerHTML='';
+  el.appendChild(document.createTextNode(msg));
+  const b=document.createElement('button');b.className='toast-act';b.textContent=label;
+  b.onclick=()=>{fn();el.classList.remove('show');el.style.pointerEvents='none'};
+  el.appendChild(b);
+  el.style.pointerEvents='auto';
+  el.classList.add('show');clearTimeout(tT);
+  tT=setTimeout(()=>{el.classList.remove('show');el.style.pointerEvents='none'},5000);
+}
 
 /* ====================== GITHUB SYNC ====================== */
 const GH_OWNER='Hachemizz',GH_REPO='Feuille-de-temps',GH_FILE='fdt-data.json';
@@ -720,13 +804,18 @@ async function ghGet(){
   }catch(e){return null}
 }
 
-async function ghPut(content,sha){
+/* 409/422 = stale sha (file changed from another device) → refetch sha, retry once */
+async function ghPut(content,sha,retried){
   const tok=getToken();if(!tok)return false;
   try{
     const body={message:'sync '+new Date().toISOString().slice(0,16),content:b64enc(JSON.stringify(content,null,2))};
     if(sha)body.sha=sha;
     const r=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE,
       {method:'PUT',headers:{Authorization:'token '+tok,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if((r.status===409||r.status===422)&&!retried){
+      const g=await ghGet();
+      return ghPut(content,g?g.sha:null,true);
+    }
     if(!r.ok)throw new Error('HTTP '+r.status);
     const j=await r.json();
     localStorage.setItem(LS_SHA,j.content.sha);
@@ -735,6 +824,7 @@ async function ghPut(content,sha){
 }
 
 async function syncFromGH(){
+  if(!navigator.onLine){toast('Hors ligne — sync impossible');return}
   setSyncIcon('⏳',true);
   const res=await ghGet();
   if(!res){setSyncIcon('⚠',false);toast('Erreur GitHub — vérifier le token');return}
@@ -748,6 +838,7 @@ async function syncFromGH(){
 }
 
 async function syncToGH(){
+  if(!navigator.onLine){toast('Hors ligne — sync impossible');return}
   setSyncIcon('⏳',true);
   archive();
   const content={current:state,weeks:getArch()};
@@ -785,7 +876,7 @@ function renderSetup(){
 // auto-pull on load if token already saved in this browser
 if(getToken())syncFromGH();
 
-/* ====================== ICON (PNG via canvas — Safari + 1Password) ====================== */
+/* ====================== ICON + INLINE MANIFEST (PNG via canvas) ====================== */
 (function(){
   try{
     const S=180,cv=document.createElement('canvas');cv.width=S;cv.height=S;
@@ -814,6 +905,17 @@ if(getToken())syncFromGH();
     const png=cv.toDataURL('image/png');
     document.getElementById('ati').href=png;
     document.getElementById('fav').href=png;
+    // inline web app manifest (data: URI keeps everything in one file);
+    // iOS keeps using the apple-* meta tags, Chrome/Android gets standalone + splash
+    const man={
+      name:'Feuille de temps',short_name:'FDT',
+      start_url:'.',scope:'.',display:'standalone',
+      background_color:'#121317',theme_color:'#121317',
+      icons:[{src:png,sizes:'180x180',type:'image/png'}]
+    };
+    const link=document.createElement('link');link.rel='manifest';
+    link.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(man));
+    document.head.appendChild(link);
   }catch(e){}
 })();
 
