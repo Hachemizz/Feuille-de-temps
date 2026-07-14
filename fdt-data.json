@@ -2,65 +2,108 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-06-29",
+    "weekstart": "2026-07-06",
     "entries": [
       {
-        "id": 1782844481961.7007,
-        "jour": "Lundi",
-        "controle": "221753",
-        "heures": "8",
+        "id": 1784000474619.2976,
+        "jour": "Vendredi",
+        "controle": "221510",
+        "heures": "4",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "5650 Rue du Hautbois, Montréal QC"
+        "adresse": "7735 Avenue d'Outremont, Montréal QC"
       },
       {
-        "id": 1782844519136.1804,
+        "id": 1784000655581.4402,
+        "jour": "Vendredi",
+        "controle": "221512",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "3654 Chemin de la Côte-Bissonnette, Varennes QC"
+      },
+      {
+        "id": 1784000670978.1328,
         "jour": "Mardi",
-        "controle": "221753",
-        "heures": "8",
+        "controle": "",
+        "heures": "",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "5650 Rue du Hautbois, Montréal QC"
+        "adresse": ""
       },
       {
-        "id": 1782848382094.3093,
+        "id": 1784000706658.8154,
         "jour": "Mardi",
-        "controle": "221504",
+        "controle": "221511",
         "heures": "3",
         "mult": 1,
         "type": "Appel de service",
-        "adresse": "11989 Avenue Monty, Montréal QC"
+        "adresse": "210 st paul st jean richelieu "
       },
       {
-        "id": 1783998807773.9692,
-        "jour": "Mercredi",
-        "controle": "",
-        "heures": "",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": ""
-      },
-      {
-        "id": 1783998808748.5286,
-        "jour": "Jeudi",
-        "controle": "",
-        "heures": "",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": ""
-      },
-      {
-        "id": 1783998809379.2625,
-        "jour": "Vendredi",
-        "controle": "",
-        "heures": "",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": ""
+        "id": 1784001405569.5176,
+        "jour": "Samedi",
+        "controle": "221512",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "1455 rue rechon"
       }
     ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-07-06",
+      "entries": [
+        {
+          "id": 1784000474619.2976,
+          "jour": "Vendredi",
+          "controle": "221510",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "7735 Avenue d'Outremont, Montréal QC"
+        },
+        {
+          "id": 1784000655581.4402,
+          "jour": "Vendredi",
+          "controle": "221512",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "3654 Chemin de la Côte-Bissonnette, Varennes QC"
+        },
+        {
+          "id": 1784000670978.1328,
+          "jour": "Mardi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1784000706658.8154,
+          "jour": "Mardi",
+          "controle": "221511",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "210 st paul st jean richelieu "
+        },
+        {
+          "id": 1784001405569.5176,
+          "jour": "Samedi",
+          "controle": "221512",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "1455 rue rechon"
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
@@ -96,29 +139,74 @@
         {
           "id": 1783998807773.9692,
           "jour": "Mercredi",
-          "controle": "",
-          "heures": "",
+          "controle": "221548",
+          "heures": "4",
           "mult": 1,
-          "type": "Inspection",
-          "adresse": ""
+          "type": "Appel de service",
+          "adresse": "2 Rue Boileau, Vaudreuil-Dorion QC"
         },
         {
           "id": 1783998808748.5286,
           "jour": "Jeudi",
+          "controle": "221506",
+          "heures": "2",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "260 Rue Marcotte, Montréal QC"
+        },
+        {
+          "id": 1783998809379.2625,
+          "jour": "Vendredi",
+          "controle": "221508",
+          "heures": "3",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "7085 Rue Louis-Hémon, Montréal QC"
+        },
+        {
+          "id": 1783998946794.9202,
+          "jour": "Jeudi",
+          "controle": "221550",
+          "heures": "2",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "845 Rue Roy, Montréal QC"
+        },
+        {
+          "id": 1783998952817.3738,
+          "jour": "Jeudi",
+          "controle": "221549",
+          "heures": "2",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "800 Rue Dorais, Montréal QC"
+        },
+        {
+          "id": 1783998953995.3655,
+          "jour": "Jeudi",
+          "controle": "221507",
+          "heures": "2",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "5650 Rue du Hautbois, Montréal QC"
+        },
+        {
+          "id": 1783999103569.447,
+          "jour": "Mercredi",
           "controle": "",
-          "heures": "",
+          "heures": "4",
           "mult": 1,
           "type": "Inspection",
           "adresse": ""
         },
         {
-          "id": 1783998809379.2625,
+          "id": 1783999965917.086,
           "jour": "Vendredi",
-          "controle": "",
-          "heures": "",
+          "controle": "221509",
+          "heures": "3",
           "mult": 1,
-          "type": "Inspection",
-          "adresse": ""
+          "type": "Réparations",
+          "adresse": "2250 Rue Plessis, Montréal QC"
         }
       ]
     },
