@@ -129,6 +129,33 @@
         "mult": 1,
         "type": "Inspection",
         "adresse": "4681-83-85-87-89 de Rouen "
+      },
+      {
+        "id": 1785889329900.3623,
+        "jour": "Jeudi",
+        "controle": "222759",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "440 Rue Saint-Michel, Saint-Jean-sur-Richelieu QC"
+      },
+      {
+        "id": 1785889608581.5537,
+        "jour": "Dimanche",
+        "controle": "222802",
+        "heures": "3",
+        "mult": 2,
+        "type": "Inspection",
+        "adresse": "225 Avenue Olivier, Westmount QC"
+      },
+      {
+        "id": 1785889642542.2756,
+        "jour": "Dimanche",
+        "controle": "222802",
+        "heures": "",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "225 Avenue Olivier, Westmount QC"
       }
     ]
   },
@@ -182,6 +209,67 @@
           "mult": 1,
           "type": "Appel de service",
           "adresse": "285 Rue Leblanc, Salaberry-de-Valleyfield QC"
+        }
+      ]
+    },
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-07-20",
+      "entries": [
+        {
+          "id": 1785890266803.7917,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Maladie",
+          "adresse": "RDV a l'hopital "
+        },
+        {
+          "id": 1785890315420.1104,
+          "jour": "Mardi",
+          "controle": "222761",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1391 Rue Beauregard, Longueuil QC"
+        },
+        {
+          "id": 1785891526063.5159,
+          "jour": "Mercredi",
+          "controle": "222762",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1340 Boulevard Nobert, Longueuil QC"
+        },
+        {
+          "id": 1785891687788.1543,
+          "jour": "Jeudi",
+          "controle": "222763",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
+        },
+        {
+          "id": 1785891845305.005,
+          "jour": "Vendredi",
+          "controle": "222763",
+          "heures": "6",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
+        },
+        {
+          "id": 1785892086635.0122,
+          "jour": "Dimanche",
+          "controle": "222801",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "3300 Boulevard Saint-Joseph Est, Montréal QC"
         }
       ]
     },
@@ -315,6 +403,33 @@
           "mult": 1,
           "type": "Inspection",
           "adresse": "4681-83-85-87-89 de Rouen "
+        },
+        {
+          "id": 1785889329900.3623,
+          "jour": "Jeudi",
+          "controle": "222759",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "440 Rue Saint-Michel, Saint-Jean-sur-Richelieu QC"
+        },
+        {
+          "id": 1785889608581.5537,
+          "jour": "Dimanche",
+          "controle": "222802",
+          "heures": "3",
+          "mult": 2,
+          "type": "Inspection",
+          "adresse": "225 Avenue Olivier, Westmount QC"
+        },
+        {
+          "id": 1785889642542.2756,
+          "jour": "Dimanche",
+          "controle": "222802",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "225 Avenue Olivier, Westmount QC"
         }
       ]
     },
