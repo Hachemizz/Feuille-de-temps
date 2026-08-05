@@ -2,160 +2,70 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-07-13",
+    "weekstart": "2026-08-03",
     "entries": [
       {
-        "id": 1785886730035.024,
-        "jour": "Lundi",
-        "controle": "221505",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "764 Place de Monaco, Laval QC"
-      },
-      {
-        "id": 1785887006571.7603,
-        "jour": "Lundi",
-        "controle": "222752",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "6945 Avenue Champchevrier, Montréal QC"
-      },
-      {
-        "id": 1785887043414.5098,
-        "jour": "Lundi",
-        "controle": "222753",
-        "heures": "2",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "6014 Avenue du Parc, Montréal QC"
-      },
-      {
-        "id": 1785887240704.1797,
+        "id": 1785886076508.6577,
         "jour": "Mardi",
-        "controle": "221770",
-        "heures": "5",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "250 Rue Ontario Est, Montréal QC"
-      },
-      {
-        "id": 1785887847070.2668,
-        "jour": "Mardi",
-        "controle": "222754",
-        "heures": "3",
-        "mult": 1,
-        "type": "Réparations",
-        "adresse": "7105 Rue Sherbrooke Est, Montréal QC"
-      },
-      {
-        "id": 1785887963900.7278,
-        "jour": "Mercredi",
-        "controle": "222402",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "117000 Rue de l'Avenir, Mirabel QC"
-      },
-      {
-        "id": 1785888319172.9373,
-        "jour": "Mercredi",
-        "controle": "222755",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "1651 Boulevard Saint-Joseph Est, Montréal QC"
-      },
-      {
-        "id": 1785888412120.5593,
-        "jour": "Mercredi",
-        "controle": "222403",
+        "controle": "",
         "heures": "2",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "4165 Rue Parthenais, Montréal QC"
-      },
-      {
-        "id": 1785888449809.5166,
-        "jour": "Jeudi",
-        "controle": "222756",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "120 Rue Alexandre, Salaberry-de-Valleyfield QC"
-      },
-      {
-        "id": 1785888808950.4917,
-        "jour": "Jeudi",
-        "controle": "222757",
-        "heures": "2",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "200 Rue Alexandre, Salaberry-de-Valleyfield QC"
-      },
-      {
-        "id": 1785888810083.5137,
-        "jour": "Jeudi",
-        "controle": "BBQ ",
-        "heures": "3",
         "mult": 1,
         "type": "Au bureau",
         "adresse": "Bureau"
       },
       {
-        "id": 1785888954452.8655,
-        "jour": "Vendredi",
-        "controle": "",
-        "heures": "1",
+        "id": 1785886079215.3665,
+        "jour": "Lundi",
+        "controle": "222404",
+        "heures": "5",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "9750 Boulevard Saint-Laurent, Montréal QC"
+        "adresse": "3500 Route Marie-Victorin, Varennes QC"
       },
       {
-        "id": 1785889066826.063,
-        "jour": "Vendredi",
-        "controle": "222758",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "50 Boulevard Léger, Laval QC"
-      },
-      {
-        "id": 1785889068071.6216,
-        "jour": "Vendredi",
-        "controle": "",
-        "heures": "4",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "4681-83-85-87-89 de Rouen "
-      },
-      {
-        "id": 1785889329900.3623,
-        "jour": "Jeudi",
-        "controle": "222759",
+        "id": 1785886112134.7524,
+        "jour": "Lundi",
+        "controle": "222751",
         "heures": "3",
         "mult": 2,
         "type": "Appel de service",
-        "adresse": "440 Rue Saint-Michel, Saint-Jean-sur-Richelieu QC"
+        "adresse": "1910 Rue Notre-Dame Ouest, Montréal QC"
       },
       {
-        "id": 1785889608581.5537,
-        "jour": "Dimanche",
-        "controle": "222802",
-        "heures": "3",
-        "mult": 2,
-        "type": "Inspection",
-        "adresse": "225 Avenue Olivier, Westmount QC"
-      },
-      {
-        "id": 1785889642542.2756,
-        "jour": "Dimanche",
-        "controle": "222802",
-        "heures": "",
+        "id": 1785886205021.6084,
+        "jour": "Mardi",
+        "controle": "222803",
+        "heures": "2",
         "mult": 1,
-        "type": "Inspection",
-        "adresse": "225 Avenue Olivier, Westmount QC"
+        "type": "Appel de service",
+        "adresse": "124 Boulevard Hymus, Pointe-Claire QC"
+      },
+      {
+        "id": 1785886273596.279,
+        "jour": "Mardi",
+        "controle": "222804",
+        "heures": "2",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "285 Rue Leblanc, Salaberry-de-Valleyfield QC"
+      },
+      {
+        "id": 1785892636767.4568,
+        "jour": "Lundi",
+        "controle": "222726",
+        "heures": "3",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "4825 Rue Cyrille-Delage, Laval QC"
+      },
+      {
+        "id": 1785892693129.4834,
+        "jour": "Mardi",
+        "controle": "222805",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "5699 Boulevard De La Vérendrye, Montréal QC"
       }
     ]
   },
@@ -169,19 +79,19 @@
           "id": 1785886076508.6577,
           "jour": "Mardi",
           "controle": "",
-          "heures": "",
+          "heures": "2",
           "mult": 1,
-          "type": "Inspection",
-          "adresse": ""
+          "type": "Au bureau",
+          "adresse": "Bureau"
         },
         {
           "id": 1785886079215.3665,
           "jour": "Lundi",
-          "controle": "",
-          "heures": "",
+          "controle": "222404",
+          "heures": "5",
           "mult": 1,
           "type": "Inspection",
-          "adresse": ""
+          "adresse": "3500 Route Marie-Victorin, Varennes QC"
         },
         {
           "id": 1785886112134.7524,
@@ -196,7 +106,7 @@
           "id": 1785886205021.6084,
           "jour": "Mardi",
           "controle": "222803",
-          "heures": "3",
+          "heures": "2",
           "mult": 1,
           "type": "Appel de service",
           "adresse": "124 Boulevard Hymus, Pointe-Claire QC"
@@ -205,10 +115,28 @@
           "id": 1785886273596.279,
           "jour": "Mardi",
           "controle": "222804",
-          "heures": "3",
+          "heures": "2",
           "mult": 1,
           "type": "Appel de service",
           "adresse": "285 Rue Leblanc, Salaberry-de-Valleyfield QC"
+        },
+        {
+          "id": 1785892636767.4568,
+          "jour": "Lundi",
+          "controle": "222726",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "4825 Rue Cyrille-Delage, Laval QC"
+        },
+        {
+          "id": 1785892693129.4834,
+          "jour": "Mardi",
+          "controle": "222805",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "5699 Boulevard De La Vérendrye, Montréal QC"
         }
       ]
     },
@@ -248,7 +176,7 @@
           "id": 1785891687788.1543,
           "jour": "Jeudi",
           "controle": "222763",
-          "heures": "8",
+          "heures": "6",
           "mult": 1,
           "type": "Inspection",
           "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
@@ -257,7 +185,7 @@
           "id": 1785891845305.005,
           "jour": "Vendredi",
           "controle": "222763",
-          "heures": "6",
+          "heures": "8",
           "mult": 1,
           "type": "Inspection",
           "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
@@ -270,6 +198,33 @@
           "mult": 2,
           "type": "Appel de service",
           "adresse": "3300 Boulevard Saint-Joseph Est, Montréal QC"
+        },
+        {
+          "id": 1785892183536.4133,
+          "jour": "Samedi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1785892188899.0896,
+          "jour": "Vendredi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1785892357486.2703,
+          "jour": "Jeudi",
+          "controle": "222764",
+          "heures": "2",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "2005 Avenue Elmhurst, Montréal QC"
         }
       ]
     },
