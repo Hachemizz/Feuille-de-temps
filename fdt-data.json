@@ -143,6 +143,58 @@
     {
       "nom": "Hachemi",
       "code": "64",
+      "weekstart": "2026-07-27",
+      "entries": [
+        {
+          "id": 1785895459874.9216,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "8",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        },
+        {
+          "id": 1785895478130.0798,
+          "jour": "Vendredi",
+          "controle": "",
+          "heures": "8",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        },
+        {
+          "id": 1785895474170.2202,
+          "jour": "Jeudi",
+          "controle": "",
+          "heures": "8",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        },
+        {
+          "id": 1785895470645.3274,
+          "jour": "Mercredi",
+          "controle": "",
+          "heures": "8",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        },
+        {
+          "id": 1785895467571.0188,
+          "jour": "Mardi",
+          "controle": "",
+          "heures": "8",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        }
+      ]
+    },
+    {
+      "nom": "Hachemi",
+      "code": "64",
       "weekstart": "2026-07-20",
       "entries": [
         {
