@@ -267,7 +267,9 @@ footer{position:fixed;left:0;right:0;bottom:0;z-index:30;
 .addr-drop.show{display:block}
 .addr-sug{padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--line)}
 .addr-sug:last-child{border-bottom:none}
-.addr-sug:hover,.addr-sug:active{background:var(--card)}
+.addr-sug:hover,.addr-sug:active,.addr-sug.sel{background:var(--card)}
+.addr-sug.sel{box-shadow:inset 3px 0 0 var(--amber)}
+.addr-sug.hist .sug-main::before{content:"⟲ ";color:var(--amber2)}
 .sug-main{font-size:13px;font-weight:600;color:var(--txt)}
 .sug-sub{font-size:11px;color:var(--dim);margin-top:2px}
 .addr-attr{padding:5px 13px;font-size:10px;color:var(--faint);border-top:1px solid var(--line);text-align:right}
@@ -416,7 +418,7 @@ let activeDay=null;  // rail filter — null = show all days
 function monday(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
 function blankWeek(){return {nom:'Hachemi',code:'64',weekstart:iso(monday(new Date())),entries:[]}}
 function load(){try{const c=localStorage.getItem(LS_CUR);if(c)return JSON.parse(c)}catch(e){}return blankWeek()}
-function save(){try{localStorage.setItem(LS_CUR,JSON.stringify(state))}catch(e){}}
+function save(){_hist=null;try{localStorage.setItem(LS_CUR,JSON.stringify(state))}catch(e){}}
 /* local-date ISO — toISOString() converts to UTC and shifts the date in UTC+ timezones */
 function iso(d){const x=new Date(d);const p=n=>String(n).padStart(2,'0');return x.getFullYear()+'-'+p(x.getMonth()+1)+'-'+p(x.getDate())}
 function fmtDM(d){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+String(d.getFullYear()).slice(2)}
@@ -613,8 +615,46 @@ function addOff(day,type,motif){
   toast((type||'Congé')+' ajouté · '+DEF_OFF_HRS+' h');
 }
 
-/* ====================== ADDRESS AUTOCOMPLETE (Photon/OSM) ====================== */
-let acTimer,acCurrent=null,acCtl=null,acSeq=0;
+/* ====================== ADDRESS AUTOCOMPLETE ======================
+   Trois sources fusionnées, classées, dédupliquées :
+   1. Historique local — adresses déjà saisies (instantané, fonctionne hors ligne)
+   2. Adresses Québec — servicescarto.mern.gouv.qc.ca (officiel, tout le Québec)
+        · /suggest               → fort en frappe partielle, sans ville
+        · /findAddressCandidates → tolère accents manquants + abréviations, veut la ville
+        Les deux sont interrogés en parallèle : ils échouent sur des cas opposés.
+   3. Photon / OSM — filet : arrondissements, commerces, POI nommés
+   Aucune source n'est bloquante — si l'une tombe, les autres s'affichent.
+=================================================================== */
+const AQ='https://servicescarto.mern.gouv.qc.ca/pes/rest/services/Territoire/Adresse_Geocodage/GeocodeServer';
+/* AQ ne connaît pas les arrondissements comme municipalités : "st laurent",
+   "lachine"… doivent être remplacés par "Montréal" en 2e passe. */
+const BOROUGHS=['saint laurent','lachine','lasalle','verdun','anjou','outremont',
+ 'montreal nord','saint leonard','ahuntsic','cartierville','plateau mont royal',
+ 'rosemont','villeray','hochelaga maisonneuve','mercier','ville marie','sud ouest',
+ 'pierrefonds','roxboro','riviere des prairies','pointe aux trembles',
+ 'cote des neiges','notre dame de grace','ndg','ile bizard','parc extension','saint michel'];
+const ABBR={st:'saint','st.':'saint',ste:'sainte','ste.':'sainte',boul:'boulevard',
+ 'boul.':'boulevard',bd:'boulevard',blvd:'boulevard',av:'avenue','av.':'avenue',
+ ave:'avenue',ch:'chemin','ch.':'chemin',mtee:'montée',pl:'place',crois:'croissant',
+ terr:'terrasse',imp:'impasse',o:'ouest',e:'est'};
+var _hist=null;
+let acTimer,acCurrent=null,acCtl=null,acSeq=0,acIdx=-1,acItems=[];
+
+function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^a-z0-9]+/g,' ').trim()}
+function expandQ(q){return q.trim().split(/\s+/).map(w=>ABBR[w.toLowerCase()]||w).join(' ')}
+function doorNum(q){const m=/^\s*(\d+)/.exec(q);return m?m[1]:''}
+function startsWithNum(label,num){return num?norm(label).indexOf(num+' ')===0:false}
+function boroughSwap(q){
+  const n=norm(q);
+  for(const b of BOROUGHS){
+    if(n.length>b.length+3&&n.endsWith(' '+b)){
+      const head=n.slice(0,n.length-b.length-1).trim();
+      if(head.split(' ').length>=2)return head+' montreal';
+    }
+  }
+  return null;
+}
 function aDrop(){return $('addrDrop')}
 function acPos(input){
   const d=aDrop(),r=input.getBoundingClientRect();
@@ -633,67 +673,197 @@ function acPos(input){
     d.style.maxHeight=Math.max(120,spaceAbove)+'px';
   }
 }
-function acClose(){aDrop().classList.remove('show');acCurrent=null}
+function acClose(){aDrop().classList.remove('show');acCurrent=null;acIdx=-1;acItems=[]}
+
+/* ---- source 1 : historique local ---- */
+function histList(){
+  if(_hist)return _hist;
+  const m=new Map();
+  const add=e=>{const a=((e&&e.adresse)||'').trim();if(a.length>5&&!isOff(e.type))m.set(norm(a),a)};
+  ((state&&state.entries)||[]).forEach(add);
+  getArch().forEach(w=>(w.entries||[]).forEach(add));
+  _hist=[...m.values()];
+  return _hist;
+}
+function histMatch(q){
+  const t=norm(q).split(' ').filter(Boolean);
+  if(!t.length)return [];
+  return histList().filter(a=>{const n=norm(a);return t.every(x=>n.indexOf(x)>=0)})
+    .slice(0,3).map(a=>{
+      const i=a.indexOf(',');
+      return{label:i>0?a.slice(0,i):a,
+             sub:(i>0?a.slice(i+1).trim()+' · ':'')+'déjà utilisée',
+             full:a,src:'hist'};
+    });
+}
+
+/* ---- source 2 : Adresses Québec ---- */
+const PC=/([A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)/;
+function aqMap(text,city,zip){
+  if(!text)return null;
+  const i=text.indexOf(',');
+  let label=i>0?text.slice(0,i):text;
+  const tail=i>0?text.slice(i+1).trim():'';
+  // "Boulevard Décarie (Saint-Laurent)" → la parenthèse est le secteur de la rue
+  const bor=(/\(([^)]+)\)/.exec(label)||[])[1]||'';
+  label=label.replace(/\s*\([^)]*\)\s*/g,' ').replace(/\s+/g,' ').trim();
+  const cty=(city||tail.replace(PC,'').trim()).trim();
+  let pc=zip||(PC.exec(tail)||[])[1]||'';
+  if(pc)pc=pc.replace(/\s/g,'').toUpperCase().replace(/^(.{3})(.{3})$/,'$1 $2');
+  const sub=[(bor&&norm(bor)!==norm(cty))?bor:'',cty,pc].filter(Boolean).join(', ');
+  const full=[label,cty?cty+' QC':''].filter(Boolean).join(', ');
+  return{label,sub,full,src:'aq'};
+}
+async function aqSuggest(q,signal){
+  const r=await fetch(AQ+'/suggest?text='+encodeURIComponent(q)+'&maxSuggestions=6&f=json',
+    {headers:{Accept:'application/json'},signal});
+  const d=await r.json();
+  return (d.suggestions||[]).map(x=>aqMap(x.text,'','')).filter(Boolean);
+}
+async function aqFind(q,signal){
+  const r=await fetch(AQ+'/findAddressCandidates?SingleLine='+encodeURIComponent(q)+
+    '&f=json&maxLocations=6&outFields=City,ZIP',{headers:{Accept:'application/json'},signal});
+  const d=await r.json();
+  return (d.candidates||[]).filter(c=>(c.score||0)>=60).map(c=>{
+    const a=c.attributes||{};
+    return aqMap(c.address||a.Match_addr||'',a.City||'',a.ZIP||'');
+  }).filter(Boolean);
+}
+
+/* ---- source 3 : Photon / OSM ---- */
 async function photonQuery(q,signal){
   const url='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+
     '&limit=8&lang=fr&lat=45.50&lon=-73.57'+
-    '&bbox=-79.8,44.9,-57.0,62.6'; // Quebec + eastern Canada box, filters out France/Guadeloupe
-  const r=await fetch(url,{headers:{'Accept':'application/json'},signal});
+    '&bbox=-79.8,44.9,-57.0,62.6'; // Québec + est du Canada, écarte France/Guadeloupe
+  const r=await fetch(url,{headers:{Accept:'application/json'},signal});
   const data=await r.json();
   return (data.features||[]).filter(f=>{
     const t=f.properties.type;const cc=f.properties.countrycode;
     if(cc&&cc!=='CA')return false;
     return t!=='country'&&t!=='state';
+  }).map(f=>{
+    const pr=f.properties;
+    const street=pr.street||pr.name||'';
+    const num=pr.housenumber||'';
+    const main=(num?num+' ':'')+street||pr.name||'';
+    const city=pr.city||pr.town||pr.village||pr.county||'';
+    const label=main||[pr.name,city].filter(Boolean).join(', ');
+    const sub=[pr.district,city,pr.state,pr.postcode].filter(Boolean).join(', ');
+    const cityProv=[city,pr.state==='Québec'?'QC':pr.state].filter(Boolean).join(' ');
+    const full=[label,cityProv].filter(Boolean).join(', ');
+    return{label,sub,full,src:'osm'};
   });
 }
+
+/* ---- fusion + classement ---- */
+const SRC_RANK={hist:0,aq:1,osm:2};
+function mergeSug(lists,q){
+  const num=doorNum(q),seen=new Set(),all=[];
+  [].concat.apply([],lists).forEach(x=>{
+    if(!x||!x.full||!x.label)return;
+    const k=norm(x.full);
+    if(!k||seen.has(k))return;seen.add(k);
+    x._n=num?(startsWithNum(x.label,num)?0:1):0; // numéro civique demandé = priorité
+    x._r=SRC_RANK[x.src]===undefined?3:SRC_RANK[x.src];
+    all.push(x);
+  });
+  /* d'abord les adresses au bon numéro civique, puis le reste ; à l'intérieur de
+     chaque groupe on alterne les sources — sinon AQ prend les 6 places et masque
+     les arrondissements que seul OSM connaît (ex. « ... Lachine »). */
+  const out=[];
+  [0,1].forEach(n=>{
+    const buckets=[[],[],[],[]];
+    all.forEach(x=>{if(x._n===n)buckets[x._r].push(x)});
+    for(let go=true;go;){
+      go=false;
+      for(const b of buckets)if(b.length){out.push(b.shift());go=true}
+    }
+  });
+  return out.slice(0,6);
+}
+
+function acPaint(list,input,onSelect){
+  const d=aDrop();
+  d.innerHTML='';acItems=[];acIdx=-1;
+  list.forEach(sg=>{
+    const div=document.createElement('div');
+    div.className='addr-sug'+(sg.src==='hist'?' hist':'');
+    div.innerHTML='<div class="sug-main">'+esc(sg.label)+'</div>'+
+      (sg.sub?'<div class="sug-sub">'+esc(sg.sub)+'</div>':'');
+    div.onmousedown=ev=>{ev.preventDefault();input.value=sg.full;onSelect(sg.full);acClose()};
+    d.appendChild(div);
+    acItems.push({el:div,full:sg.full});
+  });
+  const srcs=[];
+  if(list.some(x=>x.src==='aq'))srcs.push('Adresses Québec');
+  if(list.some(x=>x.src==='osm'))srcs.push('OpenStreetMap');
+  const attr=document.createElement('div');attr.className='addr-attr';
+  attr.textContent=srcs.length?'© '+srcs.join(' · '):'historique local';
+  d.appendChild(attr);
+  acPos(input);d.classList.add('show');acCurrent=input;
+}
+function acHighlight(i){
+  acItems.forEach((it,k)=>it.el.classList.toggle('sel',k===i));
+  if(acItems[i])acItems[i].el.scrollIntoView({block:'nearest'});
+}
+
 async function acFetch(q,input,onSelect){
-  // cancel any in-flight request; sequence guard drops stale responses that
-  // resolve out of order (fast typing + slow API)
+  // annule la requête en vol ; le compteur de séquence jette les réponses périmées
   if(acCtl)acCtl.abort();
   acCtl=new AbortController();
+  const sig=acCtl.signal;
   const seq=++acSeq;
+  const hist=histMatch(q);
+  const num=doorNum(q);
+  // un numéro seul ne vaut pas un appel réseau
+  if(/^\d+$/.test(q.trim())){
+    if(hist.length)acPaint(hist,input,onSelect);else acClose();
+    return;
+  }
+  const qx=expandQ(q); // st → saint, boul → boulevard, …
   try{
-    let feats=await photonQuery(q,acCtl.signal);
-    // if a number+street query returns nothing, retry anchored to Quebec
-    if(!feats.length&&/\d/.test(q)&&!/montr|qu[eé]bec|laval|longueuil/i.test(q)){
-      feats=await photonQuery(q+' Québec',acCtl.signal);
+    const res=await Promise.allSettled([aqSuggest(qx,sig),aqFind(qx,sig),photonQuery(qx,sig)]);
+    if(seq!==acSeq)return; // une frappe plus récente a pris le relais
+    const [sg,fa,ph]=res.map(r=>r.status==='fulfilled'?r.value:[]);
+    let list=mergeSug([hist,sg,fa,ph],q);
+    // 2e passe : arrondissement de Montréal en fin de requête → réessayer sur "Montréal"
+    if(num&&!list.some(x=>x._n===0)){
+      const alt=boroughSwap(qx);
+      if(alt){
+        let more=[];
+        try{more=await aqFind(alt,sig)}catch(e){}
+        if(seq!==acSeq)return;
+        more=more.filter(x=>startsWithNum(x.label,num)); // sinon la 2e passe pollue
+        if(more.length)list=mergeSug([hist,more,sg,fa,ph],q);
+      }
     }
-    if(seq!==acSeq)return; // a newer request superseded this one
-    const d=aDrop();
-    if(!feats.length){d.classList.remove('show');return}
-    d.innerHTML='';
-    feats.slice(0,5).forEach(f=>{
-      const pr=f.properties;
-      const street=pr.street||pr.name||'';
-      const num=pr.housenumber||'';
-      const main=(num?num+' ':'')+street || pr.name || '';
-      const city=pr.city||pr.town||pr.village||pr.county||'';
-      const pc=pr.postcode||'';
-      const sub=[city,pr.state,pc].filter(Boolean).join(', ');
-      const label=main||[pr.name,city].filter(Boolean).join(', ');
-      // full value written into the field on select: street, city QC
-      const cityProv=[city,pr.state==='Québec'?'QC':pr.state].filter(Boolean).join(' ');
-      const full=[label,cityProv].filter(Boolean).join(', ');
-      const div=document.createElement('div');div.className='addr-sug';
-      div.innerHTML='<div class="sug-main">'+esc(label)+'</div>'+(sub?'<div class="sug-sub">'+esc(sub)+'</div>':'');
-      div.onmousedown=ev=>{ev.preventDefault();onSelect(full);acClose()};
-      d.appendChild(div);
-    });
-    const attr=document.createElement('div');attr.className='addr-attr';attr.textContent='© OpenStreetMap';
-    d.appendChild(attr);
-    acPos(input);d.classList.add('show');acCurrent=input;
+    if(!list.length){acClose();return}
+    acPaint(list,input,onSelect);
   }catch(e){
-    if(e&&e.name==='AbortError')return; // superseded, not an error
-    acClose();
+    if(e&&e.name==='AbortError')return; // remplacée, pas une erreur
+    if(hist.length)acPaint(hist,input,onSelect);else acClose();
   }
 }
 function acBind(input,onSelect){
+  const pick=val=>{input.value=val;onSelect(val)};
   input.oninput=ev=>{
-    onSelect(ev.target.value); // live save
+    onSelect(ev.target.value); // sauvegarde continue
     clearTimeout(acTimer);
     const q=ev.target.value.trim();
     if(q.length<3){acClose();return}
-    acTimer=setTimeout(()=>acFetch(q,input,(val)=>{input.value=val;onSelect(val)}),350);
+    acTimer=setTimeout(()=>acFetch(q,input,onSelect),260);
+  };
+  input.onkeydown=ev=>{
+    if(!aDrop().classList.contains('show')||!acItems.length)return;
+    if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){
+      ev.preventDefault();
+      acIdx=ev.key==='ArrowDown'
+        ?Math.min(acIdx+1,acItems.length-1)
+        :Math.max(acIdx-1,0);
+      acHighlight(acIdx);
+    }else if(ev.key==='Enter'&&acIdx>=0){
+      ev.preventDefault();pick(acItems[acIdx].full);acClose();
+    }else if(ev.key==='Escape'){acClose()}
   };
   input.onfocus=()=>{if((input.value||'').trim().length>=3){acPos(input);aDrop().classList.add('show')}};
   input.onblur=()=>setTimeout(acClose,180);
@@ -877,7 +1047,7 @@ $('exportBtn').onclick=exportXlsx;
 
 /* ====================== ARCHIVE / WEEKS ====================== */
 function getArch(){try{return JSON.parse(localStorage.getItem(LS_ARCH))||[]}catch(e){return[]}}
-function setArch(a){try{localStorage.setItem(LS_ARCH,JSON.stringify(a))}catch(e){}}
+function setArch(a){_hist=null;try{localStorage.setItem(LS_ARCH,JSON.stringify(a))}catch(e){}}
 function archive(){
   if(!state.entries.length)return;
   const a=getArch();const key=state.weekstart;
