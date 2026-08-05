@@ -19,6 +19,7 @@
   --amber:#ff8c1a; --amber2:#ffb066;
   --insp:#ffb020; --rep:#5b8def; --call:#2fd27a;
   --off:#a78bfa; --off2:rgba(167,139,250,.16);
+  --desk:#39c6d9; --cxl:#ff7a7a; --cxl2:rgba(255,122,122,.13);
   --ok:#37c97f; --dbl:#ffd166; --warn:#ff6b6b;
   --bgt:rgba(18,19,23,0);
   --readout1:#14161b; --readout2:#1b1e25;
@@ -34,6 +35,7 @@
     --amber:#e67300; --amber2:#c96400;
     --insp:#d99000; --rep:#3d6fd6; --call:#1fa864;
     --off:#7c5cd6; --off2:rgba(124,92,214,.12);
+    --desk:#0d8fa3; --cxl:#d94848; --cxl2:rgba(217,72,72,.10);
     --ok:#1e9e5f; --dbl:#c98f00; --warn:#d94848;
     --bgt:rgba(244,245,247,0);
     --readout1:#ffffff; --readout2:#f4f6f9;
@@ -167,7 +169,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .entry.t-rep::before{background:var(--rep)}
 .entry.t-call::before{background:var(--call)}
 .entry.t-off::before{background:var(--off)}
+.entry.t-desk::before{background:var(--desk)}
+.entry.t-cxl::before{background:var(--cxl)}
 .entry.t-off{background:linear-gradient(90deg,var(--off2),var(--card) 70%)}
+.entry.t-cxl{background:linear-gradient(90deg,var(--cxl2),var(--card) 70%)}
 .entry.incomplete{border-color:#5a4a2a}
 
 .r1{display:grid;grid-template-columns:1.2fr 1fr;gap:8px;align-items:end;padding-right:62px}
@@ -189,6 +194,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .tled.t-rep{background:var(--rep);box-shadow:0 0 7px var(--rep)}
 .tled.t-call{background:var(--call);box-shadow:0 0 7px var(--call)}
 .tled.t-off{background:var(--off);box-shadow:0 0 7px var(--off)}
+.tled.t-desk{background:var(--desk);box-shadow:0 0 7px var(--desk)}
+.tled.t-cxl{background:var(--cxl);box-shadow:0 0 7px var(--cxl)}
 
 .tools{position:absolute;top:9px;right:9px;display:flex;gap:4px}
 .tool{width:28px;height:28px;border:none;background:transparent;color:var(--faint);font-size:15px;
@@ -200,6 +207,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--dbl)}
 .flag.o{color:var(--off)}
 .flag.o::before{background:var(--off)}
+.flag.c{color:var(--cxl)}
+.flag.c::before{background:var(--cxl)}
+.flag+.flag{margin-left:14px}
 
 .addrow{display:grid;grid-template-columns:1fr auto;gap:8px}
 .addday{width:100%;border:1px dashed var(--line2);background:transparent;color:var(--dim);border-radius:11px;
@@ -384,10 +394,19 @@ function genXlsx(data){return zipStore([
 ])}
 
 /* ====================== APP STATE ====================== */
-const TYPES=['Inspection','Réparations','Appel de service'];
+const TYPES=['Inspection','Réparations','Appel de service','Au bureau'];
+const CXLTYPES=['Travail annulé'];
 const OFFTYPES=['Férié','Congé','Vacances','Maladie'];
 const isOff=t=>OFFTYPES.indexOf(t)>=0;
-function typeCls(t){return isOff(t)?'t-off':t==='Inspection'?'t-insp':t==='Réparations'?'t-rep':'t-call'}
+const isCxl=t=>CXLTYPES.indexOf(t)>=0;
+const OFFICE='Au bureau', OFFICE_ADDR='Bureau';
+function typeCls(t){
+  return isOff(t)?'t-off'
+    :isCxl(t)?'t-cxl'
+    :t===OFFICE?'t-desk'
+    :t==='Inspection'?'t-insp'
+    :t==='Réparations'?'t-rep':'t-call';
+}
 const DEF_OFF_HRS='8';
 const LS_CUR='fdt_current', LS_ARCH='fdt_weeks';
 let state=load();
@@ -687,6 +706,7 @@ function typeSelect(cur){
   const o=t=>'<option'+(t===cur?' selected':'')+'>'+t+'</option>';
   return '<select class="f-type">'+
     '<optgroup label="Travail">'+TYPES.map(o).join('')+'</optgroup>'+
+    '<optgroup label="Autre">'+CXLTYPES.map(o).join('')+'</optgroup>'+
     '<optgroup label="Absence">'+OFFTYPES.map(o).join('')+'</optgroup>'+
   '</select>';
 }
@@ -714,7 +734,10 @@ function entryEl(e){
     (off
       ?'<div class="r3"><div class="mini"><label>Motif (optionnel)</label><input class="f-motif" type="text" autocomplete="off" placeholder="ex. Fête du travail" value="'+escAttr(e.adresse)+'"></div></div>'
       :'<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" type="text" name="adresse-libre" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="'+escAttr(e.adresse)+'"></div></div>')+
-    (off?'<span class="flag o">Journée non travaillée</span>':(e.mult===2?'<span class="flag">Temps double</span>':''));
+    (off
+      ?'<span class="flag o">Journée non travaillée</span>'
+      :(isCxl(e.type)?'<span class="flag c">Annulé — non exécuté</span>':'')+
+       (e.mult===2?'<span class="flag">Temps double</span>':''));
   card.querySelector('.del').onclick=()=>{
     const idx=state.entries.indexOf(e);
     state.entries.splice(idx,1);save();render();
@@ -747,6 +770,8 @@ function entryEl(e){
     }else if(!isOff(nt)&&isOff(e.type)){
       e.adresse='';
     }
+    // travail au bureau : pas d'adresse de site à chercher
+    if(nt===OFFICE&&!(e.adresse||'').trim())e.adresse=OFFICE_ADDR;
     e.type=nt;save();render();
   };
   card.querySelector('.f-day').onchange=ev=>{e.jour=ev.target.value;save();render()};
