@@ -2,29 +2,92 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-07-06",
+    "weekstart": "2026-07-13",
     "entries": [
       {
-        "id": 1784000474619.2976,
-        "jour": "Vendredi",
-        "controle": "221510",
-        "heures": "4",
+        "id": 1785886730035.024,
+        "jour": "Lundi",
+        "controle": "221505",
+        "heures": "3",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "7735 Avenue d'Outremont, Montréal QC"
+        "adresse": "764 Place de Monaco, Laval QC"
       },
       {
-        "id": 1784000655581.4402,
-        "jour": "Vendredi",
-        "controle": "221512",
-        "heures": "4",
+        "id": 1785887006571.7603,
+        "jour": "Lundi",
+        "controle": "222752",
+        "heures": "3",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "6945 Avenue Champchevrier, Montréal QC"
+      },
+      {
+        "id": 1785887043414.5098,
+        "jour": "Lundi",
+        "controle": "222753",
+        "heures": "2",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "6014 Avenue du Parc, Montréal QC"
+      },
+      {
+        "id": 1785887240704.1797,
+        "jour": "Mardi",
+        "controle": "221770",
+        "heures": "5",
         "mult": 1,
         "type": "Appel de service",
-        "adresse": "3654 Chemin de la Côte-Bissonnette, Varennes QC"
+        "adresse": "250 Rue Ontario Est, Montréal QC"
       },
       {
-        "id": 1784000670978.1328,
+        "id": 1785887847070.2668,
         "jour": "Mardi",
+        "controle": "222754",
+        "heures": "3",
+        "mult": 1,
+        "type": "Réparations",
+        "adresse": "7105 Rue Sherbrooke Est, Montréal QC"
+      },
+      {
+        "id": 1785887963900.7278,
+        "jour": "Mercredi",
+        "controle": "222402",
+        "heures": "3",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "117000 Rue de l'Avenir, Mirabel QC"
+      },
+      {
+        "id": 1785888319172.9373,
+        "jour": "Mercredi",
+        "controle": "222755",
+        "heures": "3",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "1651 Boulevard Saint-Joseph Est, Montréal QC"
+      },
+      {
+        "id": 1785888412120.5593,
+        "jour": "Mercredi",
+        "controle": "222403",
+        "heures": "2",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "4165 Rue Parthenais, Montréal QC"
+      },
+      {
+        "id": 1785888449809.5166,
+        "jour": "Jeudi",
+        "controle": "222756",
+        "heures": "3",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "120 Rue Alexandre, Salaberry-de-Valleyfield QC"
+      },
+      {
+        "id": 1785888808950.4917,
+        "jour": "Jeudi",
         "controle": "",
         "heures": "",
         "mult": 1,
@@ -32,26 +95,175 @@
         "adresse": ""
       },
       {
-        "id": 1784000706658.8154,
-        "jour": "Mardi",
-        "controle": "221511",
-        "heures": "3",
+        "id": 1785888810083.5137,
+        "jour": "Jeudi",
+        "controle": "",
+        "heures": "",
         "mult": 1,
-        "type": "Appel de service",
-        "adresse": "210 st paul st jean richelieu "
-      },
-      {
-        "id": 1784001405569.5176,
-        "jour": "Samedi",
-        "controle": "221512",
-        "heures": "3",
-        "mult": 2,
-        "type": "Appel de service",
-        "adresse": "1455 rue rechon"
+        "type": "Inspection",
+        "adresse": ""
       }
     ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-08-03",
+      "entries": [
+        {
+          "id": 1785886076508.6577,
+          "jour": "Mardi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1785886079215.3665,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1785886112134.7524,
+          "jour": "Lundi",
+          "controle": "222751",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "1910 Rue Notre-Dame Ouest, Montréal QC"
+        },
+        {
+          "id": 1785886205021.6084,
+          "jour": "Mardi",
+          "controle": "222803",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "124 Boulevard Hymus, Pointe-Claire QC"
+        },
+        {
+          "id": 1785886273596.279,
+          "jour": "Mardi",
+          "controle": "222804",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "285 Rue Leblanc, Salaberry-de-Valleyfield QC"
+        }
+      ]
+    },
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-07-13",
+      "entries": [
+        {
+          "id": 1785886730035.024,
+          "jour": "Lundi",
+          "controle": "221505",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "764 Place de Monaco, Laval QC"
+        },
+        {
+          "id": 1785887006571.7603,
+          "jour": "Lundi",
+          "controle": "222752",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "6945 Avenue Champchevrier, Montréal QC"
+        },
+        {
+          "id": 1785887043414.5098,
+          "jour": "Lundi",
+          "controle": "222753",
+          "heures": "2",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "6014 Avenue du Parc, Montréal QC"
+        },
+        {
+          "id": 1785887240704.1797,
+          "jour": "Mardi",
+          "controle": "221770",
+          "heures": "5",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "250 Rue Ontario Est, Montréal QC"
+        },
+        {
+          "id": 1785887847070.2668,
+          "jour": "Mardi",
+          "controle": "222754",
+          "heures": "3",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "7105 Rue Sherbrooke Est, Montréal QC"
+        },
+        {
+          "id": 1785887963900.7278,
+          "jour": "Mercredi",
+          "controle": "222402",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "117000 Rue de l'Avenir, Mirabel QC"
+        },
+        {
+          "id": 1785888319172.9373,
+          "jour": "Mercredi",
+          "controle": "222755",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1651 Boulevard Saint-Joseph Est, Montréal QC"
+        },
+        {
+          "id": 1785888412120.5593,
+          "jour": "Mercredi",
+          "controle": "222403",
+          "heures": "2",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "4165 Rue Parthenais, Montréal QC"
+        },
+        {
+          "id": 1785888449809.5166,
+          "jour": "Jeudi",
+          "controle": "222756",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "120 Rue Alexandre, Salaberry-de-Valleyfield QC"
+        },
+        {
+          "id": 1785888808950.4917,
+          "jour": "Jeudi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1785888810083.5137,
+          "jour": "Jeudi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
@@ -74,15 +286,6 @@
           "mult": 1,
           "type": "Appel de service",
           "adresse": "3654 Chemin de la Côte-Bissonnette, Varennes QC"
-        },
-        {
-          "id": 1784000670978.1328,
-          "jour": "Mardi",
-          "controle": "",
-          "heures": "",
-          "mult": 1,
-          "type": "Inspection",
-          "adresse": ""
         },
         {
           "id": 1784000706658.8154,
