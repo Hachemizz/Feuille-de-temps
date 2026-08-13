@@ -3,9 +3,71 @@
     "nom": "Hachemi",
     "code": "64",
     "weekstart": "2026-08-10",
-    "entries": []
+    "entries": [
+      {
+        "id": 1786580142740.8513,
+        "jour": "Mardi",
+        "controle": "222781",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "2385 Boulevard Thimens, Montréal QC"
+      },
+      {
+        "id": 1786580169908.6755,
+        "jour": "Lundi",
+        "controle": "222780",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "330 Rue Christin, Montréal QC"
+      },
+      {
+        "id": 1786580201903.9893,
+        "jour": "Lundi",
+        "controle": "222782",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "8690 25e Avenue, Montréal QC"
+      }
+    ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-08-10",
+      "entries": [
+        {
+          "id": 1786580142740.8513,
+          "jour": "Mardi",
+          "controle": "222781",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "2385 Boulevard Thimens, Montréal QC"
+        },
+        {
+          "id": 1786580169908.6755,
+          "jour": "Lundi",
+          "controle": "222780",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "330 Rue Christin, Montréal QC"
+        },
+        {
+          "id": 1786580201903.9893,
+          "jour": "Lundi",
+          "controle": "222782",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "8690 25e Avenue, Montréal QC"
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
