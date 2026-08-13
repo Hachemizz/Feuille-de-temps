@@ -2,72 +2,8 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-08-03",
-    "entries": [
-      {
-        "id": 1785886076508.6577,
-        "jour": "Mardi",
-        "controle": "",
-        "heures": "2",
-        "mult": 1,
-        "type": "Au bureau",
-        "adresse": "Bureau"
-      },
-      {
-        "id": 1785886079215.3665,
-        "jour": "Lundi",
-        "controle": "222404",
-        "heures": "5",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "3500 Route Marie-Victorin, Varennes QC"
-      },
-      {
-        "id": 1785886112134.7524,
-        "jour": "Lundi",
-        "controle": "222751",
-        "heures": "3",
-        "mult": 2,
-        "type": "Appel de service",
-        "adresse": "1910 Rue Notre-Dame Ouest, Montréal QC"
-      },
-      {
-        "id": 1785886205021.6084,
-        "jour": "Mardi",
-        "controle": "222803",
-        "heures": "2",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "124 Boulevard Hymus, Pointe-Claire QC"
-      },
-      {
-        "id": 1785886273596.279,
-        "jour": "Mardi",
-        "controle": "222804",
-        "heures": "2",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "285 Rue Leblanc, Salaberry-de-Valleyfield QC"
-      },
-      {
-        "id": 1785892636767.4568,
-        "jour": "Lundi",
-        "controle": "222726",
-        "heures": "3",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "4825 Rue Cyrille-Delage, Laval QC"
-      },
-      {
-        "id": 1785892693129.4834,
-        "jour": "Mardi",
-        "controle": "222805",
-        "heures": "4",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "5699 Boulevard De La Vérendrye, Montréal QC"
-      }
-    ]
+    "weekstart": "2026-08-10",
+    "entries": []
   },
   "weeks": [
     {
