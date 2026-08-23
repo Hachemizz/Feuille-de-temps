@@ -2,38 +2,108 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-08-10",
+    "weekstart": "2026-08-17",
     "entries": [
       {
-        "id": 1786580142740.8513,
+        "id": 1787513490780.66,
+        "jour": "Lundi",
+        "controle": "222734",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
+      },
+      {
+        "id": 1787513510559.8613,
         "jour": "Mardi",
-        "controle": "222781",
+        "controle": "222734",
         "heures": "8",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "2385 Boulevard Thimens, Montréal QC"
+        "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
       },
       {
-        "id": 1786580169908.6755,
-        "jour": "Lundi",
-        "controle": "222780",
+        "id": 1787513666636.3586,
+        "jour": "Mercredi",
+        "controle": "222735",
         "heures": "8",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "330 Rue Christin, Montréal QC"
+        "adresse": "1455 Rue Rochon, Montréal QC"
       },
       {
-        "id": 1786580201903.9893,
-        "jour": "Lundi",
-        "controle": "222782",
-        "heures": "3",
-        "mult": 2,
-        "type": "Appel de service",
-        "adresse": "8690 25e Avenue, Montréal QC"
+        "id": 1787513711486.9404,
+        "jour": "Jeudi",
+        "controle": "222735",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "1455 Rue Rochon, Montréal QC"
+      },
+      {
+        "id": 1787513830070.9897,
+        "jour": "Jeudi",
+        "controle": "222736",
+        "heures": "4",
+        "mult": 1,
+        "type": "Réparations",
+        "adresse": "1455 Rue Rochon, Montréal QC"
       }
     ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-08-17",
+      "entries": [
+        {
+          "id": 1787513490780.66,
+          "jour": "Lundi",
+          "controle": "222734",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
+        },
+        {
+          "id": 1787513510559.8613,
+          "jour": "Mardi",
+          "controle": "222734",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
+        },
+        {
+          "id": 1787513666636.3586,
+          "jour": "Mercredi",
+          "controle": "222735",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1455 Rue Rochon, Montréal QC"
+        },
+        {
+          "id": 1787513711486.9404,
+          "jour": "Jeudi",
+          "controle": "222735",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1455 Rue Rochon, Montréal QC"
+        },
+        {
+          "id": 1787513830070.9897,
+          "jour": "Jeudi",
+          "controle": "222736",
+          "heures": "4",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "1455 Rue Rochon, Montréal QC"
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
@@ -65,6 +135,87 @@
           "mult": 2,
           "type": "Appel de service",
           "adresse": "8690 25e Avenue, Montréal QC"
+        },
+        {
+          "id": 1787511986777.5518,
+          "jour": "Mercredi",
+          "controle": "222783",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "3701 Boulevard Saint-Charles, Kirkland QC"
+        },
+        {
+          "id": 1787512105024.7236,
+          "jour": "Mercredi",
+          "controle": "222732",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "585 Avenue Saint-Charles, Vaudreuil-Dorion QC"
+        },
+        {
+          "id": 1787512245029.895,
+          "jour": "Jeudi",
+          "controle": "222727",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "725 Rue Gaudette, Saint-Jean-sur-Richelieu QC"
+        },
+        {
+          "id": 1787512398391.3618,
+          "jour": "Jeudi",
+          "controle": "222733",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "400 Route 132, Saint-Constant QC"
+        },
+        {
+          "id": 1787512429434.5266,
+          "jour": "Jeudi",
+          "controle": "222728",
+          "heures": "",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "6666 Rue Saint-Urbain, Montréal QC"
+        },
+        {
+          "id": 1787512531533.2615,
+          "jour": "Vendredi",
+          "controle": "222729",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "2360 Rue Charles-Darwin, Montréal QC"
+        },
+        {
+          "id": 1787512558721.5356,
+          "jour": "Vendredi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Au bureau",
+          "adresse": "Bureau"
+        },
+        {
+          "id": 1787512562433.6997,
+          "jour": "Vendredi",
+          "controle": "222977",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "11905 Rue Industrielle, Sorel-Tracy QC"
+        },
+        {
+          "id": 1787512632800.822,
+          "jour": "Samedi",
+          "controle": "22730",
+          "heures": "4",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "6460 Rue Sherbrooke Ouest, Montréal QC"
         }
       ]
     },
