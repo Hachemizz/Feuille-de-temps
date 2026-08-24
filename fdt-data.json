@@ -70,11 +70,29 @@
       {
         "id": 1787514799960.3567,
         "jour": "Vendredi",
-        "controle": "",
-        "heures": "",
+        "controle": "22738",
+        "heures": "3",
         "mult": 1,
         "type": "Inspection",
-        "adresse": ""
+        "adresse": "6655 Chemin de la Côte-des-Neiges, Montréal QC"
+      },
+      {
+        "id": 1787515875300.381,
+        "jour": "Jeudi",
+        "controle": "22739",
+        "heures": "3",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "2975 Rue Remembrance, Montréal QC"
+      },
+      {
+        "id": 1787533040188.6072,
+        "jour": "Dimanche",
+        "controle": "222786",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "5010 Rue Ontario Est, Montréal QC"
       }
     ]
   },
@@ -150,11 +168,29 @@
         {
           "id": 1787514799960.3567,
           "jour": "Vendredi",
-          "controle": "",
-          "heures": "",
+          "controle": "22738",
+          "heures": "3",
           "mult": 1,
           "type": "Inspection",
-          "adresse": ""
+          "adresse": "6655 Chemin de la Côte-des-Neiges, Montréal QC"
+        },
+        {
+          "id": 1787515875300.381,
+          "jour": "Jeudi",
+          "controle": "22739",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "2975 Rue Remembrance, Montréal QC"
+        },
+        {
+          "id": 1787533040188.6072,
+          "jour": "Dimanche",
+          "controle": "222786",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "5010 Rue Ontario Est, Montréal QC"
         }
       ]
     },
@@ -194,7 +230,7 @@
           "id": 1787511986777.5518,
           "jour": "Mercredi",
           "controle": "222783",
-          "heures": "",
+          "heures": "3",
           "mult": 1,
           "type": "Inspection",
           "adresse": "3701 Boulevard Saint-Charles, Kirkland QC"
@@ -203,7 +239,7 @@
           "id": 1787512105024.7236,
           "jour": "Mercredi",
           "controle": "222732",
-          "heures": "",
+          "heures": "4",
           "mult": 1,
           "type": "Inspection",
           "adresse": "585 Avenue Saint-Charles, Vaudreuil-Dorion QC"
@@ -212,7 +248,7 @@
           "id": 1787512245029.895,
           "jour": "Jeudi",
           "controle": "222727",
-          "heures": "",
+          "heures": "4",
           "mult": 1,
           "type": "Inspection",
           "adresse": "725 Rue Gaudette, Saint-Jean-sur-Richelieu QC"
@@ -221,7 +257,7 @@
           "id": 1787512398391.3618,
           "jour": "Jeudi",
           "controle": "222733",
-          "heures": "",
+          "heures": "4",
           "mult": 1,
           "type": "Inspection",
           "adresse": "400 Route 132, Saint-Constant QC"
@@ -230,7 +266,7 @@
           "id": 1787512429434.5266,
           "jour": "Jeudi",
           "controle": "222728",
-          "heures": "",
+          "heures": "3",
           "mult": 1,
           "type": "Appel de service",
           "adresse": "6666 Rue Saint-Urbain, Montréal QC"
@@ -239,7 +275,7 @@
           "id": 1787512531533.2615,
           "jour": "Vendredi",
           "controle": "222729",
-          "heures": "",
+          "heures": "3",
           "mult": 1,
           "type": "Inspection",
           "adresse": "2360 Rue Charles-Darwin, Montréal QC"
@@ -248,7 +284,7 @@
           "id": 1787512558721.5356,
           "jour": "Vendredi",
           "controle": "",
-          "heures": "",
+          "heures": "3",
           "mult": 1,
           "type": "Au bureau",
           "adresse": "Bureau"
@@ -270,6 +306,24 @@
           "mult": 2,
           "type": "Appel de service",
           "adresse": "6460 Rue Sherbrooke Ouest, Montréal QC"
+        },
+        {
+          "id": 1787515659291.7935,
+          "jour": "Mercredi",
+          "controle": "222785",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "291 Rue Sainte-Catherine, Saint-Polycarpe QC"
+        },
+        {
+          "id": 1787516160836.5356,
+          "jour": "Mercredi",
+          "controle": "222740",
+          "heures": "1",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "1800 Rue Notre-Dame Ouest, Montréal QC"
         }
       ]
     },
