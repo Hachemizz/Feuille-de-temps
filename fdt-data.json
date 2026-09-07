@@ -2,101 +2,180 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-08-17",
+    "weekstart": "2026-08-24",
     "entries": [
       {
-        "id": 1787513490780.66,
+        "id": 1788820690092.4072,
         "jour": "Lundi",
-        "controle": "222734",
-        "heures": "8",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
-      },
-      {
-        "id": 1787513510559.8613,
-        "jour": "Mardi",
-        "controle": "222734",
-        "heures": "8",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "840 Boulevard de la Côte-Vertu, Montréal QC"
-      },
-      {
-        "id": 1787513666636.3586,
-        "jour": "Mercredi",
-        "controle": "222735",
-        "heures": "8",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "1455 Rue Rochon, Montréal QC"
-      },
-      {
-        "id": 1787513711486.9404,
-        "jour": "Jeudi",
-        "controle": "222735",
-        "heures": "4",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "1455 Rue Rochon, Montréal QC"
-      },
-      {
-        "id": 1787513830070.9897,
-        "jour": "Jeudi",
-        "controle": "222736",
-        "heures": "4",
-        "mult": 1,
-        "type": "Réparations",
-        "adresse": "1455 Rue Rochon, Montréal QC"
-      },
-      {
-        "id": 1787514797836.0457,
-        "jour": "Vendredi",
-        "controle": "222737",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "5964 Avenue Notre-Dame-de-Grâce, Montréal QC"
-      },
-      {
-        "id": 1787514798947.937,
-        "jour": "Vendredi",
-        "controle": "22731",
+        "controle": "",
         "heures": "2",
         "mult": 1,
-        "type": "Inspection",
-        "adresse": "13061 Rue Forsyth, Montréal QC"
+        "type": "Travail annulé",
+        "adresse": "750 Rue McArthur, Montréal QC"
       },
       {
-        "id": 1787514799960.3567,
-        "jour": "Vendredi",
-        "controle": "22738",
+        "id": 1788820701132.2014,
+        "jour": "Lundi",
+        "controle": "",
+        "heures": "2",
+        "mult": 1,
+        "type": "Au bureau",
+        "adresse": "Bureau"
+      },
+      {
+        "id": 1788820708242.142,
+        "jour": "Lundi",
+        "controle": "222787",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "11905 Rue Industrielle, Sorel-Tracy QC"
+      },
+      {
+        "id": 1788820807296.9558,
+        "jour": "Mardi",
+        "controle": "222788",
         "heures": "3",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "6655 Chemin de la Côte-des-Neiges, Montréal QC"
+        "adresse": "155 Avenue Greene, Montréal QC"
       },
       {
-        "id": 1787515875300.381,
-        "jour": "Jeudi",
-        "controle": "22739",
+        "id": 1788821042372.6306,
+        "jour": "Mardi",
+        "controle": "222796",
+        "heures": "2",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "1455 Rue Rochon, Montréal QC"
+      },
+      {
+        "id": 1788821288870.1772,
+        "jour": "Mardi",
+        "controle": "222797",
         "heures": "3",
         "mult": 1,
         "type": "Appel de service",
-        "adresse": "2975 Rue Remembrance, Montréal QC"
+        "adresse": "16669 Boulevard de Pierrefonds, Montréal QC"
       },
       {
-        "id": 1787533040188.6072,
-        "jour": "Dimanche",
-        "controle": "222786",
+        "id": 1788821329820.7422,
+        "jour": "Mardi",
+        "controle": "222789",
         "heures": "3",
-        "mult": 2,
+        "mult": 1,
         "type": "Appel de service",
-        "adresse": "5010 Rue Ontario Est, Montréal QC"
+        "adresse": "5650 Rue du Hautbois, Montréal QC"
+      },
+      {
+        "id": 1788821557001.4973,
+        "jour": "Mercredi",
+        "controle": "222798",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "1380 Rue de l'Église, Montréal QC"
+      },
+      {
+        "id": 1788821681682.4827,
+        "jour": "Mercredi",
+        "controle": "222799",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "2900"
       }
     ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-08-24",
+      "entries": [
+        {
+          "id": 1788820690092.4072,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "2",
+          "mult": 1,
+          "type": "Travail annulé",
+          "adresse": "750 Rue McArthur, Montréal QC"
+        },
+        {
+          "id": 1788820701132.2014,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "2",
+          "mult": 1,
+          "type": "Au bureau",
+          "adresse": "Bureau"
+        },
+        {
+          "id": 1788820708242.142,
+          "jour": "Lundi",
+          "controle": "222787",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "11905 Rue Industrielle, Sorel-Tracy QC"
+        },
+        {
+          "id": 1788820807296.9558,
+          "jour": "Mardi",
+          "controle": "222788",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "155 Avenue Greene, Montréal QC"
+        },
+        {
+          "id": 1788821042372.6306,
+          "jour": "Mardi",
+          "controle": "222796",
+          "heures": "2",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "1455 Rue Rochon, Montréal QC"
+        },
+        {
+          "id": 1788821288870.1772,
+          "jour": "Mardi",
+          "controle": "222797",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "16669 Boulevard de Pierrefonds, Montréal QC"
+        },
+        {
+          "id": 1788821329820.7422,
+          "jour": "Mardi",
+          "controle": "222789",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "5650 Rue du Hautbois, Montréal QC"
+        },
+        {
+          "id": 1788821557001.4973,
+          "jour": "Mercredi",
+          "controle": "222798",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1380 Rue de l'Église, Montréal QC"
+        },
+        {
+          "id": 1788821681682.4827,
+          "jour": "Mercredi",
+          "controle": "222799",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "2900"
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
