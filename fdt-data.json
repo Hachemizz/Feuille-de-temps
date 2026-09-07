@@ -2,110 +2,216 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-08-24",
+    "weekstart": "2026-08-31",
     "entries": [
       {
-        "id": 1788820690092.4072,
+        "id": 1788822481930.1113,
         "jour": "Lundi",
         "controle": "",
-        "heures": "2",
-        "mult": 1,
-        "type": "Travail annulé",
-        "adresse": "750 Rue McArthur, Montréal QC"
-      },
-      {
-        "id": 1788820701132.2014,
-        "jour": "Lundi",
-        "controle": "",
-        "heures": "2",
-        "mult": 1,
-        "type": "Au bureau",
-        "adresse": "Bureau"
-      },
-      {
-        "id": 1788820708242.142,
-        "jour": "Lundi",
-        "controle": "222787",
-        "heures": "4",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "11905 Rue Industrielle, Sorel-Tracy QC"
-      },
-      {
-        "id": 1788820807296.9558,
-        "jour": "Mardi",
-        "controle": "222788",
-        "heures": "3",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "155 Avenue Greene, Montréal QC"
-      },
-      {
-        "id": 1788821042372.6306,
-        "jour": "Mardi",
-        "controle": "222796",
-        "heures": "2",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "1455 Rue Rochon, Montréal QC"
-      },
-      {
-        "id": 1788821288870.1772,
-        "jour": "Mardi",
-        "controle": "222797",
-        "heures": "3",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "16669 Boulevard de Pierrefonds, Montréal QC"
-      },
-      {
-        "id": 1788821329820.7422,
-        "jour": "Mardi",
-        "controle": "222789",
-        "heures": "3",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "5650 Rue du Hautbois, Montréal QC"
-      },
-      {
-        "id": 1788821557001.4973,
-        "jour": "Mercredi",
-        "controle": "222798",
-        "heures": "4",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "1380 Rue de l'Église, Montréal QC"
-      },
-      {
-        "id": 1788821681682.4827,
-        "jour": "Mercredi",
-        "controle": "222799",
-        "heures": "4",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "2900 Rue Baker, Montréal QC"
-      },
-      {
-        "id": 1788821776461.371,
-        "jour": "Jeudi",
-        "controle": "Bon Avec Saber",
-        "heures": "8",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "9000 Route Transcanadienne, Pointe-Claire QC"
-      },
-      {
-        "id": 1788821798497.7786,
-        "jour": "Vendredi",
-        "controle": "",
-        "heures": "8",
+        "heures": "0",
         "mult": 1,
         "type": "Congé",
         "adresse": ""
+      },
+      {
+        "id": 1788822521396.2422,
+        "jour": "Mardi",
+        "controle": "222790",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "750 Rue McArthur, Montréal QC"
+      },
+      {
+        "id": 1788822630372.3345,
+        "jour": "Mardi",
+        "controle": "222800",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "480 Rue Saint-Antoine Est, Montréal QC"
+      },
+      {
+        "id": 1788822727671.1406,
+        "jour": "Mercredi",
+        "controle": "22791",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "37 Rue Quenneville, Salaberry-de-Valleyfield QC"
+      },
+      {
+        "id": 1788822829552.9165,
+        "jour": "Mercredi",
+        "controle": "222792",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "2530 Rue des Muguets, Vaudreuil-Dorion QC"
+      },
+      {
+        "id": 1788822851703.9604,
+        "jour": "Mercredi",
+        "controle": "222793",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "6565 Rue Saint-Urbain, Montréal QC"
+      },
+      {
+        "id": 1788823190309.7773,
+        "jour": "Jeudi",
+        "controle": "222741",
+        "heures": "4",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "3365 Avenue Ridgewood, Montréal QC"
+      },
+      {
+        "id": 1788823191817.2195,
+        "jour": "Jeudi",
+        "controle": "222795",
+        "heures": "4",
+        "mult": 1,
+        "type": "Réparations",
+        "adresse": "2360 Rue Charles-Darwin, Montréal QC"
+      },
+      {
+        "id": 1788823440168.591,
+        "jour": "Vendredi",
+        "controle": "223008",
+        "heures": "4",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "10390 Terrasse-Fleurie, Montréal QC"
+      },
+      {
+        "id": 1788823670220.3975,
+        "jour": "Vendredi",
+        "controle": "222742",
+        "heures": "2.5",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "4400 Avenue West Hill, Montréal QC"
+      },
+      {
+        "id": 1788823702111.7422,
+        "jour": "Vendredi",
+        "controle": "222743",
+        "heures": "3",
+        "mult": 1,
+        "type": "Appel de service",
+        "adresse": "4205 Place de Java, Brossard QC"
       }
     ]
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-08-31",
+      "entries": [
+        {
+          "id": 1788822481930.1113,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "0",
+          "mult": 1,
+          "type": "Congé",
+          "adresse": ""
+        },
+        {
+          "id": 1788822521396.2422,
+          "jour": "Mardi",
+          "controle": "222790",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "750 Rue McArthur, Montréal QC"
+        },
+        {
+          "id": 1788822630372.3345,
+          "jour": "Mardi",
+          "controle": "222800",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "480 Rue Saint-Antoine Est, Montréal QC"
+        },
+        {
+          "id": 1788822727671.1406,
+          "jour": "Mercredi",
+          "controle": "22791",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "37 Rue Quenneville, Salaberry-de-Valleyfield QC"
+        },
+        {
+          "id": 1788822829552.9165,
+          "jour": "Mercredi",
+          "controle": "222792",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "2530 Rue des Muguets, Vaudreuil-Dorion QC"
+        },
+        {
+          "id": 1788822851703.9604,
+          "jour": "Mercredi",
+          "controle": "222793",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "6565 Rue Saint-Urbain, Montréal QC"
+        },
+        {
+          "id": 1788823190309.7773,
+          "jour": "Jeudi",
+          "controle": "222741",
+          "heures": "4",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "3365 Avenue Ridgewood, Montréal QC"
+        },
+        {
+          "id": 1788823191817.2195,
+          "jour": "Jeudi",
+          "controle": "222795",
+          "heures": "4",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "2360 Rue Charles-Darwin, Montréal QC"
+        },
+        {
+          "id": 1788823440168.591,
+          "jour": "Vendredi",
+          "controle": "223008",
+          "heures": "4",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "10390 Terrasse-Fleurie, Montréal QC"
+        },
+        {
+          "id": 1788823670220.3975,
+          "jour": "Vendredi",
+          "controle": "222742",
+          "heures": "2.5",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "4400 Avenue West Hill, Montréal QC"
+        },
+        {
+          "id": 1788823702111.7422,
+          "jour": "Vendredi",
+          "controle": "222743",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "4205 Place de Java, Brossard QC"
+        }
+      ]
+    },
     {
       "nom": "Hachemi",
       "code": "64",
