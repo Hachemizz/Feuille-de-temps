@@ -1048,6 +1048,36 @@
       margin-top: 5px
     }
 
+    /* ---------- note attachée à une entrée ---------- */
+    .entry .nrow {
+      margin-top: 9px
+    }
+
+    .entry .nrow textarea {
+      line-height: 1.45;
+      resize: none;
+      min-height: 56px;
+      overflow: hidden;
+      border-radius: 9px;
+      padding: 10px 11px;
+      font-size: 16px
+    }
+
+    .entry .nrow .cnt {
+      font-size: 10px;
+      color: var(--faint);
+      text-align: right;
+      margin-top: 4px
+    }
+
+    .tool.nt {
+      font-size: 13px
+    }
+
+    .tool.nt.on {
+      color: var(--amber2)
+    }
+
     .empty {
       color: var(--faint);
       font-size: 14px;
@@ -1482,20 +1512,31 @@
       }
       rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, "Total d'heures", 3) + xc('C', r, '', 3) + xc('D', r, tt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
 
-      /* ---- bloc NOTES : seulement les jours qui en ont ---- */
+      /* ---- bloc NOTES : une ligne par entrée annotée, dans l'ordre des jours.
+             La grille A:E du rapport reste intacte — pas de 6e colonne. ---- */
       const nts = data.notes || {};
-      const noteDays = DAYS.filter(d => String(nts[d] || '').trim());
-      if (noteDays.length) {
+      const noteRows = [];
+      for (const day of DAYS) {
+        orderDay(data.entries.filter(e => e.jour === day)).forEach(e => {
+          const t = String(e.note || '').trim();
+          if (t) noteRows.push({day, ref: (e.controle || e.type || ''), txt: t});
+        });
+        const d = String(nts[day] || '').trim();
+        if (d) noteRows.push({day, ref: '', txt: d}); // note orpheline (jour sans entrée)
+      }
+      if (noteRows.length) {
         rows.push('<row r="' + r + '"></row>'); r++;
         rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, 'NOTES', 2) + xc('B', r, '', 2) + xc('C', r, '', 2) + xc('D', r, '', 2) + xc('E', r, '', 2) + '</row>');
         merges.push('A' + r + ':E' + r); r++;
-        for (const d of noteDays) {
-          const txt = String(nts[d]).trim();
-          /* hauteur approximative : ~90 caractères par ligne sur B:E fusionné */
-          const lines = txt.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length / 90)), 0);
-          const ht = Math.min(120, Math.max(20, lines * 13));
-          rows.push('<row r="' + r + '" ht="' + ht + '" customHeight="1">' + xc('A', r, d, 2) + xc('B', r, txt, 5) + xc('C', r, '', 5) + xc('D', r, '', 5) + xc('E', r, '', 5) + '</row>');
-          merges.push('B' + r + ':E' + r); r++;
+        let prev = '';
+        for (const n of noteRows) {
+          /* hauteur approximative : ~78 caractères par ligne sur C:E fusionné */
+          const lines = n.txt.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length / 78)), 0);
+          const ht = Math.min(150, Math.max(20, lines * 13));
+          rows.push('<row r="' + r + '" ht="' + ht + '" customHeight="1">' +
+            xc('A', r, n.day === prev ? '' : n.day, 2) + xc('B', r, n.ref, 3) +
+            xc('C', r, n.txt, 5) + xc('D', r, '', 5) + xc('E', r, '', 5) + '</row>');
+          merges.push('C' + r + ':E' + r); prev = n.day; r++;
         }
       }
 
@@ -1531,14 +1572,27 @@
     let state = load();
     let focusDay = null;   // scroll target after render
     let activeDay = null;  // rail filter — null = show all days
+    const noteOpen = new Set(); // entrées dont le champ note est ouvert mais encore vide
 
     function monday(d) {const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0, 0, 0, 0); return x}
     function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}}}
-    /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser */
+    /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser.
+       Migration : une note de jour (ancien format) est rattachée à la 1re entrée
+       du jour. Si le jour n'a aucune entrée, elle reste dans w.notes (orpheline)
+       et continue d'être affichée et exportée. */
     function normWeek(w) {
       if (!w || typeof w !== 'object') return w;
       if (!w.notes || typeof w.notes !== 'object' || Array.isArray(w.notes)) w.notes = {};
       if (!Array.isArray(w.entries)) w.entries = [];
+      DAYS.forEach(d => {
+        const t = String(w.notes[d] || '').trim();
+        if (!t) {delete w.notes[d]; return}
+        const first = w.entries.find(e => e.jour === d);
+        if (!first) return;
+        first.note = String(first.note || '').trim()
+          ? first.note + '\n' + t : t;
+        delete w.notes[d];
+      });
       return w;
     }
     function load() {try {const c = localStorage.getItem(LS_CUR); if (c) return normWeek(JSON.parse(c))} catch (e) { } return blankWeek()}
@@ -1549,8 +1603,14 @@
     const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
     const MOIS_FULL = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     function fmtLong(d) {return d.getDate() + ' ' + MOIS_FULL[d.getMonth()] + ' ' + d.getFullYear()} // 22 juin 2026
-    function noteOf(day) {return (state.notes && state.notes[day]) || ''}
-    function hasNote(day) {return !!String(noteOf(day)).trim()}
+    /* note attachée à une entrée : e.note. state.notes[jour] ne subsiste que
+       comme note orpheline (ancienne version, ou jour sans aucune entrée). */
+    const entryNote = e => String((e && e.note) || '').trim();
+    function dayNote(day) {return (state.notes && state.notes[day]) || ''}
+    function hasDayNote(day) {return !!String(dayNote(day)).trim()}
+    function hasNote(day) {
+      return hasDayNote(day) || state.entries.some(e => e.jour === day && entryNote(e));
+    }
 
     /* ---- Appel de service temps double : toujours en fin de journée ----
        Partition stable — tout le reste garde son ordre de saisie.
@@ -1736,43 +1796,44 @@
         addO.onclick = () => addOff(day, hol ? 'Férié' : 'Congé', hol);
         row.appendChild(add); row.appendChild(addO);
         grp.appendChild(row);
-        grp.appendChild(notesEl(day));
+        if (hasDayNote(day)) grp.appendChild(notesEl(day)); // note orpheline seulement
         main.appendChild(grp);
-        sizeNote();
       });
+      sizeNotes();
       main.appendChild(Object.assign(document.createElement('div'), {className: 'spacer'}));
 
       restoreFocus(keep);
       if (focusDay) {const g = main.querySelector('.daygroup[data-day="' + focusDay + '"]'); if (g) g.scrollIntoView({behavior: 'smooth', block: 'center'}); focusDay = null}
     }
 
-    /* ---- bloc notes du jour affiché ---- */
+    /* ---- note orpheline : jour sans entrée (ou ancien format non migré) ----
+       Dès qu'une entrée existe pour ce jour, la note est rattachée à la 1re
+       entrée et ce bloc disparaît. */
     function notesEl(day) {
       const wrap = document.createElement('div');
-      wrap.className = 'notes' + (hasNote(day) ? ' filled' : '');
+      wrap.className = 'notes filled';
       wrap.innerHTML =
         '<div class="nhead"><span class="dot"></span>' +
-        '<label for="noteTa">Notes — ' + day.toLowerCase() + '</label>' +
+        '<label for="noteTa">Note du jour — ' + day.toLowerCase() + ' (sans entrée)</label>' +
         '<button class="clr" type="button" id="noteClr">Effacer</button></div>' +
         '<textarea id="noteTa" rows="3" maxlength="' + NOTE_MAX + '" ' +
         'placeholder="Remarques, pièces à commander, suivi, n° de panneau…" ' +
         'autocomplete="off" data-1p-ignore data-lpignore="true"></textarea>' +
         '<div class="cnt mono" id="noteCnt"></div>';
       const ta = wrap.querySelector('#noteTa');
-      ta.value = noteOf(day);
+      ta.value = dayNote(day);
       const paint = () => {
         const n = ta.value.length;
         wrap.querySelector('#noteCnt').textContent = n ? (n + ' / ' + NOTE_MAX) : '';
-        wrap.classList.toggle('filled', !!ta.value.trim());
       };
       ta.oninput = () => {
         if (!state.notes) state.notes = {};
         if (ta.value.trim()) state.notes[day] = ta.value; else delete state.notes[day];
-        save(); paint(); sizeNote(); renderRail();
+        save(); paint(); sizeNotes(); renderRail();
       };
       wrap.querySelector('#noteClr').onclick = () => {
         const old = ta.value;
-        ta.value = ''; delete state.notes[day]; save(); paint(); sizeNote(); renderRail();
+        delete state.notes[day]; save(); render();
         toastAction('Note effacée', 'Annuler', () => {
           state.notes[day] = old; save(); render();
         });
@@ -1780,11 +1841,12 @@
       paint();
       return wrap;
     }
-    /* auto-hauteur : le textarea grandit avec le texte, pas de scroll interne */
-    function sizeNote() {
-      const ta = $('noteTa'); if (!ta) return;
-      ta.style.height = 'auto';
-      ta.style.height = (ta.scrollHeight + 2) + 'px';
+    /* auto-hauteur : les textareas grandissent avec le texte, pas de scroll interne */
+    function sizeNotes() {
+      document.querySelectorAll('#main textarea').forEach(ta => {
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+      });
     }
 
     function renderRail() {
@@ -1813,17 +1875,29 @@
       });
     }
 
+    /* une note orpheline du jour est rattachée à la 1re entrée créée ce jour-là,
+       sinon elle resterait hors entrée indéfiniment */
+    function absorbDayNote(day, e) {
+      const t = String(dayNote(day)).trim();
+      if (!t) return;
+      e.note = String(e.note || '').trim() ? e.note + '\n' + t : t;
+      delete state.notes[day];
+    }
     function addEntry(day) {
-      state.entries.push({id: Date.now() + Math.random(), jour: day, controle: '', heures: '', mult: 1, type: 'Inspection', adresse: ''});
+      const e = {id: Date.now() + Math.random(), jour: day, controle: '', heures: '', mult: 1, type: 'Inspection', adresse: ''};
+      absorbDayNote(day, e);
+      state.entries.push(e);
       activeDay = day; // filter to the day we just added to
       save(); render();
     }
     /* journée fériée / congé : pas de contrôle, pas d'adresse, pas de temps double */
     function addOff(day, type, motif) {
-      state.entries.push({
+      const e = {
         id: Date.now() + Math.random(), jour: day, controle: '', heures: DEF_OFF_HRS,
         mult: 1, type: type || 'Congé', adresse: motif || ''
-      });
+      };
+      absorbDayNote(day, e);
+      state.entries.push(e);
       activeDay = day; focusDay = day; save(); render();
       toast((type || 'Congé') + ' ajouté · ' + DEF_OFF_HRS + ' h');
     }
@@ -2107,10 +2181,13 @@
       const card = document.createElement('div');
       const off = isOff(e.type);
       const cls = typeCls(e.type);
+      /* champ note visible si l'entrée en a une, ou si on vient de l'ouvrir */
+      const showNote = !!entryNote(e) || noteOpen.has(e.id);
       card.className = 'entry ' + cls + (isNum(e.heures) ? '' : ' incomplete');
       card.dataset.eid = e.id; // ancre pour la restauration du focus après render()
       card.innerHTML =
         '<div class="tools">' +
+        '<button class="tool nt' + (entryNote(e) ? ' on' : '') + '" tabindex="-1" aria-label="Note" title="Note">✎</button>' +
         '<button class="tool dup" tabindex="-1" aria-label="Dupliquer">⧉</button>' +
         '<button class="tool del" tabindex="-1" aria-label="Supprimer">✕</button>' +
         '</div>' +
@@ -2127,6 +2204,13 @@
         (off
           ? '<div class="r3"><div class="mini"><label>Motif (optionnel)</label><input class="f-motif" type="text" autocomplete="off" placeholder="ex. Fête du travail" value="' + escAttr(e.adresse) + '"></div></div>'
           : '<div class="r3"><div class="mini"><label>Adresse</label><input class="f-addr" type="text" name="adresse-libre" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="' + escAttr(e.adresse) + '"></div></div>') +
+        (showNote
+          ? '<div class="nrow mini"><label>Note</label>' +
+          '<textarea class="f-note" rows="2" maxlength="' + NOTE_MAX + '" ' +
+          'placeholder="Remarques, pièces, suivi, n° de panneau…" ' +
+          'autocomplete="off" data-1p-ignore data-lpignore="true">' + escAttr(e.note || '') + '</textarea>' +
+          '<div class="cnt mono nc"></div></div>'
+          : '') +
         (off
           ? '<span class="flag o">Journée non travaillée</span>'
           : (isCxl(e.type) ? '<span class="flag c">Annulé — non exécuté</span>' : '') +
@@ -2143,7 +2227,7 @@
         const copy = {
           id: Date.now() + Math.random(), jour: e.jour, controle: e.controle,
           heures: off ? e.heures : '', mult: 1, type: e.type, adresse: e.adresse
-        };
+        }; // note volontairement non copiée : elle décrit cette visite-là
         const idx = state.entries.indexOf(e); state.entries.splice(idx + 1, 0, copy); focusDay = e.jour; save(); render();
       };
       const ctrl = card.querySelector('.f-ctrl');
@@ -2174,6 +2258,24 @@
       if (motif) motif.oninput = ev => {e.adresse = ev.target.value; save()};
       const addr = card.querySelector('.f-addr');
       if (addr) acBind(addr, val => {e.adresse = val; save()});
+      /* note : le bouton ✎ ouvre le champ ; rouvrir un champ vide le referme */
+      card.querySelector('.nt').onclick = () => {
+        if (noteOpen.has(e.id) && !entryNote(e)) {noteOpen.delete(e.id); render(); return}
+        noteOpen.add(e.id); render();
+        const t = document.querySelector('.entry[data-eid="' + e.id + '"] .f-note');
+        if (t) {t.focus(); t.setSelectionRange(t.value.length, t.value.length)}
+      };
+      const nte = card.querySelector('.f-note');
+      if (nte) {
+        const cnt = card.querySelector('.nc');
+        const paint = () => {cnt.textContent = nte.value.length ? (nte.value.length + ' / ' + NOTE_MAX) : ''};
+        nte.oninput = () => {
+          if (nte.value.trim()) e.note = nte.value; else delete e.note;
+          save(); paint(); sizeNotes(); renderRail();
+          card.querySelector('.nt').classList.toggle('on', !!entryNote(e));
+        };
+        paint();
+      }
       return card;
     }
     function escAttr(v) {return v == null ? '' : String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
@@ -2301,7 +2403,8 @@
           const h = parseFloat(en.heures) * (en.mult === 2 ? 2 : 1);
           t += h; if (isOff(en.type)) o += h;
         }
-        const nn = DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
+        const nn = w.entries.filter(en => String(en.note || '').trim()).length +
+          DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
         const cur = w.weekstart === state.weekstart;
         const row = document.createElement('div'); row.className = 'wkrow';
         row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrées' + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + '</div></div>' +
@@ -2492,7 +2595,7 @@
     })();
 
     render();
-    window.addEventListener('resize', sizeNote);
+    window.addEventListener('resize', sizeNotes);
   </script>
 </body>
 
