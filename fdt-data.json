@@ -3,10 +3,183 @@
     "nom": "Hachemi",
     "code": "64",
     "weekstart": "2026-09-21",
-    "entries": [],
+    "entries": [
+      {
+        "id": 1790557435640.41,
+        "jour": "Lundi",
+        "controle": "222808",
+        "heures": "5",
+        "mult": 1,
+        "type": "Réparations",
+        "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
+      },
+      {
+        "id": 1790557440629.3777,
+        "jour": "Mardi",
+        "controle": "222810",
+        "heures": "5",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+      },
+      {
+        "id": 1790557441866.7117,
+        "jour": "Mercredi",
+        "controle": "222810",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+      },
+      {
+        "id": 1790557443095.8032,
+        "jour": "Jeudi",
+        "controle": "222810",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+      },
+      {
+        "id": 1790557444641.255,
+        "jour": "Vendredi",
+        "controle": "222810",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+      },
+      {
+        "id": 1790557446081.8108,
+        "jour": "Vendredi",
+        "controle": "",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": ""
+      },
+      {
+        "id": 1790557479253.1528,
+        "jour": "Mardi",
+        "controle": "",
+        "heures": "3",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": ""
+      },
+      {
+        "id": 1790557515014.1643,
+        "jour": "Lundi",
+        "controle": "",
+        "heures": "3",
+        "mult": 1,
+        "type": "Au bureau",
+        "adresse": "Bureau",
+        "note": "Recuperation de stock de chez Mircom "
+      },
+      {
+        "id": 1790557649987.007,
+        "jour": "Lundi",
+        "controle": "222809`",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "3465 Chemin de la Côte-des-Neiges, Montréal QC"
+      }
+    ],
     "notes": {}
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-09-21",
+      "entries": [
+        {
+          "id": 1790557435640.41,
+          "jour": "Lundi",
+          "controle": "222808",
+          "heures": "5",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "162 , 172, 185 Avenue Fairmount Ouest, Montréal QC"
+        },
+        {
+          "id": 1790557440629.3777,
+          "jour": "Mardi",
+          "controle": "222810",
+          "heures": "5",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+        },
+        {
+          "id": 1790557441866.7117,
+          "jour": "Mercredi",
+          "controle": "222810",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+        },
+        {
+          "id": 1790557443095.8032,
+          "jour": "Jeudi",
+          "controle": "222810",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+        },
+        {
+          "id": 1790557444641.255,
+          "jour": "Vendredi",
+          "controle": "222810",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "3710-20-30 Boulevard Saint-Elzéar Ouest, Laval QC"
+        },
+        {
+          "id": 1790557446081.8108,
+          "jour": "Vendredi",
+          "controle": "",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": ""
+        },
+        {
+          "id": 1790557479253.1528,
+          "jour": "Mardi",
+          "controle": "",
+          "heures": "3",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": ""
+        },
+        {
+          "id": 1790557515014.1643,
+          "jour": "Lundi",
+          "controle": "",
+          "heures": "3",
+          "mult": 1,
+          "type": "Au bureau",
+          "adresse": "Bureau",
+          "note": "Recuperation de stock de chez Mircom "
+        },
+        {
+          "id": 1790557649987.007,
+          "jour": "Lundi",
+          "controle": "222809`",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "3465 Chemin de la Côte-des-Neiges, Montréal QC"
+        }
+      ],
+      "notes": {}
+    },
     {
       "nom": "Hachemi",
       "code": "64",
