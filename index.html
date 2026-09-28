@@ -298,6 +298,19 @@
       box-shadow: 0 0 6px var(--off)
     }
 
+    /* pastille note : coin bas-droite, distincte du point férié (haut-droite) */
+    .rail .ch.note::before {
+      content: "";
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 6px var(--amber)
+    }
+
     .rail .ch.active {
       border-color: var(--amber);
       box-shadow: 0 0 0 2px rgba(255, 140, 26, .18)
@@ -342,7 +355,8 @@
     }
 
     input,
-    select {
+    select,
+    textarea {
       width: 100%;
       background: var(--card);
       border: 1px solid var(--line2);
@@ -355,7 +369,8 @@
     }
 
     input:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: var(--amber);
       box-shadow: 0 0 0 3px rgba(255, 140, 26, .18)
@@ -763,7 +778,8 @@
     }
 
     .mini input,
-    .mini select {
+    .mini select,
+    .mini textarea {
       padding: 10px 11px;
       font-size: 16px;
       border-radius: 9px
@@ -957,6 +973,79 @@
     .addday.off:active {
       border-color: var(--off);
       color: var(--off)
+    }
+
+    /* ---------- notes du jour ---------- */
+    .notes {
+      margin-top: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 12px
+    }
+
+    .notes .nhead {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px
+    }
+
+    .notes .nhead label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--dim);
+      font-weight: 700
+    }
+
+    .notes .nhead .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 7px var(--amber);
+      opacity: 0
+    }
+
+    .notes.filled .nhead .dot {
+      opacity: 1
+    }
+
+    .notes .nhead .clr {
+      margin-left: auto;
+      border: none;
+      background: transparent;
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 4px;
+      display: none
+    }
+
+    .notes.filled .nhead .clr {
+      display: block
+    }
+
+    .notes .nhead .clr:active {
+      color: var(--warn)
+    }
+
+    .notes textarea {
+      line-height: 1.45;
+      resize: none;
+      min-height: 78px;
+      overflow: hidden;
+      border-radius: 10px
+    }
+
+    .notes .cnt {
+      font-size: 10px;
+      color: var(--faint);
+      text-align: right;
+      margin-top: 5px
     }
 
     .empty {
@@ -1348,7 +1437,9 @@
     /* styles.xml must be related to the workbook (rId2), otherwise Excel shows
        "We found a problem with some content ... recover?" on open. */
     const WBR = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
-    const STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="9"/><name val="Times New Roman"/></font><font><b/><sz val="9"/><name val="Times New Roman"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right><top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    /* cellXfs : 0 normal · 1 bold centré · 2 bold bordé centré · 3 bordé centré
+                 4 bordé centré wrap · 5 bordé gauche wrap (notes) */
+    const STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="9"/><name val="Times New Roman"/></font><font><b/><sz val="9"/><name val="Times New Roman"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right><top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
 
     function xc(col, row, val, st, isNumeric) {const ref = col + row; if (val === '' || val == null) return '<c r="' + ref + '" s="' + st + '"/>'; if (isNumeric) return '<c r="' + ref + '" s="' + st + '"><v>' + val + '</v></c>'; return '<c r="' + ref + '" s="' + st + '" t="inlineStr"><is><t xml:space="preserve">' + esc(val) + '</t></is></c>'}
     const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -1389,10 +1480,28 @@
         rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, 'Heures travaillées', 3) + xc('C', r, '', 3) + xc('D', r, wt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
         rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, 'Férié / congé', 3) + xc('C', r, '', 3) + xc('D', r, ot, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
       }
-      rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, "Total d'heures", 3) + xc('C', r, '', 3) + xc('D', r, tt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r);
+      rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, "Total d'heures", 3) + xc('C', r, '', 3) + xc('D', r, tt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
+
+      /* ---- bloc NOTES : seulement les jours qui en ont ---- */
+      const nts = data.notes || {};
+      const noteDays = DAYS.filter(d => String(nts[d] || '').trim());
+      if (noteDays.length) {
+        rows.push('<row r="' + r + '"></row>'); r++;
+        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, 'NOTES', 2) + xc('B', r, '', 2) + xc('C', r, '', 2) + xc('D', r, '', 2) + xc('E', r, '', 2) + '</row>');
+        merges.push('A' + r + ':E' + r); r++;
+        for (const d of noteDays) {
+          const txt = String(nts[d]).trim();
+          /* hauteur approximative : ~90 caractères par ligne sur B:E fusionné */
+          const lines = txt.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length / 90)), 0);
+          const ht = Math.min(120, Math.max(20, lines * 13));
+          rows.push('<row r="' + r + '" ht="' + ht + '" customHeight="1">' + xc('A', r, d, 2) + xc('B', r, txt, 5) + xc('C', r, '', 5) + xc('D', r, '', 5) + xc('E', r, '', 5) + '</row>');
+          merges.push('B' + r + ':E' + r); r++;
+        }
+      }
+
       const cols = '<cols><col min="1" max="1" width="11.7" customWidth="1"/><col min="2" max="2" width="19.3" customWidth="1"/><col min="3" max="3" width="9.6" customWidth="1"/><col min="4" max="4" width="30.7" customWidth="1"/><col min="5" max="5" width="50.3" customWidth="1"/></cols>';
       const mx = '<mergeCells count="' + merges.length + '">' + merges.map(m => '<mergeCell ref="' + m + '"/>').join('') + '</mergeCells>';
-      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:E' + r + '"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="14.25"/>' + cols + '<sheetData>' + rows.join('') + '</sheetData>' + mx + '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>';
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:E' + (r - 1) + '"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="14.25"/>' + cols + '<sheetData>' + rows.join('') + '</sheetData>' + mx + '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>';
     }
     function genXlsx(data) {
       return zipStore([
@@ -1417,14 +1526,22 @@
               : t === 'Réparations' ? 't-rep' : 't-call';
     }
     const DEF_OFF_HRS = '8';
+    const NOTE_MAX = 600;
     const LS_CUR = 'fdt_current', LS_ARCH = 'fdt_weeks';
     let state = load();
     let focusDay = null;   // scroll target after render
     let activeDay = null;  // rail filter — null = show all days
 
     function monday(d) {const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0, 0, 0, 0); return x}
-    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: []}}
-    function load() {try {const c = localStorage.getItem(LS_CUR); if (c) return JSON.parse(c)} catch (e) { } return blankWeek()}
+    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}}}
+    /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser */
+    function normWeek(w) {
+      if (!w || typeof w !== 'object') return w;
+      if (!w.notes || typeof w.notes !== 'object' || Array.isArray(w.notes)) w.notes = {};
+      if (!Array.isArray(w.entries)) w.entries = [];
+      return w;
+    }
+    function load() {try {const c = localStorage.getItem(LS_CUR); if (c) return normWeek(JSON.parse(c))} catch (e) { } return blankWeek()}
     function save() {_hist = null; try {localStorage.setItem(LS_CUR, JSON.stringify(state))} catch (e) { } }
     /* local-date ISO — toISOString() converts to UTC and shifts the date in UTC+ timezones */
     function iso(d) {const x = new Date(d); const p = n => String(n).padStart(2, '0'); return x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate())}
@@ -1432,6 +1549,8 @@
     const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
     const MOIS_FULL = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     function fmtLong(d) {return d.getDate() + ' ' + MOIS_FULL[d.getMonth()] + ' ' + d.getFullYear()} // 22 juin 2026
+    function noteOf(day) {return (state.notes && state.notes[day]) || ''}
+    function hasNote(day) {return !!String(noteOf(day)).trim()}
 
     /* ---- Appel de service temps double : toujours en fin de journée ----
        Partition stable — tout le reste garde son ordre de saisie.
@@ -1500,7 +1619,7 @@
       const ws = new Date(state.weekstart + 'T00:00:00'); const we = new Date(ws); we.setDate(we.getDate() + 6);
       const now = new Date(); now.setHours(0, 0, 0, 0);
       if (now >= ws && now <= we) return DAYS[(now.getDay() + 6) % 7];
-      return DAYS.find(d => state.entries.some(e => e.jour === d)) || 'Lundi';
+      return DAYS.find(d => state.entries.some(e => e.jour === d) || hasNote(d)) || 'Lundi';
     }
     const isNum = v => v !== '' && v != null && !isNaN(parseFloat(v));
     function entryHrs(e) {return isNum(e.heures) ? parseFloat(e.heures) * (e.mult === 2 ? 2 : 1) : 0}
@@ -1520,6 +1639,39 @@
     }
     function incompleteCount() {return state.entries.filter(e => !isNum(e.heures)).length}
 
+    /* ====================== FOCUS PRESERVATION ======================
+       render() reconstruit tout le DOM. Sans ça, changer « Type » ou « Jour »
+       (onchange → render) renvoyait le focus sur <body> : la tabulation
+       repartait du haut de la page et n'atteignait jamais le champ Adresse.
+       On mémorise le champ actif avant le rebuild et on le restaure après.
+    ================================================================ */
+    function snapFocus() {
+      const el = document.activeElement;
+      if (!el || el === document.body) return null;
+      const card = el.closest ? el.closest('.entry') : null;
+      if (card && card.dataset.eid) {
+        let cls = null;
+        el.classList.forEach(c => {if (c.indexOf('f-') === 0) cls = c});
+        if (!cls && el.classList.contains('x2')) cls = 'x2';
+        if (cls) return {eid: card.dataset.eid, cls, sel: 'selectionStart' in el ? el.selectionStart : null};
+      }
+      if (el.id) return {id: el.id, sel: 'selectionStart' in el ? el.selectionStart : null};
+      return null;
+    }
+    function restoreFocus(f) {
+      if (!f) return;
+      let t = null;
+      if (f.eid) {
+        const card = document.querySelector('.entry[data-eid="' + f.eid + '"]');
+        if (card) t = card.querySelector('.' + f.cls);
+      } else if (f.id) {t = document.getElementById(f.id)}
+      if (!t || !t.focus) return;
+      t.focus({preventScroll: true});
+      if (f.sel != null && 'setSelectionRange' in t) {
+        try {t.setSelectionRange(f.sel, f.sel)} catch (e) { }
+      }
+    }
+
     /* ====================== RENDER ====================== */
     const $ = id => document.getElementById(id);
     function paintTotals() {
@@ -1529,6 +1681,7 @@
         (t.off ? ' · <span class="o">abs <b>' + t.off + '</b> h</span>' : '');
     }
     function render() {
+      const keep = snapFocus();
       if (activeDay === null) activeDay = defaultDay(); // un seul jour visible à la fois
       const wr = weekRange();
       $('wkMini').textContent = wr.pretty;
@@ -1582,11 +1735,56 @@
         addO.title = 'Journée fériée ou congé';
         addO.onclick = () => addOff(day, hol ? 'Férié' : 'Congé', hol);
         row.appendChild(add); row.appendChild(addO);
-        grp.appendChild(row); main.appendChild(grp);
+        grp.appendChild(row);
+        grp.appendChild(notesEl(day));
+        main.appendChild(grp);
+        sizeNote();
       });
       main.appendChild(Object.assign(document.createElement('div'), {className: 'spacer'}));
 
+      restoreFocus(keep);
       if (focusDay) {const g = main.querySelector('.daygroup[data-day="' + focusDay + '"]'); if (g) g.scrollIntoView({behavior: 'smooth', block: 'center'}); focusDay = null}
+    }
+
+    /* ---- bloc notes du jour affiché ---- */
+    function notesEl(day) {
+      const wrap = document.createElement('div');
+      wrap.className = 'notes' + (hasNote(day) ? ' filled' : '');
+      wrap.innerHTML =
+        '<div class="nhead"><span class="dot"></span>' +
+        '<label for="noteTa">Notes — ' + day.toLowerCase() + '</label>' +
+        '<button class="clr" type="button" id="noteClr">Effacer</button></div>' +
+        '<textarea id="noteTa" rows="3" maxlength="' + NOTE_MAX + '" ' +
+        'placeholder="Remarques, pièces à commander, suivi, n° de panneau…" ' +
+        'autocomplete="off" data-1p-ignore data-lpignore="true"></textarea>' +
+        '<div class="cnt mono" id="noteCnt"></div>';
+      const ta = wrap.querySelector('#noteTa');
+      ta.value = noteOf(day);
+      const paint = () => {
+        const n = ta.value.length;
+        wrap.querySelector('#noteCnt').textContent = n ? (n + ' / ' + NOTE_MAX) : '';
+        wrap.classList.toggle('filled', !!ta.value.trim());
+      };
+      ta.oninput = () => {
+        if (!state.notes) state.notes = {};
+        if (ta.value.trim()) state.notes[day] = ta.value; else delete state.notes[day];
+        save(); paint(); sizeNote(); renderRail();
+      };
+      wrap.querySelector('#noteClr').onclick = () => {
+        const old = ta.value;
+        ta.value = ''; delete state.notes[day]; save(); paint(); sizeNote(); renderRail();
+        toastAction('Note effacée', 'Annuler', () => {
+          state.notes[day] = old; save(); render();
+        });
+      };
+      paint();
+      return wrap;
+    }
+    /* auto-hauteur : le textarea grandit avec le texte, pas de scroll interne */
+    function sizeNote() {
+      const ta = $('noteTa'); if (!ta) return;
+      ta.style.height = 'auto';
+      ta.style.height = (ta.scrollHeight + 2) + 'px';
     }
 
     function renderRail() {
@@ -1600,11 +1798,13 @@
         const h = round2(dayHrs(day)); const has = state.entries.some(e => e.jour === day);
         const offDay = state.entries.some(e => e.jour === day && isOff(e.type));
         const hol = ferieFor(chipDate);
+        const note = hasNote(day);
         const isActive = activeDay === day;
         const ch = document.createElement('button');
         ch.className = 'ch' + (has ? ' has' : '') + (isActive ? ' active' : '') + (isToday ? ' today' : '') +
-          (offDay ? ' off' : '') + (hol && !offDay ? ' hol' : '');
-        if (hol) ch.title = hol;
+          (offDay ? ' off' : '') + (hol && !offDay ? ' hol' : '') + (note ? ' note' : '');
+        const tip = [hol || '', note ? 'note' : ''].filter(Boolean).join(' · ');
+        if (tip) ch.title = tip;
         ch.innerHTML = '<span class="dn">' + DAYS_SHORT[i] + '</span>' +
           '<span class="dt">' + dateNum + '</span>' +
           '<span class="hh mono">' + (has ? h + 'h' : '') + '</span>';
@@ -1882,6 +2082,9 @@
           acHighlight(acIdx);
         } else if (ev.key === 'Enter' && acIdx >= 0) {
           ev.preventDefault(); pick(acItems[acIdx].full); acClose();
+        } else if (ev.key === 'Tab' && acIdx >= 0) {
+          // Tab valide la suggestion surlignée puis continue la tabulation
+          pick(acItems[acIdx].full); acClose();
         } else if (ev.key === 'Escape') {acClose()}
       };
       input.onfocus = () => {if ((input.value || '').trim().length >= 3) {acPos(input); aDrop().classList.add('show')} };
@@ -1905,10 +2108,11 @@
       const off = isOff(e.type);
       const cls = typeCls(e.type);
       card.className = 'entry ' + cls + (isNum(e.heures) ? '' : ' incomplete');
+      card.dataset.eid = e.id; // ancre pour la restauration du focus après render()
       card.innerHTML =
         '<div class="tools">' +
-        '<button class="tool dup" aria-label="Dupliquer">⧉</button>' +
-        '<button class="tool del" aria-label="Supprimer">✕</button>' +
+        '<button class="tool dup" tabindex="-1" aria-label="Dupliquer">⧉</button>' +
+        '<button class="tool del" tabindex="-1" aria-label="Supprimer">✕</button>' +
         '</div>' +
         '<div class="r1' + (off ? ' solo' : '') + '">' +
         (off ? '' : '<div class="mini"><label>Contrôle</label><input class="f-ctrl" type="text" name="controle" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="' + escAttr(e.controle) + '"></div>') +
@@ -1982,7 +2186,8 @@
     function gotoWeek(key) {
       archive(); activeDay = null;
       const a = getArch(); const found = a.find(w => w.weekstart === key);
-      state = found ? JSON.parse(JSON.stringify(found)) : {nom: state.nom, code: state.code, weekstart: key, entries: []};
+      state = found ? normWeek(JSON.parse(JSON.stringify(found)))
+        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}};
       save(); render();
     }
     function weekStep(delta) {
@@ -2048,9 +2253,13 @@
 
     /* ====================== EXPORT ====================== */
     async function exportXlsx() {
-      if (!state.entries.length) {toast('Aucune entrée à exporter'); return }
+      const anyNote = DAYS.some(hasNote);
+      if (!state.entries.length && !anyNote) {toast('Aucune entrée à exporter'); return }
       const wr = weekRange();
-      const data = {nom: state.nom || '', code: state.code || '', semaine: wr.label, entries: state.entries};
+      const data = {
+        nom: state.nom || '', code: state.code || '', semaine: wr.label,
+        entries: state.entries, notes: state.notes || {}
+      };
       const bytes = genXlsx(data);
       const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       const fname = (wr.file || 'feuille') + '.xlsx';
@@ -2067,10 +2276,11 @@
     $('exportBtn').onclick = exportXlsx;
 
     /* ====================== ARCHIVE / WEEKS ====================== */
-    function getArch() {try {return JSON.parse(localStorage.getItem(LS_ARCH)) || []} catch (e) {return []} }
+    function getArch() {try {return (JSON.parse(localStorage.getItem(LS_ARCH)) || []).map(normWeek)} catch (e) {return []} }
     function setArch(a) {_hist = null; try {localStorage.setItem(LS_ARCH, JSON.stringify(a))} catch (e) { } }
     function archive() {
-      if (!state.entries.length) return;
+      // une semaine sans entrée mais avec des notes mérite d'être conservée
+      if (!state.entries.length && !DAYS.some(hasNote)) return;
       const a = getArch(); const key = state.weekstart;
       const snap = JSON.parse(JSON.stringify(state));
       const i = a.findIndex(w => w.weekstart === key);
@@ -2091,11 +2301,12 @@
           const h = parseFloat(en.heures) * (en.mult === 2 ? 2 : 1);
           t += h; if (isOff(en.type)) o += h;
         }
+        const nn = DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
         const cur = w.weekstart === state.weekstart;
         const row = document.createElement('div'); row.className = 'wkrow';
-        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrées' + (o ? ' · ' + round2(o) + ' h abs' : '') + '</div></div>' +
+        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrées' + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + '</div></div>' +
           '<div class="wk-act"><button class="load">Ouvrir</button><button class="rm" aria-label="Supprimer">✕</button></div>';
-        row.querySelector('.load').onclick = () => {archive(); state = JSON.parse(JSON.stringify(w)); save(); render(); $('weeksSheet').classList.remove('show'); toast('Semaine chargée')};
+        row.querySelector('.load').onclick = () => {archive(); state = normWeek(JSON.parse(JSON.stringify(w))); activeDay = null; save(); render(); $('weeksSheet').classList.remove('show'); toast('Semaine chargée')};
         row.querySelector('.rm').onclick = () => {const arr = getArch().filter(x => x.weekstart !== w.weekstart); setArch(arr); renderWeeks()};
         list.appendChild(row);
       });
@@ -2119,8 +2330,8 @@
       try {
         const j = JSON.parse(await f.text());
         if (!j || typeof j !== 'object' || (!j.current && !j.weeks)) throw new Error('format');
-        if (j.weeks && Array.isArray(j.weeks)) setArch(j.weeks);
-        if (j.current && j.current.weekstart) {state = j.current; save()}
+        if (j.weeks && Array.isArray(j.weeks)) setArch(j.weeks.map(normWeek));
+        if (j.current && j.current.weekstart) {state = normWeek(j.current); save()}
         render(); renderWeeks();
         toast('✓ Sauvegarde importée');
       } catch (e) {toast('Fichier invalide — import annulé')}
@@ -2190,8 +2401,8 @@
       const res = await ghGet();
       if (!res) {setSyncIcon('⚠', false); toast('Erreur GitHub — vérifier le token'); return }
       if (res.content) {
-        if (res.content.current) {state = res.content.current; save()}
-        if (res.content.weeks) setArch(res.content.weeks);
+        if (res.content.current) {state = normWeek(res.content.current); save()}
+        if (res.content.weeks) setArch(res.content.weeks.map(normWeek));
         if (res.sha) localStorage.setItem(LS_SHA, res.sha);
         render(); toast('✓ Données chargées depuis GitHub');
       } else {toast('GitHub connecté — aucune donnée encore')}
@@ -2281,6 +2492,7 @@
     })();
 
     render();
+    window.addEventListener('resize', sizeNote);
   </script>
 </body>
 
