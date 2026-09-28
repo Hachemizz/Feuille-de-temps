@@ -35,6 +35,7 @@
       --cxl2: rgba(255, 122, 122, .13);
       --ok: #37c97f;
       --dbl: #ffd166;
+      --x2bg: #ffd166;
       --warn: #ff6b6b;
       --bgt: rgba(18, 19, 23, 0);
       --readout1: #14161b;
@@ -44,6 +45,11 @@
       --r: 14px;
       --maxw: 640px;
       --gut: max(14px, calc((100% - var(--maxw)) / 2));
+      --ring: rgba(255, 140, 26, .22);
+      --sh1: 0 1px 2px rgba(0, 0, 0, .28);
+      --sh2: 0 4px 14px rgba(0, 0, 0, .34);
+      --sh3: 0 14px 36px rgba(0, 0, 0, .5);
+      --ease: cubic-bezier(.2, .8, .3, 1);
     }
 
     @media (prefers-color-scheme: light) {
@@ -68,13 +74,18 @@
         --cxl: #d94848;
         --cxl2: rgba(217, 72, 72, .10);
         --ok: #1e9e5f;
-        --dbl: #c98f00;
+        --dbl: #8f6400;
+        --x2bg: #ffce5c;
         --warn: #d94848;
         --bgt: rgba(244, 245, 247, 0);
         --readout1: #ffffff;
         --readout2: #f4f6f9;
         --x2txt: #3a2c00;
         --seltxt: #ffffff;
+        --ring: rgba(230, 115, 0, .18);
+        --sh1: 0 1px 2px rgba(16, 24, 40, .06);
+        --sh2: 0 4px 14px rgba(16, 24, 40, .09);
+        --sh3: 0 14px 36px rgba(16, 24, 40, .16);
       }
     }
 
@@ -101,6 +112,34 @@
     .mono {
       font-family: ui-monospace, "SF Mono", Menlo, monospace;
       font-variant-numeric: tabular-nums
+    }
+
+    /* toutes les icônes : même grille, même trait, alignées sur la ligne de base */
+    .ic {
+      display: block;
+      flex: 0 0 auto;
+      vector-effect: non-scaling-stroke
+    }
+
+    button {
+      font-family: inherit
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .spin .ic {
+      animation: spin .9s linear infinite;
+      transform-origin: 50% 50%
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .spin .ic {
+        animation-duration: 2.4s
+      }
     }
 
     .eyebrow {
@@ -150,17 +189,22 @@
     }
 
     .brand h1 {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       margin: 0;
-      letter-spacing: .2px;
+      letter-spacing: .1px;
       flex: 1
     }
 
     .brand .wkmini {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--amber2);
-      font-weight: 700
+      font-weight: 700;
+      letter-spacing: .2px;
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card)
     }
 
     .readout {
@@ -168,17 +212,18 @@
       align-items: baseline;
       gap: 12px;
       margin-top: 10px;
-      padding: 10px 14px;
+      padding: 12px 15px;
       background: linear-gradient(180deg, var(--readout1), var(--readout2));
       border: 1px solid var(--line);
-      border-radius: 12px
+      border-radius: 13px;
+      box-shadow: var(--sh1)
     }
 
     .readout .big {
-      font-size: 30px;
+      font-size: 31px;
       font-weight: 800;
       color: var(--ok);
-      letter-spacing: .5px;
+      letter-spacing: -.5px;
       line-height: 1
     }
 
@@ -222,8 +267,8 @@
       appearance: none;
       border: 1px solid var(--line);
       background: var(--card);
-      border-radius: 9px;
-      padding: 6px 2px 5px;
+      border-radius: 10px;
+      padding: 7px 2px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -231,7 +276,7 @@
       cursor: pointer;
       color: var(--faint);
       font-family: inherit;
-      transition: border-color .12s, background .12s;
+      transition: border-color .15s var(--ease), background .15s var(--ease), transform .12s var(--ease);
       position: relative
     }
 
@@ -242,10 +287,11 @@
     }
 
     .rail .ch .dt {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       line-height: 1;
-      color: var(--faint)
+      color: var(--faint);
+      letter-spacing: -.3px
     }
 
     .rail .ch.has .dt {
@@ -266,7 +312,8 @@
 
     .rail .ch .hh {
       font-size: 10px;
-      font-weight: 700
+      font-weight: 700;
+      min-height: 12px
     }
 
     .rail .ch.has {
@@ -302,8 +349,8 @@
     .rail .ch.note::before {
       content: "";
       position: absolute;
-      bottom: 4px;
-      right: 4px;
+      top: 4px;
+      left: 4px;
       width: 5px;
       height: 5px;
       border-radius: 50%;
@@ -313,7 +360,7 @@
 
     .rail .ch.active {
       border-color: var(--amber);
-      box-shadow: 0 0 0 2px rgba(255, 140, 26, .18)
+      box-shadow: 0 0 0 2px var(--ring)
     }
 
     .rail .ch:active {
@@ -365,7 +412,8 @@
       padding: 11px 12px;
       font-size: 16px;
       font-family: inherit;
-      appearance: none
+      appearance: none;
+      transition: border-color .15s var(--ease), box-shadow .15s var(--ease)
     }
 
     input:focus,
@@ -373,7 +421,12 @@
     textarea:focus {
       outline: none;
       border-color: var(--amber);
-      box-shadow: 0 0 0 3px rgba(255, 140, 26, .18)
+      box-shadow: 0 0 0 3px var(--ring)
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--faint)
     }
 
     select {
@@ -400,17 +453,24 @@
       border: 1px solid var(--line2);
       background: var(--card);
       color: var(--amber2);
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: 800;
+      border-radius: 11px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center
+      justify-content: center;
+      transition: background .15s var(--ease), border-color .15s var(--ease)
     }
 
     .step:active {
-      background: var(--card2)
+      background: var(--card2);
+      transform: scale(.94)
+    }
+
+    @media(hover:hover) {
+      .step:hover {
+        border-color: var(--amber);
+        background: var(--card2)
+      }
     }
 
     .rangeout {
@@ -429,17 +489,24 @@
       background: var(--card);
       border: 1px solid var(--line2);
       color: var(--txt);
-      border-radius: 10px;
-      padding: 11px 12px;
+      border-radius: 11px;
+      padding: 11px 13px;
       font-size: 16px;
       font-family: inherit;
       font-weight: 600;
       cursor: pointer;
-      text-align: left
+      text-align: left;
+      transition: border-color .15s var(--ease), background .15s var(--ease)
     }
 
     .datefield:active {
       background: var(--card2)
+    }
+
+    @media(hover:hover) {
+      .datefield:hover {
+        border-color: var(--line2)
+      }
     }
 
     .datefield .cal {
@@ -466,9 +533,9 @@
       width: 288px;
       background: var(--bg2);
       border: 1px solid var(--line2);
-      border-radius: 14px;
-      padding: 12px;
-      box-shadow: 0 14px 36px rgba(0, 0, 0, .55);
+      border-radius: 15px;
+      padding: 13px;
+      box-shadow: var(--sh3);
       display: none
     }
 
@@ -498,12 +565,18 @@
       background: var(--card);
       color: var(--amber2);
       border-radius: 9px;
-      font-size: 18px;
-      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center
+      justify-content: center;
+      transition: background .15s var(--ease), border-color .15s var(--ease)
+    }
+
+    @media(hover:hover) {
+      .calhead button:hover {
+        border-color: var(--amber);
+        background: var(--card2)
+      }
     }
 
     .calhead button:active {
@@ -590,6 +663,13 @@
       background: var(--card2)
     }
 
+    @media(hover:hover) {
+      .caltoday:hover {
+        border-color: var(--amber);
+        background: var(--card2)
+      }
+    }
+
     .empty .cta {
       margin-top: 16px;
       border: none;
@@ -639,11 +719,11 @@
     }
 
     .dayhead .bar {
-      height: 2px;
-      flex: 0 0 16px;
+      height: 3px;
+      flex: 0 0 18px;
       background: var(--amber);
-      border-radius: 2px;
-      opacity: .7
+      border-radius: 3px;
+      opacity: .85
     }
 
     .dayhead .name {
@@ -683,6 +763,12 @@
       background: var(--off2)
     }
 
+    @media(hover:hover) {
+      .holtag:not(.done):hover {
+        background: var(--off2)
+      }
+    }
+
     .holtag.done {
       opacity: .55;
       cursor: default
@@ -692,10 +778,17 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--r);
-      padding: 12px 12px 12px 15px;
+      padding: 13px 13px 13px 16px;
       margin-bottom: 10px;
       position: relative;
-      overflow: hidden
+      overflow: hidden;
+      box-shadow: var(--sh1);
+      transition: box-shadow .18s var(--ease), border-color .18s var(--ease)
+    }
+
+    .entry:focus-within {
+      border-color: var(--line2);
+      box-shadow: var(--sh2)
     }
 
     .entry::before {
@@ -704,7 +797,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 4px;
+      width: 3px;
       background: var(--line2)
     }
 
@@ -749,7 +842,7 @@
       grid-template-columns: 1.2fr 1fr;
       gap: 8px;
       align-items: end;
-      padding-right: 62px
+      padding-right: 104px
     }
 
     .r1.solo {
@@ -797,25 +890,38 @@
     }
 
     .x2 {
-      flex: 0 0 48px;
+      flex: 0 0 50px;
       border: 1px solid var(--line2);
       background: var(--card2);
       border-radius: 9px;
       color: var(--dim);
       font-weight: 800;
       font-size: 13px;
+      letter-spacing: .3px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      user-select: none
+      user-select: none;
+      transition: background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease)
+    }
+
+    .x2:active {
+      transform: scale(.95)
+    }
+
+    @media(hover:hover) {
+      .x2:hover {
+        border-color: var(--dbl);
+        color: var(--txt)
+      }
     }
 
     .x2.on {
-      background: var(--dbl);
+      background: var(--x2bg);
       color: var(--x2txt);
-      border-color: var(--dbl);
-      box-shadow: 0 0 12px rgba(255, 209, 102, .35)
+      border-color: var(--x2bg);
+      box-shadow: 0 0 0 3px rgba(255, 209, 102, .22)
     }
 
     .typewrap {
@@ -869,34 +975,53 @@
 
     .tools {
       position: absolute;
-      top: 9px;
-      right: 9px;
+      top: 8px;
+      right: 8px;
       display: flex;
-      gap: 4px
+      gap: 2px;
+      padding: 2px;
+      border-radius: 10px;
+      background: var(--card2);
+      border: 1px solid var(--line)
     }
 
     .tool {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       border: none;
       background: transparent;
       color: var(--faint);
-      font-size: 15px;
-      border-radius: 7px;
+      border-radius: 8px;
       cursor: pointer;
-      line-height: 1;
       display: flex;
       align-items: center;
-      justify-content: center
+      justify-content: center;
+      padding: 0;
+      transition: background .14s var(--ease), color .14s var(--ease)
     }
 
     .tool:active {
-      background: var(--card2);
-      color: var(--txt)
+      transform: scale(.92)
+    }
+
+    @media(hover:hover) {
+      .tool:hover {
+        background: var(--card);
+        color: var(--txt)
+      }
+
+      .tool.del:hover {
+        background: var(--cxl2);
+        color: var(--warn)
+      }
+
+      .tool.nt:hover {
+        color: var(--amber2)
+      }
     }
 
     .tool.del:active {
-      background: rgba(255, 107, 107, .16);
+      background: var(--cxl2);
       color: var(--warn)
     }
 
@@ -952,21 +1077,41 @@
       background: transparent;
       color: var(--dim);
       border-radius: 11px;
-      padding: 11px;
+      padding: 12px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      font-family: inherit
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: border-color .15s var(--ease), color .15s var(--ease), background .15s var(--ease)
     }
 
     .addday:active {
       border-color: var(--amber);
-      color: var(--amber2)
+      color: var(--amber2);
+      transform: scale(.99)
+    }
+
+    @media(hover:hover) {
+      .addday:hover {
+        border-color: var(--amber);
+        color: var(--amber2);
+        background: rgba(255, 140, 26, .05)
+      }
+
+      .addday.off:hover {
+        border-color: var(--off);
+        color: var(--off);
+        background: var(--off2)
+      }
     }
 
     .addday.off {
       color: var(--off);
-      padding: 11px 14px;
+      padding: 12px 15px;
       white-space: nowrap
     }
 
@@ -1070,12 +1215,9 @@
       margin-top: 4px
     }
 
-    .tool.nt {
-      font-size: 13px
-    }
-
     .tool.nt.on {
-      color: var(--amber2)
+      color: var(--amber2);
+      background: rgba(255, 140, 26, .13)
     }
 
     .empty {
@@ -1102,9 +1244,9 @@
       bottom: 0;
       z-index: 30;
       padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom));
-      background: linear-gradient(0deg, var(--bg) 78%, var(--bgt));
+      background: linear-gradient(0deg, var(--bg) 72%, var(--bgt));
       display: flex;
-      gap: 10px
+      gap: 9px
     }
 
     .btn {
@@ -1115,18 +1257,24 @@
       font-weight: 800;
       font-family: inherit;
       cursor: pointer;
-      letter-spacing: .3px
+      letter-spacing: .2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform .12s var(--ease), box-shadow .18s var(--ease), background .15s var(--ease)
     }
 
     .btn.export {
       flex: 1;
       background: linear-gradient(135deg, var(--amber), #ff9a3d);
       color: #1a1205;
-      box-shadow: 0 6px 20px rgba(255, 140, 26, .32)
+      box-shadow: 0 5px 18px rgba(255, 140, 26, .3), inset 0 1px 0 rgba(255, 255, 255, .28)
     }
 
     .btn.export:active {
-      transform: translateY(1px)
+      transform: translateY(1px) scale(.995);
+      box-shadow: 0 2px 8px rgba(255, 140, 26, .26)
     }
 
     .btn.sec {
@@ -1134,7 +1282,34 @@
       background: var(--card);
       color: var(--dim);
       border: 1px solid var(--line2);
-      padding: 15px 17px
+      padding: 15px 16px;
+      box-shadow: var(--sh1)
+    }
+
+    .btn.sec:active {
+      transform: scale(.94);
+      color: var(--txt)
+    }
+
+    .btn.sec.bad {
+      color: var(--warn);
+      border-color: var(--warn)
+    }
+
+    .btn.sec:disabled {
+      opacity: .6;
+      cursor: default
+    }
+
+    @media(hover:hover) {
+      .btn.sec:hover {
+        color: var(--txt);
+        border-color: var(--amber)
+      }
+
+      .btn.export:hover {
+        box-shadow: 0 7px 22px rgba(255, 140, 26, .38), inset 0 1px 0 rgba(255, 255, 255, .28)
+      }
     }
 
     .toast {
@@ -1145,12 +1320,13 @@
       background: var(--card2);
       border: 1px solid var(--line2);
       color: var(--txt);
-      padding: 11px 18px;
+      padding: 12px 19px;
       border-radius: 30px;
       font-size: 14px;
       font-weight: 600;
       opacity: 0;
-      transition: .25s;
+      box-shadow: var(--sh2);
+      transition: opacity .22s var(--ease), transform .22s var(--ease);
       z-index: 50;
       pointer-events: none;
       max-width: 90vw;
@@ -1192,7 +1368,8 @@
       background: var(--bg2);
       width: 100%;
       max-width: var(--maxw);
-      border-radius: 20px 20px 0 0;
+      border-radius: 22px 22px 0 0;
+      box-shadow: var(--sh3);
       border-top: 1px solid var(--line2);
       padding: 8px 16px calc(20px + env(safe-area-inset-bottom));
       max-height: 80vh;
@@ -1209,19 +1386,28 @@
 
     .sheet h2 {
       font-size: 15px;
-      margin: 0 0 12px;
-      font-weight: 800
+      margin: 0 0 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 9px
+    }
+
+    .sheet h2 .hi {
+      display: flex;
+      color: var(--amber2)
     }
 
     .wkrow {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 12px;
+      padding: 12px 13px;
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 12px;
-      margin-bottom: 8px
+      margin-bottom: 8px;
+      box-shadow: var(--sh1)
     }
 
     .wkrow .wk-r {
@@ -1245,17 +1431,32 @@
       border: 1px solid var(--line2);
       background: var(--card2);
       color: var(--dim);
-      border-radius: 8px;
+      border-radius: 9px;
       padding: 9px 11px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      font-family: inherit
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color .15s var(--ease), color .15s var(--ease)
+    }
+
+    .wkrow button:active {
+      transform: scale(.95)
     }
 
     .wkrow button.load {
       color: var(--amber2);
       border-color: var(--amber)
+    }
+
+    @media(hover:hover) {
+      .wkrow button.rm:hover {
+        color: var(--warn);
+        border-color: var(--warn)
+      }
     }
 
     .legend {
@@ -1293,8 +1494,8 @@
     }
 
     .bkbtn {
-      border-radius: 10px;
-      padding: 12px;
+      border-radius: 11px;
+      padding: 13px;
       font-size: 13px;
       font-weight: 800;
       font-family: inherit;
@@ -1302,14 +1503,44 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 8px;
       border: 1px solid var(--line2);
       background: var(--card2);
-      color: var(--txt)
+      color: var(--txt);
+      transition: border-color .15s var(--ease), background .15s var(--ease)
+    }
+
+    .bkbtn .bi {
+      display: flex;
+      flex: 0 0 auto
     }
 
     .bkbtn:active {
-      opacity: .75
+      transform: scale(.98);
+      opacity: .85
+    }
+
+    .bkbtn.ok {
+      flex: 1;
+      color: var(--ok);
+      border-color: var(--ok)
+    }
+
+    .bkbtn.danger {
+      color: var(--warn);
+      border-color: var(--warn)
+    }
+
+    @media(hover:hover) {
+      .bkbtn:hover {
+        border-color: var(--amber)
+      }
+
+      .bkbtn.ok:hover,
+      .bkbtn.danger:hover {
+        border-color: currentColor;
+        background: var(--card)
+      }
     }
 
     .setup-info {
@@ -1368,9 +1599,16 @@
       box-shadow: inset 3px 0 0 var(--amber)
     }
 
-    .addr-sug.hist .sug-main::before {
-      content: "⟲ ";
-      color: var(--amber2)
+    .addr-sug.hist .sug-main {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .addr-sug.hist .sug-main .ic {
+      flex: 0 0 auto;
+      color: var(--amber2);
+      opacity: .9
     }
 
     .sug-main {
@@ -1410,10 +1648,9 @@
   <main id="main"></main>
 
   <footer>
-    <button class="btn sec" id="weeksBtn" title="Semaines enregistrées" aria-label="Semaines enregistrées">☰</button>
-    <button class="btn sec" id="syncBtn" title="Sync GitHub" aria-label="Synchroniser avec GitHub"
-      style="font-size:18px">☁</button>
-    <button class="btn export" id="exportBtn">Générer l'Excel</button>
+    <button class="btn sec" id="weeksBtn" type="button" title="Semaines enregistrées" aria-label="Semaines enregistrées"></button>
+    <button class="btn sec" id="syncBtn" type="button" title="Sync GitHub" aria-label="Synchroniser avec GitHub"></button>
+    <button class="btn export" id="exportBtn" type="button"><span class="lbl">Générer l'Excel</span></button>
   </footer>
 
   <div class="toast" id="toast"></div>
@@ -1425,8 +1662,8 @@
       <div class="grip"></div>
       <h2>Semaines enregistrées</h2>
       <div class="backup-row">
-        <button class="bkbtn" id="bkExport">⭳ Exporter JSON</button>
-        <button class="bkbtn" id="bkImport">⭱ Importer JSON</button>
+        <button class="bkbtn" id="bkExport" type="button"><span class="bi"></span>Exporter JSON</button>
+        <button class="bkbtn" id="bkImport" type="button"><span class="bi"></span>Importer JSON</button>
       </div>
       <div id="weeksList"></div>
     </div>
@@ -1435,16 +1672,15 @@
   <div class="sheet-backdrop" id="setupSheet">
     <div class="sheet">
       <div class="grip"></div>
-      <h2>☁ Sync GitHub</h2>
+      <h2><span class="hi"></span>Sync GitHub</h2>
       <p class="setup-info" id="tokenStatus"></p>
       <div class="fld" style="margin-bottom:12px">
         <label>Personal Access Token</label>
         <input id="tokenInput" type="password" autocomplete="off" placeholder="github_pat_...">
       </div>
       <div style="display:flex;gap:8px">
-        <button class="bkbtn" id="tokenSave" style="flex:1;color:var(--ok);border-color:var(--ok)">💾 Enregistrer +
-          Sync</button>
-        <button class="bkbtn" id="tokenClear" style="color:var(--warn);border-color:var(--warn)">Effacer</button>
+        <button class="bkbtn ok" id="tokenSave" type="button"><span class="bi"></span>Enregistrer + Sync</button>
+        <button class="bkbtn danger" id="tokenClear" type="button">Effacer</button>
       </div>
       <p class="setup-hint">
         Créer le token : github.com → Settings → Developer settings →
@@ -1455,6 +1691,42 @@
   </div>
 
   <script>
+    /* ====================== ICONS ======================
+       Jeu d'icônes SVG inline : trait unique, currentColor, même grille 24.
+       Remplace les glyphes texte (✎ ⧉ ✕ ☰ ☁ ‹ ›) qui changeaient de forme,
+       de graisse et d'alignement selon la police du système.
+    ================================================================ */
+    const ICON = {
+      note: '<path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12.8 13.8l-3.6.9.9-3.6Z"/>',
+      copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+      x: '<path d="M18 6 6 18M6 6l12 12"/>',
+      trash: '<path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-.8 13a2 2 0 0 1-2 1.9H7.8a2 2 0 0 1-2-1.9L5 6"/><path d="M10 11v6M14 11v6"/>',
+      left: '<path d="M15 18 9 12l6-6"/>',
+      right: '<path d="m9 18 6-6-6-6"/>',
+      plus: '<path d="M12 5v14M5 12h14"/>',
+      cal: '<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+      layers: '<path d="M3 7.5 12 3l9 4.5-9 4.5Z"/><path d="m3 12.5 9 4.5 9-4.5"/><path d="m3 17 9 4.5L21 17"/>',
+      cloud: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 11.2 3.9 3.9 0 0 0 6.5 19Z"/>',
+      cloudUp: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 11.2 3.9 3.9 0 0 0 6.5 19"/><path d="M12 21v-8M9 16l3-3 3 3"/>',
+      cloudOk: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 11.2 3.9 3.9 0 0 0 6.5 19Z"/><path d="m9.2 14.6 1.9 1.9 3.7-3.7"/>',
+      cloudOff: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 11.2 3.9 3.9 0 0 0 6.5 19Z"/><path d="M12 9.5v3.2M12 15.6v.1"/>',
+      sync: '<path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.8 4.2v4.6h-4.6"/>',
+      down: '<path d="M12 3v12M7.5 10.5 12 15l4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+      up: '<path d="M12 15V3M7.5 7.5 12 3l4.5 4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+      save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+      sheet: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M3 9.5h18M3 15h18M9.5 9.5V21M15 9.5V21"/>',
+      open: '<path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h4l2 2.5h7A1.5 1.5 0 0 1 20 9v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18Z"/>',
+      hist: '<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.2 4.2v4.6h4.6"/><path d="M12 7.6V12l3 1.8"/>',
+      key: '<circle cx="8" cy="15" r="4"/><path d="m10.9 12.1 8-8M18 4l2.5 2.5M15.5 6.5 18 9"/>'
+    };
+    /* sz : taille en px · cls : classe optionnelle sur le <svg> */
+    function ico(name, sz, cls) {
+      const d = ICON[name]; if (!d) return '';
+      return '<svg class="ic' + (cls ? ' ' + cls : '') + '" width="' + (sz || 18) + '" height="' + (sz || 18) +
+        '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + d + '</svg>';
+    }
+
     /* ====================== XLSX WRITER (offline, no deps) ====================== */
     function crc32(buf) {let t = crc32.t; if (!t) {t = crc32.t = new Uint32Array(256); for (let n = 0; n < 256; n++) {let c = n; for (let k = 0; k < 8; k++)c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0} } let crc = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++)crc = (crc >>> 8) ^ t[(crc ^ buf[i]) & 0xFF]; return (crc ^ 0xFFFFFFFF) >>> 0}
     function s2u(s) {return new TextEncoder().encode(s)}
@@ -1756,11 +2028,10 @@
         '<div class="fld"><label>Code</label><input id="code" type="text" name="code-employe" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"></div>' +
         '<div class="fld full"><label>Semaine de (lundi)</label>' +
         '<div class="weekrow">' +
-        '<button class="step" id="prevWk" aria-label="Semaine précédente">‹</button>' +
+        '<button class="step" id="prevWk" type="button" aria-label="Semaine précédente">' + ico('left', 20) + '</button>' +
         '<button class="datefield" id="dateField" aria-label="Choisir la semaine"><span class="dt" id="dateText"></span>' +
-        '<svg class="cal" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>' +
-        '</button>' +
-        '<button class="step" id="nextWk" aria-label="Semaine suivante">›</button>' +
+        '' + ico('cal', 18, 'cal') + '</button>' +
+        '<button class="step" id="nextWk" type="button" aria-label="Semaine suivante">' + ico('right', 20) + '</button>' +
         '</div>' +
         '<div class="rangeout" id="rangeOut"></div></div>';
       main.appendChild(meta);
@@ -1789,9 +2060,11 @@
         if (ht && !hasOff) ht.onclick = () => addOff(day, 'Férié', hol);
         de.forEach(e => grp.appendChild(entryEl(e)));
         const row = document.createElement('div'); row.className = 'addrow';
-        const add = document.createElement('button'); add.className = 'addday'; add.textContent = '+ Ajouter une entrée';
+        const add = document.createElement('button'); add.className = 'addday'; add.type = 'button';
+        add.innerHTML = ico('plus', 17) + '<span>Ajouter une entrée</span>';
         add.onclick = () => addEntry(day);
-        const addO = document.createElement('button'); addO.className = 'addday off'; addO.textContent = '+ Congé';
+        const addO = document.createElement('button'); addO.className = 'addday off'; addO.type = 'button';
+        addO.innerHTML = ico('plus', 17) + '<span>Congé</span>';
         addO.title = 'Journée fériée ou congé';
         addO.onclick = () => addOff(day, hol ? 'Férié' : 'Congé', hol);
         row.appendChild(add); row.appendChild(addO);
@@ -2081,7 +2354,7 @@
       list.forEach(sg => {
         const div = document.createElement('div');
         div.className = 'addr-sug' + (sg.src === 'hist' ? ' hist' : '');
-        div.innerHTML = '<div class="sug-main">' + esc(sg.label) + '</div>' +
+        div.innerHTML = '<div class="sug-main">' + (sg.src === 'hist' ? ico('hist', 13) : '') + '<span>' + esc(sg.label) + '</span></div>' +
           (sg.sub ? '<div class="sug-sub">' + esc(sg.sub) + '</div>' : '');
         div.onmousedown = ev => {ev.preventDefault(); input.value = sg.full; onSelect(sg.full); acClose()};
         d.appendChild(div);
@@ -2187,9 +2460,9 @@
       card.dataset.eid = e.id; // ancre pour la restauration du focus après render()
       card.innerHTML =
         '<div class="tools">' +
-        '<button class="tool nt' + (entryNote(e) ? ' on' : '') + '" tabindex="-1" aria-label="Note" title="Note">✎</button>' +
-        '<button class="tool dup" tabindex="-1" aria-label="Dupliquer">⧉</button>' +
-        '<button class="tool del" tabindex="-1" aria-label="Supprimer">✕</button>' +
+        '<button class="tool nt' + (entryNote(e) ? ' on' : '') + '" type="button" tabindex="-1" aria-label="Note" title="Note">' + ico('note', 16) + '</button>' +
+        '<button class="tool dup" type="button" tabindex="-1" aria-label="Dupliquer" title="Dupliquer">' + ico('copy', 16) + '</button>' +
+        '<button class="tool del" type="button" tabindex="-1" aria-label="Supprimer" title="Supprimer">' + ico('trash', 16) + '</button>' +
         '</div>' +
         '<div class="r1' + (off ? ' solo' : '') + '">' +
         (off ? '' : '<div class="mini"><label>Contrôle</label><input class="f-ctrl" type="text" name="controle" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="' + escAttr(e.controle) + '"></div>') +
@@ -2324,9 +2597,9 @@
       const sel = new Date(state.weekstart + 'T00:00:00');// selected Monday
       const wkEnd = new Date(sel); wkEnd.setDate(wkEnd.getDate() + 6);
       const today = new Date(); today.setHours(0, 0, 0, 0);
-      let html = '<div class="calhead"><button id="calPrev" aria-label="Mois précédent">‹</button>' +
+      let html = '<div class="calhead"><button id="calPrev" type="button" aria-label="Mois précédent">' + ico('left', 18) + '</button>' +
         '<span class="my">' + MOIS_FULL[m] + ' ' + y + '</span>' +
-        '<button id="calNext" aria-label="Mois suivant">›</button></div><div class="calgrid">';
+        '<button id="calNext" type="button" aria-label="Mois suivant">' + ico('right', 18) + '</button></div><div class="calgrid">';
       for (const d of JOURS_MIN) html += '<span class="wd">' + d + '</span>';
       for (let i = 0; i < 42; i++) {
         const cur = new Date(first); cur.setDate(first.getDate() + i);
@@ -2407,8 +2680,9 @@
           DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
         const cur = w.weekstart === state.weekstart;
         const row = document.createElement('div'); row.className = 'wkrow';
-        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrées' + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + '</div></div>' +
-          '<div class="wk-act"><button class="load">Ouvrir</button><button class="rm" aria-label="Supprimer">✕</button></div>';
+        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrée' + (w.entries.length > 1 ? 's' : '') + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + '</div></div>' +
+          '<div class="wk-act"><button class="load" type="button">' + ico('open', 15) + 'Ouvrir</button>' +
+          '<button class="rm" type="button" aria-label="Supprimer" title="Supprimer">' + ico('trash', 15) + '</button></div>';
         row.querySelector('.load').onclick = () => {archive(); state = normWeek(JSON.parse(JSON.stringify(w))); activeDay = null; save(); render(); $('weeksSheet').classList.remove('show'); toast('Semaine chargée')};
         row.querySelector('.rm').onclick = () => {const arr = getArch().filter(x => x.weekstart !== w.weekstart); setArch(arr); renderWeeks()};
         list.appendChild(row);
@@ -2436,7 +2710,7 @@
         if (j.weeks && Array.isArray(j.weeks)) setArch(j.weeks.map(normWeek));
         if (j.current && j.current.weekstart) {state = normWeek(j.current); save()}
         render(); renderWeeks();
-        toast('✓ Sauvegarde importée');
+        toast('Sauvegarde importée');
       } catch (e) {toast('Fichier invalide — import annulé')}
     };
 
@@ -2500,31 +2774,37 @@
 
     async function syncFromGH() {
       if (!navigator.onLine) {toast('Hors ligne — sync impossible'); return }
-      setSyncIcon('⏳', true);
+      setSyncIcon('busy', true);
       const res = await ghGet();
-      if (!res) {setSyncIcon('⚠', false); toast('Erreur GitHub — vérifier le token'); return }
+      if (!res) {setSyncIcon('cloudOff', false); toast('Erreur GitHub — vérifier le token'); return }
       if (res.content) {
         if (res.content.current) {state = normWeek(res.content.current); save()}
         if (res.content.weeks) setArch(res.content.weeks.map(normWeek));
         if (res.sha) localStorage.setItem(LS_SHA, res.sha);
-        render(); toast('✓ Données chargées depuis GitHub');
+        render(); toast('Données chargées depuis GitHub');
       } else {toast('GitHub connecté — aucune donnée encore')}
-      setSyncIcon('☁', false);
+      setSyncIcon('cloud', false);
     }
 
     async function syncToGH() {
       if (!navigator.onLine) {toast('Hors ligne — sync impossible'); return }
-      setSyncIcon('⏳', true);
+      setSyncIcon('busy', true);
       archive();
       const content = {current: state, weeks: getArch()};
       let sha = localStorage.getItem(LS_SHA) || null;
       if (!sha) {const r = await ghGet(); if (r && r.sha) sha = r.sha;}
       const ok = await ghPut(content, sha);
-      setSyncIcon('☁', false);
-      toast(ok ? '✓ Sauvegardé sur GitHub' : '✗ Erreur sync — vérifier le token');
+      setSyncIcon('cloud', false);
+      toast(ok ? 'Sauvegardé sur GitHub' : 'Erreur sync — vérifier le token');
     }
 
-    function setSyncIcon(icon, disabled) {const b = $('syncBtn'); b.textContent = icon; b.disabled = disabled}
+    function setSyncIcon(name, disabled) {
+      const b = $('syncBtn');
+      b.innerHTML = ico(name === 'busy' ? 'sync' : name, 19);
+      b.classList.toggle('spin', name === 'busy');
+      b.classList.toggle('bad', name === 'cloudOff');
+      b.disabled = !!disabled;
+    }
 
     $('syncBtn').onclick = () => {
       if (!getToken()) {renderSetup(); $('setupSheet').classList.add('show')}
@@ -2539,7 +2819,7 @@
     };
     $('tokenClear').onclick = () => {
       clearToken(); $('setupSheet').classList.remove('show');
-      toast('Token supprimé'); setSyncIcon('☁', false);
+      toast('Token supprimé'); setSyncIcon('cloud', false);
     };
     function renderSetup() {
       $('tokenInput').value = getToken() || '';
@@ -2593,6 +2873,15 @@
         document.head.appendChild(link);
       } catch (e) { }
     })();
+
+    /* icônes statiques (barre du bas + feuilles) */
+    $('weeksBtn').innerHTML = ico('layers', 19);
+    $('exportBtn').insertAdjacentHTML('afterbegin', ico('sheet', 18));
+    setSyncIcon('cloud', false);
+    $('bkExport').querySelector('.bi').innerHTML = ico('down', 16);
+    $('bkImport').querySelector('.bi').innerHTML = ico('up', 16);
+    $('tokenSave').querySelector('.bi').innerHTML = ico('save', 16);
+    document.querySelector('#setupSheet h2 .hi').innerHTML = ico('cloudUp', 17);
 
     render();
     window.addEventListener('resize', sizeNotes);
