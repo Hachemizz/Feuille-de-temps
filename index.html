@@ -1726,6 +1726,7 @@
     .addr-attr:empty {
       display: none
     }
+
   </style>
 </head>
 
@@ -1744,10 +1745,8 @@
   <main id="main"></main>
 
   <footer>
-    <button class="btn sec" id="weeksBtn" type="button" title="Semaines enregistrées"
-      aria-label="Semaines enregistrées"></button>
-    <button class="btn sec" id="syncBtn" type="button" title="Sync GitHub"
-      aria-label="Synchroniser avec GitHub"></button>
+    <button class="btn sec" id="weeksBtn" type="button" title="Semaines enregistrées" aria-label="Semaines enregistrées"></button>
+    <button class="btn sec" id="syncBtn" type="button" title="Sync GitHub" aria-label="Synchroniser avec GitHub"></button>
     <button class="btn export" id="exportBtn" type="button"><span class="lbl">Générer l'Excel</span></button>
   </footer>
 
@@ -1963,7 +1962,7 @@
       if (!Array.isArray(w.entries)) w.entries = [];
       DAYS.forEach(d => {
         const t = String(w.notes[d] || '').trim();
-        if (!t) {delete w.notes[d]; return }
+        if (!t) {delete w.notes[d]; return}
         const first = w.entries.find(e => e.jour === d);
         if (!first) return;
         first.note = String(first.note || '').trim()
@@ -2703,7 +2702,7 @@
       const sig = acCtl.signal, seq = ++acSeq;
       const key = norm(q);
       const cached = cacheGet(key);
-      if (cached) {acLastQ = q; acLastList = cached; acPaint(cached, input, onSelect, q); return }
+      if (cached) {acLastQ = q; acLastList = cached; acPaint(cached, input, onSelect, q); return}
 
       const hist = histMatch(q, 3, norm(q));
       const num = doorNum(q);
@@ -2761,7 +2760,7 @@
         if (q.length < 3) {
           if (!q.length && document.activeElement === input) {
             const rec = histRecent(5, norm(input.value || ''));
-            if (rec.length) {acPaint(rec, input, onSelect, '', {head: 'Récentes'}); return }
+            if (rec.length) {acPaint(rec, input, onSelect, '', {head: 'Récentes'}); return}
           }
           acClose(); return;
         }
@@ -2909,7 +2908,7 @@
       if (addr) acBind(addr, val => {e.adresse = val; save()});
       /* note : le bouton ✎ ouvre le champ ; rouvrir un champ vide le referme */
       card.querySelector('.nt').onclick = () => {
-        if (noteOpen.has(e.id) && !entryNote(e)) {noteOpen.delete(e.id); render(); return }
+        if (noteOpen.has(e.id) && !entryNote(e)) {noteOpen.delete(e.id); render(); return}
         noteOpen.add(e.id); render();
         const t = document.querySelector('.entry[data-eid="' + e.id + '"] .f-note');
         if (t) {t.focus(); t.setSelectionRange(t.value.length, t.value.length)}
