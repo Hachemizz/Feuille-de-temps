@@ -1565,70 +1565,166 @@
     .addr-drop {
       position: fixed;
       z-index: 90;
-      background: var(--card2);
+      background: var(--bg2);
       border: 1px solid var(--line2);
-      border-radius: 11px;
+      border-radius: 14px;
       overflow: hidden;
       display: none;
-      max-height: 230px;
+      max-height: 320px;
       overflow-y: auto;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .45)
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: var(--sh3)
     }
 
     .addr-drop.show {
       display: block
     }
 
+    /* barre de progression : la liste reste lisible pendant la requête */
+    .addr-drop.busy::before {
+      content: "";
+      position: sticky;
+      top: 0;
+      left: 0;
+      display: block;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--amber), transparent);
+      background-size: 40% 100%;
+      background-repeat: no-repeat;
+      animation: slide 1.1s var(--ease) infinite;
+      z-index: 2
+    }
+
+    @keyframes slide {
+      0% {
+        background-position: -40% 0
+      }
+
+      100% {
+        background-position: 140% 0
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .addr-drop.busy::before {
+        animation-duration: 2.6s
+      }
+    }
+
+    .addr-head {
+      padding: 9px 14px 5px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--faint)
+    }
+
+    .addr-none {
+      padding: 16px 14px;
+      font-size: 13px;
+      color: var(--faint);
+      text-align: center
+    }
+
     .addr-sug {
+      display: flex;
+      align-items: center;
+      gap: 11px;
       padding: 10px 13px;
       cursor: pointer;
       border-bottom: 1px solid var(--line)
     }
 
-    .addr-sug:last-child {
+    .addr-sug:last-of-type {
       border-bottom: none
     }
 
-    .addr-sug:hover,
-    .addr-sug:active,
-    .addr-sug.sel {
-      background: var(--card)
+    .sug-ic {
+      flex: 0 0 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      background: var(--card2);
+      color: var(--dim)
+    }
+
+    .addr-sug.hist .sug-ic {
+      color: var(--amber2);
+      background: rgba(255, 140, 26, .12)
+    }
+
+    .sug-t {
+      flex: 1;
+      min-width: 0
+    }
+
+    .sug-main {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--txt);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    /* les lettres tapées ressortent ; le reste reste secondaire */
+    .sug-main b {
+      font-weight: 800;
+      color: var(--amber2)
+    }
+
+    .sug-sub {
+      display: block;
+      font-size: 11.5px;
+      color: var(--dim);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .sug-d {
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--faint);
+      padding-left: 4px
+    }
+
+    .addr-sug.sel,
+    .addr-sug:active {
+      background: var(--card2)
     }
 
     .addr-sug.sel {
       box-shadow: inset 3px 0 0 var(--amber)
     }
 
-    .addr-sug.hist .sug-main {
-      display: flex;
-      align-items: center;
-      gap: 6px
-    }
+    @media(hover:hover) {
+      .addr-sug:hover {
+        background: var(--card2)
+      }
 
-    .addr-sug.hist .sug-main .ic {
-      flex: 0 0 auto;
-      color: var(--amber2);
-      opacity: .9
-    }
-
-    .sug-main {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--txt)
-    }
-
-    .sug-sub {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 2px
+      .addr-sug:hover .sug-ic {
+        color: var(--txt)
+      }
     }
 
     .addr-attr {
-      padding: 5px 13px;
+      padding: 6px 13px 7px;
       font-size: 10px;
       color: var(--faint);
       border-top: 1px solid var(--line);
       text-align: right
+    }
+
+    .addr-attr:empty {
+      display: none
     }
   </style>
 </head>
@@ -1648,8 +1744,10 @@
   <main id="main"></main>
 
   <footer>
-    <button class="btn sec" id="weeksBtn" type="button" title="Semaines enregistrées" aria-label="Semaines enregistrées"></button>
-    <button class="btn sec" id="syncBtn" type="button" title="Sync GitHub" aria-label="Synchroniser avec GitHub"></button>
+    <button class="btn sec" id="weeksBtn" type="button" title="Semaines enregistrées"
+      aria-label="Semaines enregistrées"></button>
+    <button class="btn sec" id="syncBtn" type="button" title="Sync GitHub"
+      aria-label="Synchroniser avec GitHub"></button>
     <button class="btn export" id="exportBtn" type="button"><span class="lbl">Générer l'Excel</span></button>
   </footer>
 
@@ -1717,7 +1815,14 @@
       sheet: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M3 9.5h18M3 15h18M9.5 9.5V21M15 9.5V21"/>',
       open: '<path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h4l2 2.5h7A1.5 1.5 0 0 1 20 9v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18Z"/>',
       hist: '<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.2 4.2v4.6h4.6"/><path d="M12 7.6V12l3 1.8"/>',
-      key: '<circle cx="8" cy="15" r="4"/><path d="m10.9 12.1 8-8M18 4l2.5 2.5M15.5 6.5 18 9"/>'
+      key: '<circle cx="8" cy="15" r="4"/><path d="m10.9 12.1 8-8M18 4l2.5 2.5M15.5 6.5 18 9"/>',
+      pin: '<path d="M20 10.5c0 5.4-8 11.5-8 11.5s-8-6.1-8-11.5a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10.3" r="2.8"/>',
+      store: '<path d="M4 9.5V20a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9.5"/><path d="M3 6.2 4.4 3h15.2L21 6.2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/>',
+      school: '<path d="m12 3 9 4.5-9 4.5-9-4.5Z"/><path d="M6.5 10v5.2c0 1.6 2.5 2.8 5.5 2.8s5.5-1.2 5.5-2.8V10"/><path d="M21 7.5V13"/>',
+      hosp: '<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M12 9v7M8.5 12.5h7"/>',
+      flame: '<path d="M12 22a6 6 0 0 0 6-6c0-4.5-4.5-6.8-4.5-10.5C13.5 3.8 12.8 2.6 12 2c0 3.2-2.2 4.4-3.6 6.6A8.4 8.4 0 0 0 6 16a6 6 0 0 0 6 6Z"/><path d="M12 22a2.7 2.7 0 0 0 2.7-2.7c0-2-2.7-3.1-2.7-5.3-1.4 1.2-2.7 2.6-2.7 5.3A2.7 2.7 0 0 0 12 22Z"/>',
+      office: '<path d="M4 21V5.5a1.5 1.5 0 0 1 1.5-1.5h8A1.5 1.5 0 0 1 15 5.5V21"/><path d="M15 10h3.5A1.5 1.5 0 0 1 20 11.5V21M2.5 21h19"/><path d="M7.5 8h4M7.5 12h4M7.5 16h4"/>',
+      build: '<path d="M3 21V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14"/><path d="M15 11h4a2 2 0 0 1 2 2v8M2 21h20"/><path d="M6.5 9h2M6.5 13h2M6.5 17h2M11 9h1.5M11 13h1.5M11 17h1.5"/>'
     };
     /* sz : taille en px · cls : classe optionnelle sur le <svg> */
     function ico(name, sz, cls) {
@@ -1858,7 +1963,7 @@
       if (!Array.isArray(w.entries)) w.entries = [];
       DAYS.forEach(d => {
         const t = String(w.notes[d] || '').trim();
-        if (!t) {delete w.notes[d]; return}
+        if (!t) {delete w.notes[d]; return }
         const first = w.entries.find(e => e.jour === d);
         if (!first) return;
         first.note = String(first.note || '').trim()
@@ -2176,16 +2281,31 @@
     }
 
     /* ====================== ADDRESS AUTOCOMPLETE ======================
-       Trois sources fusionnées, classées, dédupliquées :
-       1. Historique local — adresses déjà saisies (instantané, fonctionne hors ligne)
-       2. Adresses Québec — servicescarto.mern.gouv.qc.ca (officiel, tout le Québec)
-            · /suggest               → fort en frappe partielle, sans ville
-            · /findAddressCandidates → tolère accents manquants + abréviations, veut la ville
-            Les deux sont interrogés en parallèle : ils échouent sur des cas opposés.
-       3. Photon / OSM — filet : arrondissements, commerces, POI nommés
-       Aucune source n'est bloquante — si l'une tombe, les autres s'affichent.
+       Objectif : la sensation Google/Apple Maps sans clé d'API (la page est
+       statique et publique — une clé Google Places ou Apple MapKit y serait
+       exposée et facturée). Ce qui donne cette sensation n'est pas la source
+       de données mais la couche d'interaction :
+
+         · latence perçue nulle — cache LRU + filtrage optimiste du résultat
+           précédent pendant que la requête part ; la liste ne clignote jamais
+         · proximité — position du téléphone (une fois, en cache 12 h) envoyée
+           aux sources, distance affichée, tri du plus proche au plus loin
+         · contexte — icône par type de lieu, mise en gras des mots tapés,
+           distance, adresses récentes classées par fréquence + récence
+         · jamais de cul-de-sac — un état vide explicite plutôt qu'un menu qui
+           disparaît sous les doigts
+
+       Sources fusionnées et dédupliquées :
+         1. Historique local (frecency)  — instantané, hors ligne
+         2. Adresses Québec (MERN)       — référentiel officiel des adresses QC
+         3. Photon / OpenStreetMap       — commerces, écoles, hôpitaux, POI
     =================================================================== */
     const AQ = 'https://servicescarto.mern.gouv.qc.ca/pes/rest/services/Territoire/Adresse_Geocodage/GeocodeServer';
+    const LS_GEO = 'fdt_geo', LS_FREQ = 'fdt_addr_freq';
+    const GEO_TTL = 12 * 3600 * 1000;   // position réutilisée 12 h
+    const AC_DEBOUNCE = 140;            // ms — le cache absorbe le reste
+    const AC_MAX = 7;
+
     /* AQ ne connaît pas les arrondissements comme municipalités : "st laurent",
        "lachine"… doivent être remplacés par "Montréal" en 2e passe. */
     const BOROUGHS = ['saint laurent', 'lachine', 'lasalle', 'verdun', 'anjou', 'outremont',
@@ -2199,11 +2319,15 @@
       ave: 'avenue', ch: 'chemin', 'ch.': 'chemin', mtee: 'montée', pl: 'place', crois: 'croissant',
       terr: 'terrasse', imp: 'impasse', o: 'ouest', e: 'est'
     };
+
     var _hist = null;
     let acTimer, acCurrent = null, acCtl = null, acSeq = 0, acIdx = -1, acItems = [];
+    let acOnSelect = null, acLastQ = '', acLastList = [], acBusy = false;
+    const acCache = new Map();          // LRU query -> liste
+    const AC_CACHE_MAX = 60;
 
     function norm(s) {
-      return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
         .replace(/[^a-z0-9]+/g, ' ').trim()
     }
     function expandQ(q) {return q.trim().split(/\s+/).map(w => ABBR[w.toLowerCase()] || w).join(' ')}
@@ -2219,53 +2343,108 @@
       }
       return null;
     }
-    function aDrop() {return $('addrDrop')}
-    function acPos(input) {
-      const d = aDrop(), r = input.getBoundingClientRect();
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      const spaceBelow = vh - r.bottom - 8;
-      const spaceAbove = r.top - 8;
-      const dropH = Math.min(230, d.scrollHeight || 230);
-      d.style.left = r.left + 'px'; d.style.width = r.width + 'px';
-      if (spaceBelow >= dropH || spaceBelow >= spaceAbove) {
-        // enough room below — open downward
-        d.style.top = (r.bottom + 4) + 'px'; d.style.bottom = 'auto';
-        d.style.maxHeight = Math.max(120, spaceBelow) + 'px';
-      } else {
-        // flip upward
-        d.style.top = 'auto'; d.style.bottom = (vh - r.top + 4) + 'px';
-        d.style.maxHeight = Math.max(120, spaceAbove) + 'px';
-      }
-    }
-    function acClose() {aDrop().classList.remove('show'); acCurrent = null; acIdx = -1; acItems = []}
 
-    /* ---- source 1 : historique local ---- */
+    /* ---------- position de l'appareil ---------- */
+    let _geo = null;
+    (function loadGeo() {
+      try {
+        const g = JSON.parse(localStorage.getItem(LS_GEO) || 'null');
+        if (g && Date.now() - g.t < GEO_TTL) _geo = g;
+      } catch (e) { }
+    })();
+    let geoAsked = false;
+    function askGeo() {
+      if (geoAsked || _geo || !navigator.geolocation) return;
+      geoAsked = true; // une seule invite par session, jamais bloquante
+      try {
+        navigator.geolocation.getCurrentPosition(
+          p => {
+            _geo = {lat: p.coords.latitude, lon: p.coords.longitude, t: Date.now()};
+            try {localStorage.setItem(LS_GEO, JSON.stringify(_geo))} catch (e) { }
+            acCache.clear(); // les distances changent tout le classement
+          },
+          () => { }, // refus ou échec : on continue sans biais de proximité
+          {enableHighAccuracy: false, timeout: 8000, maximumAge: 600000}
+        );
+      } catch (e) { }
+    }
+    function haversine(a, b, c, d) {
+      const R = 6371, t = Math.PI / 180;
+      const dLa = (c - a) * t, dLo = (d - b) * t;
+      const h = Math.sin(dLa / 2) ** 2 + Math.cos(a * t) * Math.cos(c * t) * Math.sin(dLo / 2) ** 2;
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+    function distOf(x) {
+      if (!_geo || x.lat == null || x.lon == null) return null;
+      return haversine(_geo.lat, _geo.lon, x.lat, x.lon);
+    }
+    function fmtDist(km) {
+      if (km == null) return '';
+      if (km < 1) return Math.round(km * 1000) + ' m';
+      if (km < 10) return km.toFixed(1).replace('.', ',') + ' km';
+      return Math.round(km) + ' km';
+    }
+
+    /* ---------- frecency de l'historique ---------- */
+    function freqMap() {try {return JSON.parse(localStorage.getItem(LS_FREQ) || '{}')} catch (e) {return {}} }
+    function bumpAddr(full) {
+      if (!full || full.trim().length < 5) return;
+      const m = freqMap(), k = norm(full);
+      const e = m[k] || {n: 0, t: 0, v: full};
+      e.n++; e.t = Date.now(); e.v = full; m[k] = e;
+      const keys = Object.keys(m);
+      if (keys.length > 300) {           // purge : les moins utilisées/plus vieilles
+        keys.sort((a, b) => (m[a].n - m[b].n) || (m[a].t - m[b].t));
+        keys.slice(0, keys.length - 300).forEach(x => delete m[x]);
+      }
+      try {localStorage.setItem(LS_FREQ, JSON.stringify(m))} catch (e) { }
+      _hist = null;
+    }
+    /* score = usages, atténué par l'ancienneté (demi-vie ~30 jours) */
+    function frecency(e) {
+      if (!e) return 0;
+      const days = (Date.now() - (e.t || 0)) / 86400000;
+      return (e.n || 1) * Math.pow(0.5, days / 30);
+    }
+
+    /* ---------- source 1 : historique local ---------- */
     function histList() {
       if (_hist) return _hist;
-      const m = new Map();
-      const add = e => {const a = ((e && e.adresse) || '').trim(); if (a.length > 5 && !isOff(e.type)) m.set(norm(a), a)};
+      const m = new Map(), f = freqMap();
+      const add = e => {
+        const a = ((e && e.adresse) || '').trim();
+        if (a.length > 5 && !isOff(e.type)) m.set(norm(a), a);
+      };
       ((state && state.entries) || []).forEach(add);
       getArch().forEach(w => (w.entries || []).forEach(add));
-      _hist = [...m.values()];
+      Object.keys(f).forEach(k => {if (!m.has(k)) m.set(k, f[k].v)});
+      _hist = [...m.entries()].map(([k, v]) => ({k, v, s: frecency(f[k])}))
+        .sort((a, b) => b.s - a.s);
       return _hist;
     }
-    function histMatch(q) {
+    function histToSug(h) {
+      const i = h.v.indexOf(',');
+      return {
+        label: i > 0 ? h.v.slice(0, i) : h.v,
+        sub: (i > 0 ? h.v.slice(i + 1).trim() : ''),
+        full: h.v, src: 'hist', kind: 'recent', score: h.s
+      };
+    }
+    /* skip : normalisation du texte en cours de frappe. Sans ça, la saisie
+       partielle enregistrée dans e.adresse se réaffichait comme « récente ». */
+    function histMatch(q, lim, skip) {
       const t = norm(q).split(' ').filter(Boolean);
       if (!t.length) return [];
-      return histList().filter(a => {const n = norm(a); return t.every(x => n.indexOf(x) >= 0)})
-        .slice(0, 3).map(a => {
-          const i = a.indexOf(',');
-          return {
-            label: i > 0 ? a.slice(0, i) : a,
-            sub: (i > 0 ? a.slice(i + 1).trim() + ' · ' : '') + 'déjà utilisée',
-            full: a, src: 'hist'
-          };
-        });
+      return histList().filter(h => h.k !== skip && t.every(x => h.k.indexOf(x) >= 0))
+        .slice(0, lim || 3).map(histToSug);
+    }
+    function histRecent(lim, skip) {
+      return histList().filter(h => h.k !== skip).slice(0, lim || 5).map(histToSug);
     }
 
-    /* ---- source 2 : Adresses Québec ---- */
+    /* ---------- source 2 : Adresses Québec ---------- */
     const PC = /([A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d)/;
-    function aqMap(text, city, zip) {
+    function aqMap(text, city, zip, loc) {
       if (!text) return null;
       const i = text.indexOf(',');
       let label = i > 0 ? text.slice(0, i) : text;
@@ -2273,127 +2452,274 @@
       // "Boulevard Décarie (Saint-Laurent)" → la parenthèse est le secteur de la rue
       const bor = (/\(([^)]+)\)/.exec(label) || [])[1] || '';
       label = label.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
-      const cty = (city || tail.replace(PC, '').trim()).trim();
+      const cty = (city || tail.replace(PC, '')).replace(/[,\s]+$/, '').replace(/^[,\s]+/, '').trim();
       let pc = zip || (PC.exec(tail) || [])[1] || '';
       if (pc) pc = pc.replace(/\s/g, '').toUpperCase().replace(/^(.{3})(.{3})$/, '$1 $2');
       const sub = [(bor && norm(bor) !== norm(cty)) ? bor : '', cty, pc].filter(Boolean).join(', ');
       const full = [label, cty ? cty + ' QC' : ''].filter(Boolean).join(', ');
-      return {label, sub, full, src: 'aq'};
+      return {
+        label, sub, full, src: 'aq', kind: 'address',
+        lat: loc ? loc.y : null, lon: loc ? loc.x : null
+      };
     }
     async function aqSuggest(q, signal) {
-      const r = await fetch(AQ + '/suggest?text=' + encodeURIComponent(q) + '&maxSuggestions=6&f=json',
-        {headers: {Accept: 'application/json'}, signal});
+      let u = AQ + '/suggest?text=' + encodeURIComponent(q) + '&maxSuggestions=6&f=json';
+      if (_geo) u += '&location=' + _geo.lon + ',' + _geo.lat + '&distance=40000';
+      const r = await fetch(u, {headers: {Accept: 'application/json'}, signal});
       const d = await r.json();
-      return (d.suggestions || []).map(x => aqMap(x.text, '', '')).filter(Boolean);
+      return (d.suggestions || []).map(x => aqMap(x.text, '', '', null)).filter(Boolean);
     }
     async function aqFind(q, signal) {
-      const r = await fetch(AQ + '/findAddressCandidates?SingleLine=' + encodeURIComponent(q) +
-        '&f=json&maxLocations=6&outFields=City,ZIP', {headers: {Accept: 'application/json'}, signal});
+      // outSR=4326 : coordonnées WGS84 exploitables pour la distance
+      let u = AQ + '/findAddressCandidates?SingleLine=' + encodeURIComponent(q) +
+        '&f=json&maxLocations=6&outFields=City,ZIP&outSR=4326';
+      if (_geo) u += '&location=' + _geo.lon + ',' + _geo.lat + '&distance=40000';
+      const r = await fetch(u, {headers: {Accept: 'application/json'}, signal});
       const d = await r.json();
       return (d.candidates || []).filter(c => (c.score || 0) >= 60).map(c => {
         const a = c.attributes || {};
-        return aqMap(c.address || a.Match_addr || '', a.City || '', a.ZIP || '');
+        return aqMap(c.address || a.Match_addr || '', a.City || '', a.ZIP || '', c.location);
       }).filter(Boolean);
     }
 
-    /* ---- source 3 : Photon / OSM ---- */
+    /* ---------- source 3 : Photon / OSM (commerces, écoles, POI) ---------- */
+    /* le type OSM décide de l'icône : un technicien en alarme incendie cherche
+       autant des bâtiments nommés (école, CHSLD, caserne) que des numéros civiques */
+    function osmKind(pr) {
+      const k = pr.osm_key, v = pr.osm_value;
+      if (k === 'amenity') {
+        if (v === 'fire_station') return 'fire';
+        if (['hospital', 'clinic', 'doctors', 'pharmacy', 'nursing_home', 'social_facility'].indexOf(v) >= 0) return 'hosp';
+        if (['school', 'college', 'university', 'kindergarten', 'library'].indexOf(v) >= 0) return 'school';
+        if (['restaurant', 'cafe', 'fast_food', 'bar', 'pub', 'bank', 'fuel'].indexOf(v) >= 0) return 'shop';
+        return 'poi';
+      }
+      if (k === 'shop') return 'shop';
+      if (k === 'office' || k === 'craft') return 'office';
+      if (k === 'building') return 'build';
+      if (k === 'healthcare') return 'hosp';
+      if (k === 'highway' || k === 'place') return 'address';
+      return pr.housenumber ? 'address' : 'poi';
+    }
     async function photonQuery(q, signal) {
-      const url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(q) +
-        '&limit=8&lang=fr&lat=45.50&lon=-73.57' +
-        '&bbox=-79.8,44.9,-57.0,62.6'; // Québec + est du Canada, écarte France/Guadeloupe
+      let url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(q) +
+        '&limit=10&lang=fr&bbox=-79.8,44.9,-57.0,62.6'; // Québec + est du Canada
+      // biais de proximité : Photon classe autour de ce point
+      url += _geo ? ('&lat=' + _geo.lat.toFixed(4) + '&lon=' + _geo.lon.toFixed(4))
+        : '&lat=45.50&lon=-73.57';
       const r = await fetch(url, {headers: {Accept: 'application/json'}, signal});
       const data = await r.json();
       return (data.features || []).filter(f => {
-        const t = f.properties.type; const cc = f.properties.countrycode;
+        const t = f.properties.type, cc = f.properties.countrycode;
         if (cc && cc !== 'CA') return false;
         return t !== 'country' && t !== 'state';
       }).map(f => {
-        const pr = f.properties;
-        const street = pr.street || pr.name || '';
+        const pr = f.properties, co = (f.geometry || {}).coordinates || [];
+        const street = pr.street || '';
         const num = pr.housenumber || '';
-        const main = (num ? num + ' ' : '') + street || pr.name || '';
+        const named = pr.name && (!street || norm(pr.name) !== norm(street));
+        const addr = (num ? num + ' ' : '') + street;
+        const label = named ? pr.name : (addr || pr.name || '');
         const city = pr.city || pr.town || pr.village || pr.county || '';
-        const label = main || [pr.name, city].filter(Boolean).join(', ');
-        const sub = [pr.district, city, pr.state, pr.postcode].filter(Boolean).join(', ');
+        // un POI nommé garde son adresse en sous-titre : "École X · 12 rue Y, Montréal"
+        const sub = [named && addr ? addr : '', pr.district, city, pr.postcode]
+          .filter(Boolean).join(', ');
         const cityProv = [city, pr.state === 'Québec' ? 'QC' : pr.state].filter(Boolean).join(' ');
-        const full = [label, cityProv].filter(Boolean).join(', ');
-        return {label, sub, full, src: 'osm'};
-      });
+        const full = [named && addr ? (pr.name + ', ' + addr) : label, cityProv]
+          .filter(Boolean).join(', ');
+        return {
+          label, sub, full, src: 'osm', kind: osmKind(pr),
+          lat: co[1] != null ? co[1] : null, lon: co[0] != null ? co[0] : null
+        };
+      }).filter(x => x.label);
     }
 
-    /* ---- fusion + classement ---- */
-    const SRC_RANK = {hist: 0, aq: 1, osm: 2};
+    /* ---------- fusion + classement ----------
+       Un seul score, pour que l'ordre soit explicable :
+         numéro civique demandé et trouvé   −40
+         entrée déjà utilisée (frecency)    −12 … −30
+         source (AQ officiel > OSM)         +0 / +3
+         distance réelle                    +0,35 / km (plafonné)
+       Plus le score est bas, plus haut dans la liste.                    */
+    const SRC_BASE = {hist: 0, aq: 2, osm: 5};
+    const FAR_KM = 60;   // au-delà, ce n'est plus un appel de service plausible
+    function scoreSug(x, num) {
+      let s = SRC_BASE[x.src] == null ? 8 : SRC_BASE[x.src];
+      if (num && startsWithNum(x.label, num)) s -= 40;
+      if (x.src === 'hist') s -= Math.min(30, 12 + (x.score || 0) * 6);
+      const d = distOf(x);
+      x.dist = d;
+      if (d != null) {
+        s += Math.min(14, d * 0.35);
+        /* falaise : sans elle, un homonyme à 233 km qui porte le bon numéro
+           civique passait devant un bâtiment à 500 m, la pénalité de distance
+           étant plafonnée bien en dessous du bonus de numéro. */
+        if (d > FAR_KM) s += 40;
+      } else if (_geo && x.src !== 'hist') s += 3; // sans coordonnées, léger recul
+      return s;
+    }
     function mergeSug(lists, q) {
-      const num = doorNum(q), seen = new Set(), all = [];
+      const num = doorNum(q), seen = new Map(), all = [];
       [].concat.apply([], lists).forEach(x => {
         if (!x || !x.full || !x.label) return;
         const k = norm(x.full);
-        if (!k || seen.has(k)) return; seen.add(k);
-        x._n = num ? (startsWithNum(x.label, num) ? 0 : 1) : 0; // numéro civique demandé = priorité
-        x._r = SRC_RANK[x.src] === undefined ? 3 : SRC_RANK[x.src];
-        all.push(x);
-      });
-      /* d'abord les adresses au bon numéro civique, puis le reste ; à l'intérieur de
-         chaque groupe on alterne les sources — sinon AQ prend les 6 places et masque
-         les arrondissements que seul OSM connaît (ex. « ... Lachine »). */
-      const out = [];
-      [0, 1].forEach(n => {
-        const buckets = [[], [], [], []];
-        all.forEach(x => {if (x._n === n) buckets[x._r].push(x)});
-        for (let go = true; go;) {
-          go = false;
-          for (const b of buckets) if (b.length) {out.push(b.shift()); go = true}
+        if (!k) return;
+        if (seen.has(k)) {                       // doublon : garder le plus informatif
+          const prev = seen.get(k);
+          if (x.lat != null && prev.lat == null) {prev.lat = x.lat; prev.lon = x.lon}
+          if (!prev.sub && x.sub) prev.sub = x.sub;
+          return;
         }
+        seen.set(k, x); all.push(x);
       });
-      return out.slice(0, 6);
+      all.forEach(x => {x._s = scoreSug(x, num)});
+      all.sort((a, b) => a._s - b._s);
+      return all.slice(0, AC_MAX);
     }
 
-    function acPaint(list, input, onSelect) {
-      const d = aDrop();
-      d.innerHTML = ''; acItems = []; acIdx = -1;
+    /* ---------- rendu ---------- */
+    const KIND_ICON = {
+      recent: 'hist', address: 'pin', poi: 'pin', shop: 'store',
+      school: 'school', hosp: 'hosp', fire: 'flame', office: 'office', build: 'build'
+    };
+    function aDrop() {return $('addrDrop')}
+    /* met en gras chaque mot tapé là où il apparaît */
+    function markMatch(text, q) {
+      const toks = norm(q).split(' ').filter(t => t.length > 1);
+      if (!toks.length) return esc(text);
+      const nt = norm(text);
+      // norm() peut changer la longueur (accents composés) — on retombe sur
+      // l'original si les index ne s'alignent plus, plutôt que de couper de travers
+      if (nt.length !== text.length) {
+        let out = esc(text);
+        toks.forEach(t => {
+          const re = new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+          out = out.replace(re, '<b>$1</b>');
+        });
+        return out;
+      }
+      const hit = new Array(text.length).fill(false);
+      toks.forEach(t => {
+        let i = nt.indexOf(t);
+        while (i >= 0) {for (let j = i; j < i + t.length; j++) hit[j] = true; i = nt.indexOf(t, i + 1)}
+      });
+      let out = '', on = false;
+      for (let i = 0; i < text.length; i++) {
+        if (hit[i] && !on) {out += '<b>'; on = true}
+        else if (!hit[i] && on) {out += '</b>'; on = false}
+        out += esc(text[i]);
+      }
+      return out + (on ? '</b>' : '');
+    }
+    function acPos(input) {
+      const d = aDrop(), r = input.getBoundingClientRect();
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const below = vh - r.bottom - 8, above = r.top - 8;
+      const h = Math.min(320, d.scrollHeight || 320);
+      d.style.left = r.left + 'px'; d.style.width = r.width + 'px';
+      if (below >= h || below >= above) {
+        d.style.top = (r.bottom + 6) + 'px'; d.style.bottom = 'auto';
+        d.style.maxHeight = Math.max(140, below) + 'px';
+      } else {
+        d.style.top = 'auto'; d.style.bottom = (vh - r.top + 6) + 'px';
+        d.style.maxHeight = Math.max(140, above) + 'px';
+      }
+    }
+    function acClose() {
+      aDrop().classList.remove('show', 'busy');
+      acCurrent = null; acIdx = -1; acItems = []; acOnSelect = null;
+    }
+    function acPick(full) {
+      if (!acCurrent || !acOnSelect) return;
+      acCurrent.value = full; acOnSelect(full); bumpAddr(full); acClose();
+    }
+    function acPaint(list, input, onSelect, q, opts) {
+      const d = aDrop(), o = opts || {};
+      acCurrent = input; acOnSelect = onSelect;
+      d.innerHTML = '';
+      acItems = []; acIdx = -1;
+
+      if (o.head) {
+        const h = document.createElement('div');
+        h.className = 'addr-head'; h.textContent = o.head;
+        d.appendChild(h);
+      }
+      if (!list.length) {
+        const e = document.createElement('div');
+        e.className = 'addr-none';
+        e.textContent = o.busy ? 'Recherche…' : 'Aucune adresse trouvée';
+        d.appendChild(e);
+      }
       list.forEach(sg => {
         const div = document.createElement('div');
         div.className = 'addr-sug' + (sg.src === 'hist' ? ' hist' : '');
-        div.innerHTML = '<div class="sug-main">' + (sg.src === 'hist' ? ico('hist', 13) : '') + '<span>' + esc(sg.label) + '</span></div>' +
-          (sg.sub ? '<div class="sug-sub">' + esc(sg.sub) + '</div>' : '');
-        div.onmousedown = ev => {ev.preventDefault(); input.value = sg.full; onSelect(sg.full); acClose()};
+        const dist = sg.dist != null ? '<span class="sug-d mono">' + fmtDist(sg.dist) + '</span>' : '';
+        div.innerHTML =
+          '<span class="sug-ic">' + ico(KIND_ICON[sg.kind] || 'pin', 17) + '</span>' +
+          '<span class="sug-t"><span class="sug-main">' + markMatch(sg.label, q || '') + '</span>' +
+          (sg.sub ? '<span class="sug-sub">' + esc(sg.sub) + '</span>' : '') + '</span>' + dist;
+        // mousedown : se déclenche avant le blur du champ, sinon le menu ferme avant le clic
+        div.onmousedown = ev => {ev.preventDefault(); acPick(sg.full)};
         d.appendChild(div);
         acItems.push({el: div, full: sg.full});
       });
+
       const srcs = [];
       if (list.some(x => x.src === 'aq')) srcs.push('Adresses Québec');
       if (list.some(x => x.src === 'osm')) srcs.push('OpenStreetMap');
-      const attr = document.createElement('div'); attr.className = 'addr-attr';
-      attr.textContent = srcs.length ? '© ' + srcs.join(' · ') : 'historique local';
+      const attr = document.createElement('div');
+      attr.className = 'addr-attr';
+      attr.textContent = srcs.length ? '© ' + srcs.join(' · ')
+        : (list.length ? 'historique local' : '');
       d.appendChild(attr);
-      acPos(input); d.classList.add('show'); acCurrent = input;
+
+      d.classList.toggle('busy', !!o.busy);
+      d.classList.add('show');
+      acPos(input);
     }
     function acHighlight(i) {
       acItems.forEach((it, k) => it.el.classList.toggle('sel', k === i));
       if (acItems[i]) acItems[i].el.scrollIntoView({block: 'nearest'});
     }
+    function setBusy(on) {
+      acBusy = on;
+      if (aDrop().classList.contains('show')) aDrop().classList.toggle('busy', on);
+    }
 
+    /* ---------- récupération ---------- */
+    function cacheGet(k) {
+      if (!acCache.has(k)) return null;
+      const v = acCache.get(k);
+      acCache.delete(k); acCache.set(k, v);  // LRU : remis en tête
+      return v;
+    }
+    function cacheSet(k, v) {
+      acCache.set(k, v);
+      if (acCache.size > AC_CACHE_MAX) acCache.delete(acCache.keys().next().value);
+    }
     async function acFetch(q, input, onSelect) {
-      // annule la requête en vol ; le compteur de séquence jette les réponses périmées
       if (acCtl) acCtl.abort();
       acCtl = new AbortController();
-      const sig = acCtl.signal;
-      const seq = ++acSeq;
-      const hist = histMatch(q);
+      const sig = acCtl.signal, seq = ++acSeq;
+      const key = norm(q);
+      const cached = cacheGet(key);
+      if (cached) {acLastQ = q; acLastList = cached; acPaint(cached, input, onSelect, q); return }
+
+      const hist = histMatch(q, 3, norm(q));
       const num = doorNum(q);
-      // un numéro seul ne vaut pas un appel réseau
-      if (/^\d+$/.test(q.trim())) {
-        if (hist.length) acPaint(hist, input, onSelect); else acClose();
+      if (/^\d+$/.test(q.trim())) {           // un numéro seul ne vaut pas un appel réseau
+        acPaint(hist, input, onSelect, q, {head: hist.length ? 'Récentes' : ''});
         return;
       }
-      const qx = expandQ(q); // st → saint, boul → boulevard, …
+      setBusy(true);
+      const qx = expandQ(q);                  // st → saint, boul → boulevard, …
       try {
         const res = await Promise.allSettled([aqSuggest(qx, sig), aqFind(qx, sig), photonQuery(qx, sig)]);
-        if (seq !== acSeq) return; // une frappe plus récente a pris le relais
+        if (seq !== acSeq) return;            // une frappe plus récente a pris le relais
         const [sg, fa, ph] = res.map(r => r.status === 'fulfilled' ? r.value : []);
         let list = mergeSug([hist, sg, fa, ph], q);
         // 2e passe : arrondissement de Montréal en fin de requête → réessayer sur "Montréal"
-        if (num && !list.some(x => x._n === 0)) {
+        if (num && !list.some(x => startsWithNum(x.label, num))) {
           const alt = boroughSwap(qx);
           if (alt) {
             let more = [];
@@ -2403,39 +2729,89 @@
             if (more.length) list = mergeSug([hist, more, sg, fa, ph], q);
           }
         }
-        if (!list.length) {acClose(); return }
-        acPaint(list, input, onSelect);
+        setBusy(false);
+        cacheSet(key, list);
+        acLastQ = q; acLastList = list;
+        acPaint(list, input, onSelect, q);
       } catch (e) {
-        if (e && e.name === 'AbortError') return; // remplacée, pas une erreur
-        if (hist.length) acPaint(hist, input, onSelect); else acClose();
+        if (e && e.name === 'AbortError') return;  // remplacée, pas une erreur
+        setBusy(false);
+        acPaint(hist, input, onSelect, q, {head: hist.length ? 'Récentes' : ''});
       }
     }
+
+    /* filtrage optimiste : en continuant de taper, on affiche immédiatement le
+       sous-ensemble du résultat précédent au lieu d'un menu vide ou figé */
+    function optimistic(q) {
+      if (!acLastList.length || !acLastQ) return null;
+      if (norm(q).indexOf(norm(acLastQ)) !== 0) return null;
+      const t = norm(q).split(' ').filter(Boolean);
+      const sub = acLastList.filter(x => {
+        const n = norm(x.label + ' ' + (x.sub || ''));
+        return t.every(w => n.indexOf(w) >= 0);
+      });
+      return sub.length ? sub : null;
+    }
+
     function acBind(input, onSelect) {
-      const pick = val => {input.value = val; onSelect(val)};
       input.oninput = ev => {
-        onSelect(ev.target.value); // sauvegarde continue
+        onSelect(ev.target.value);            // sauvegarde continue
         clearTimeout(acTimer);
         const q = ev.target.value.trim();
-        if (q.length < 3) {acClose(); return }
-        acTimer = setTimeout(() => acFetch(q, input, onSelect), 260);
+        if (q.length < 3) {
+          if (!q.length && document.activeElement === input) {
+            const rec = histRecent(5, norm(input.value || ''));
+            if (rec.length) {acPaint(rec, input, onSelect, '', {head: 'Récentes'}); return }
+          }
+          acClose(); return;
+        }
+        const cached = cacheGet(norm(q));
+        if (cached) {                          // déjà connu : aucun délai
+          acLastQ = q; acLastList = cached;
+          acPaint(cached, input, onSelect, q);
+        } else {
+          const opt = optimistic(q);
+          if (opt) acPaint(opt, input, onSelect, q, {busy: true});
+        }
+        acTimer = setTimeout(() => acFetch(q, input, onSelect), AC_DEBOUNCE);
       };
       input.onkeydown = ev => {
-        if (!aDrop().classList.contains('show') || !acItems.length) return;
+        const open = aDrop().classList.contains('show');
+        if (ev.key === 'ArrowDown' && !open) {  // ↓ sur un champ vide ouvre les récentes
+          const rec = histRecent(5, norm(input.value || ''));
+          if (rec.length) {ev.preventDefault(); acPaint(rec, input, onSelect, '', {head: 'Récentes'})}
+          return;
+        }
+        if (!open || !acItems.length) return;
         if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
-          ev.preventDefault();
+          ev.preventDefault();                  // navigation circulaire
+          const n = acItems.length;
           acIdx = ev.key === 'ArrowDown'
-            ? Math.min(acIdx + 1, acItems.length - 1)
-            : Math.max(acIdx - 1, 0);
+            ? (acIdx + 1) % n
+            : (acIdx <= 0 ? n - 1 : acIdx - 1);
           acHighlight(acIdx);
         } else if (ev.key === 'Enter' && acIdx >= 0) {
-          ev.preventDefault(); pick(acItems[acIdx].full); acClose();
+          ev.preventDefault(); acPick(acItems[acIdx].full);
         } else if (ev.key === 'Tab' && acIdx >= 0) {
-          // Tab valide la suggestion surlignée puis continue la tabulation
-          pick(acItems[acIdx].full); acClose();
-        } else if (ev.key === 'Escape') {acClose()}
+          acPick(acItems[acIdx].full);          // valide puis laisse filer la tabulation
+        } else if (ev.key === 'Escape') {
+          ev.stopPropagation(); acClose();
+        }
       };
-      input.onfocus = () => {if ((input.value || '').trim().length >= 3) {acPos(input); aDrop().classList.add('show')} };
-      input.onblur = () => setTimeout(acClose, 180);
+      input.onfocus = () => {
+        askGeo();                               // demandée au 1er focus, jamais bloquante
+        const q = (input.value || '').trim();
+        if (q.length >= 3) {
+          const c = cacheGet(norm(q));
+          if (c) acPaint(c, input, onSelect, q);
+        } else if (!q.length) {
+          const rec = histRecent(5, norm(input.value || ''));
+          if (rec.length) acPaint(rec, input, onSelect, '', {head: 'Récentes'});
+        }
+      };
+      input.onblur = () => setTimeout(() => {
+        if (document.activeElement !== input) acClose();
+      }, 180);
     }
     document.addEventListener('click', () => acClose());
     document.addEventListener('scroll', () => acCurrent && acPos(acCurrent), true);
@@ -2533,7 +2909,7 @@
       if (addr) acBind(addr, val => {e.adresse = val; save()});
       /* note : le bouton ✎ ouvre le champ ; rouvrir un champ vide le referme */
       card.querySelector('.nt').onclick = () => {
-        if (noteOpen.has(e.id) && !entryNote(e)) {noteOpen.delete(e.id); render(); return}
+        if (noteOpen.has(e.id) && !entryNote(e)) {noteOpen.delete(e.id); render(); return }
         noteOpen.add(e.id); render();
         const t = document.querySelector('.entry[data-eid="' + e.id + '"] .f-note');
         if (t) {t.focus(); t.setSelectionRange(t.value.length, t.value.length)}
