@@ -255,6 +255,10 @@
       color: var(--off)
     }
 
+    .readout .split .k {
+      color: var(--desk)
+    }
+
     /* ---------- day rail: the panel readout / day picker ---------- */
     .rail {
       display: grid;
@@ -1193,6 +1197,101 @@
       margin-top: 5px
     }
 
+    /* ---------- kilométrage du jour ---------- */
+    .km {
+      margin-top: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 12px
+    }
+
+    .km .khead {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px
+    }
+
+    .km .khead label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--dim);
+      font-weight: 700
+    }
+
+    .km .khead .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--desk);
+      box-shadow: 0 0 7px var(--desk);
+      opacity: 0
+    }
+
+    .km.filled .khead .dot {
+      opacity: 1
+    }
+
+    .km .kclr {
+      margin-left: auto;
+      border: none;
+      background: transparent;
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 4px;
+      display: none
+    }
+
+    .km.filled .kclr {
+      display: block
+    }
+
+    .km .kclr:active {
+      color: var(--warn)
+    }
+
+    .km .kd {
+      margin-left: auto;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--desk);
+      white-space: nowrap
+    }
+
+    .km .kclr+.kd {
+      margin-left: 0
+    }
+
+    .km .kd.none {
+      color: var(--faint)
+    }
+
+    .km .kd.bad {
+      color: var(--warn)
+    }
+
+    .km .krow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px
+    }
+
+    .km .khint {
+      font-size: 11px;
+      color: var(--faint);
+      margin-top: 7px;
+      line-height: 1.45
+    }
+
+    .km .khint.bad {
+      color: var(--warn)
+    }
+
     /* ---------- note attachée à une entrée ---------- */
     .entry .nrow {
       margin-top: 9px
@@ -1888,6 +1987,34 @@
       }
       rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, "Total d'heures", 3) + xc('C', r, '', 3) + xc('D', r, tt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
 
+      /* ---- bloc KILOMÉTRAGE : relevés d'odomètre et distance par jour ----
+             Placé après les totaux d'heures, sur la même grille A:E. ---- */
+      const kms = data.km || {};
+      const kmRows = [];
+      for (const day of DAYS) {
+        const k = kms[day] || {};
+        const ks = k.s == null ? '' : String(k.s).trim();
+        const ke = k.e == null ? '' : String(k.e).trim();
+        if (!ks && !ke) continue;
+        const dd = (isNum(ks) && isNum(ke)) ? round2(parseFloat(ke) - parseFloat(ks)) : '';
+        kmRows.push({day, s: ks, e: ke, d: dd});
+      }
+      if (kmRows.length) {
+        rows.push('<row r="' + r + '"></row>'); r++;
+        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, 'KILOMÉTRAGE', 2) + xc('B', r, '', 2) + xc('C', r, '', 2) + xc('D', r, '', 2) + xc('E', r, '', 2) + '</row>');
+        merges.push('A' + r + ':E' + r); r++;
+        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, 'JOUR', 2) + xc('B', r, 'ODOMÈTRE DÉBUT', 2) + xc('C', r, 'ODOMÈTRE FIN', 2) + xc('D', r, 'DISTANCE (KM)', 2) + xc('E', r, '', 2) + '</row>'); r++;
+        let kt = 0;
+        for (const k of kmRows) {
+          if (k.d !== '' && k.d > 0) kt += k.d;
+          rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, k.day, 2) +
+            xc('B', r, k.s, 3, isNum(k.s)) + xc('C', r, k.e, 3, isNum(k.e)) +
+            xc('D', r, k.d, 3, k.d !== '') + xc('E', r, '', 4) + '</row>'); r++;
+        }
+        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, 'Total km', 3) + xc('C', r, '', 3) + xc('D', r, round2(kt), 3, true) + xc('E', r, '', 0) + '</row>');
+        merges.push('B' + r + ':C' + r); r++;
+      }
+
       /* ---- bloc NOTES : une ligne par entrée annotée, dans l'ordre des jours.
              La grille A:E du rapport reste intacte — pas de 6e colonne. ---- */
       const nts = data.notes || {};
@@ -1951,7 +2078,7 @@
     const noteOpen = new Set(); // entrées dont le champ note est ouvert mais encore vide
 
     function monday(d) {const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0, 0, 0, 0); return x}
-    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}}}
+    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}, km: {}}}
     /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser.
        Migration : une note de jour (ancien format) est rattachée à la 1re entrée
        du jour. Si le jour n'a aucune entrée, elle reste dans w.notes (orpheline)
@@ -1960,6 +2087,16 @@
       if (!w || typeof w !== 'object') return w;
       if (!w.notes || typeof w.notes !== 'object' || Array.isArray(w.notes)) w.notes = {};
       if (!Array.isArray(w.entries)) w.entries = [];
+      /* kilométrage : {jour: {s: odomètre début, e: odomètre fin}} — absent des
+         anciennes sauvegardes et des JSON importés avant cette version. */
+      if (!w.km || typeof w.km !== 'object' || Array.isArray(w.km)) w.km = {};
+      DAYS.forEach(d => {
+        const k = w.km[d];
+        if (!k || typeof k !== 'object') {delete w.km[d]; return}
+        const ks = String(k.s == null ? '' : k.s).trim();
+        const ke = String(k.e == null ? '' : k.e).trim();
+        if (!ks && !ke) delete w.km[d]; else w.km[d] = {s: ks, e: ke};
+      });
       DAYS.forEach(d => {
         const t = String(w.notes[d] || '').trim();
         if (!t) {delete w.notes[d]; return}
@@ -1986,6 +2123,35 @@
     function hasDayNote(day) {return !!String(dayNote(day)).trim()}
     function hasNote(day) {
       return hasDayNote(day) || state.entries.some(e => e.jour === day && entryNote(e));
+    }
+
+    /* ---- kilométrage : odomètre au départ et au retour ----
+       On stocke les deux relevés bruts, jamais la distance : elle se recalcule,
+       et un chiffre mal tapé reste corrigeable sans refaire le calcul à la main.
+       state.km[jour] = {s: début, e: fin} — la clé disparaît si les deux sont vides. */
+    function kmOf(day) {
+      const k = (state.km && state.km[day]) || {};
+      return {s: k.s == null ? '' : String(k.s), e: k.e == null ? '' : String(k.e)};
+    }
+    function setKm(day, f, v) {
+      if (!state.km) state.km = {};
+      const cur = kmOf(day);
+      cur[f] = String(v).replace(',', '.').trim();
+      if (!cur.s && !cur.e) delete state.km[day]; else state.km[day] = cur;
+    }
+    function kmDist(day) {
+      const k = kmOf(day);
+      if (!isNum(k.s) || !isNum(k.e)) return null;
+      return round2(parseFloat(k.e) - parseFloat(k.s));
+    }
+    function hasKmDay(day) {const k = kmOf(day); return !!(k.s || k.e)}
+    function hasKm() {return DAYS.some(hasKmDay)}
+    /* seules les journées complètes et cohérentes comptent dans le total :
+       un écart négatif est une faute de saisie, pas un kilométrage. */
+    function kmTotal() {
+      let t = 0;
+      DAYS.forEach(d => {const v = kmDist(d); if (v != null && v > 0) t += v});
+      return round2(t);
     }
 
     /* ---- Appel de service temps double : toujours en fin de journée ----
@@ -2113,8 +2279,10 @@
     function paintTotals() {
       const t = splitTotals();
       $('totVal').innerHTML = t.tot + '<small>h</small>';
+      const km = kmTotal();
       $('splitOut').innerHTML = 'rég <b>' + t.reg + '</b> h · <span class="d">×2 <b>' + t.dbl + '</b> h</span>' +
-        (t.off ? ' · <span class="o">abs <b>' + t.off + '</b> h</span>' : '');
+        (t.off ? ' · <span class="o">abs <b>' + t.off + '</b> h</span>' : '') +
+        (km ? ' · <span class="k">km <b>' + km + '</b></span>' : '');
     }
     function render() {
       const keep = snapFocus();
@@ -2174,6 +2342,7 @@
         row.appendChild(add); row.appendChild(addO);
         grp.appendChild(row);
         if (hasDayNote(day)) grp.appendChild(notesEl(day)); // note orpheline seulement
+        grp.appendChild(kmEl(day));
         main.appendChild(grp);
       });
       sizeNotes();
@@ -2181,6 +2350,71 @@
 
       restoreFocus(keep);
       if (focusDay) {const g = main.querySelector('.daygroup[data-day="' + focusDay + '"]'); if (g) g.scrollIntoView({behavior: 'smooth', block: 'center'}); focusDay = null}
+    }
+
+    /* ---- carte kilométrage : relevé d'odomètre début / fin de journée ----
+       La distance n'est pas un champ : la saisir en plus des deux relevés
+       permettrait aux trois nombres de se contredire. Elle est affichée,
+       et un écart négatif est signalé au lieu d'être compté. */
+    function kmEl(day) {
+      const wrap = document.createElement('div');
+      const k = kmOf(day);
+      wrap.className = 'km' + (hasKmDay(day) ? ' filled' : '');
+      wrap.innerHTML =
+        '<div class="khead"><span class="dot"></span>' +
+        '<label>Kilométrage — ' + day.toLowerCase() + '</label>' +
+        '<button class="kclr" type="button">Effacer</button>' +
+        '<span class="kd mono"></span></div>' +
+        '<div class="krow">' +
+        '<div class="mini"><label>Odomètre — début</label>' +
+        '<input class="f-km-s mono" type="text" inputmode="decimal" autocomplete="off" ' +
+        'data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="0" value="' + escAttr(k.s) + '"></div>' +
+        '<div class="mini"><label>Odomètre — fin</label>' +
+        '<input class="f-km-e mono" type="text" inputmode="decimal" autocomplete="off" ' +
+        'data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="0" value="' + escAttr(k.e) + '"></div>' +
+        '</div><div class="khint"></div>';
+      const kd = wrap.querySelector('.kd'), hint = wrap.querySelector('.khint');
+      const paint = () => {
+        const cur = kmOf(day), d = kmDist(day);
+        wrap.classList.toggle('filled', hasKmDay(day));
+        kd.classList.remove('bad', 'none');
+        hint.classList.remove('bad');
+        if (d == null) {
+          kd.textContent = '— km'; kd.classList.add('none');
+          hint.textContent = (cur.s || cur.e) ? 'Entrer les deux relevés pour obtenir la distance.' : '';
+        } else if (d < 0) {
+          kd.textContent = d + ' km'; kd.classList.add('bad');
+          hint.textContent = 'Fin inférieure au début — non compté dans le total.';
+          hint.classList.add('bad');
+        } else {
+          kd.textContent = d + ' km';
+          hint.textContent = '';
+        }
+      };
+      const bind = (sel, f) => {
+        const i = wrap.querySelector(sel);
+        i.oninput = ev => {
+          const pos = ev.target.selectionStart;
+          const val = ev.target.value.replace(',', '.');
+          if (val !== ev.target.value) {
+            ev.target.value = val;
+            try {ev.target.setSelectionRange(pos, pos)} catch (err) { }
+          }
+          setKm(day, f, val); save(); paint(); updateTotals();
+        };
+      };
+      bind('.f-km-s', 's'); bind('.f-km-e', 'e');
+      wrap.querySelector('.kclr').onclick = () => {
+        const old = kmOf(day);
+        if (state.km) delete state.km[day];
+        save(); render();
+        toastAction('Kilométrage effacé', 'Annuler', () => {
+          if (!state.km) state.km = {};
+          state.km[day] = old; save(); render();
+        });
+      };
+      paint();
+      return wrap;
     }
 
     /* ---- note orpheline : jour sans entrée (ou ancien format non migré) ----
@@ -2242,7 +2476,9 @@
         const ch = document.createElement('button');
         ch.className = 'ch' + (has ? ' has' : '') + (isActive ? ' active' : '') + (isToday ? ' today' : '') +
           (offDay ? ' off' : '') + (hol && !offDay ? ' hol' : '') + (note ? ' note' : '');
-        const tip = [hol || '', note ? 'note' : ''].filter(Boolean).join(' · ');
+        const kd = kmDist(day);
+        const tip = [hol || '', note ? 'note' : '',
+        (kd != null && kd > 0) ? kd + ' km' : ''].filter(Boolean).join(' · ');
         if (tip) ch.title = tip;
         ch.innerHTML = '<span class="dn">' + DAYS_SHORT[i] + '</span>' +
           '<span class="dt">' + dateNum + '</span>' +
@@ -2937,7 +3173,7 @@
       archive(); activeDay = null;
       const a = getArch(); const found = a.find(w => w.weekstart === key);
       state = found ? normWeek(JSON.parse(JSON.stringify(found)))
-        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}};
+        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}, km: {}};
       save(); render();
     }
     function weekStep(delta) {
@@ -3004,11 +3240,11 @@
     /* ====================== EXPORT ====================== */
     async function exportXlsx() {
       const anyNote = DAYS.some(hasNote);
-      if (!state.entries.length && !anyNote) {toast('Aucune entrée à exporter'); return }
+      if (!state.entries.length && !anyNote && !hasKm()) {toast('Aucune entrée à exporter'); return }
       const wr = weekRange();
       const data = {
         nom: state.nom || '', code: state.code || '', semaine: wr.label,
-        entries: state.entries, notes: state.notes || {}
+        entries: state.entries, notes: state.notes || {}, km: state.km || {}
       };
       const bytes = genXlsx(data);
       const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -3029,8 +3265,8 @@
     function getArch() {try {return (JSON.parse(localStorage.getItem(LS_ARCH)) || []).map(normWeek)} catch (e) {return []} }
     function setArch(a) {_hist = null; try {localStorage.setItem(LS_ARCH, JSON.stringify(a))} catch (e) { } }
     function archive() {
-      // une semaine sans entrée mais avec des notes mérite d'être conservée
-      if (!state.entries.length && !DAYS.some(hasNote)) return;
+      // une semaine sans entrée mais avec des notes ou du kilométrage mérite d'être conservée
+      if (!state.entries.length && !DAYS.some(hasNote) && !hasKm()) return;
       const a = getArch(); const key = state.weekstart;
       const snap = JSON.parse(JSON.stringify(state));
       const i = a.findIndex(w => w.weekstart === key);
@@ -3053,9 +3289,17 @@
         }
         const nn = w.entries.filter(en => String(en.note || '').trim()).length +
           DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
+        let kt = 0;
+        DAYS.forEach(d => {
+          const k = (w.km || {})[d] || {};
+          if (isNum(k.s) && isNum(k.e)) {
+            const v = parseFloat(k.e) - parseFloat(k.s);
+            if (v > 0) kt += v;
+          }
+        });
         const cur = w.weekstart === state.weekstart;
         const row = document.createElement('div'); row.className = 'wkrow';
-        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrée' + (w.entries.length > 1 ? 's' : '') + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + '</div></div>' +
+        row.innerHTML = '<div><div class="wk-r mono">' + fmtDM(s) + ' AU ' + fmtDM(e) + (cur ? '  •' : '') + '</div><div class="wk-h">' + round2(t) + ' h · ' + w.entries.length + ' entrée' + (w.entries.length > 1 ? 's' : '') + (o ? ' · ' + round2(o) + ' h abs' : '') + (nn ? ' · ' + nn + ' note' + (nn > 1 ? 's' : '') : '') + (kt ? ' · ' + round2(kt) + ' km' : '') + '</div></div>' +
           '<div class="wk-act"><button class="load" type="button">' + ico('open', 15) + 'Ouvrir</button>' +
           '<button class="rm" type="button" aria-label="Supprimer" title="Supprimer">' + ico('trash', 15) + '</button></div>';
         row.querySelector('.load').onclick = () => {archive(); state = normWeek(JSON.parse(JSON.stringify(w))); activeDay = null; save(); render(); $('weeksSheet').classList.remove('show'); toast('Semaine chargée')};
