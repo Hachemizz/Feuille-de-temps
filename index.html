@@ -207,55 +207,82 @@
       background: var(--card)
     }
 
+    /* ---------- readout : heures régulières et heures ×2 dans deux cases séparées ---------- */
     .readout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .rcell {
       display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-top: 10px;
-      padding: 12px 15px;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px 14px 11px;
       background: linear-gradient(180deg, var(--readout1), var(--readout2));
       border: 1px solid var(--line);
       border-radius: 13px;
-      box-shadow: var(--sh1)
+      box-shadow: var(--sh1);
+      transition: opacity .15s var(--ease), border-color .15s var(--ease)
     }
 
-    .readout .big {
-      font-size: 31px;
+    .rcell .rl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
       font-weight: 800;
-      color: var(--ok);
+      color: var(--dim)
+    }
+
+    .rcell .big {
+      font-size: 28px;
+      font-weight: 800;
       letter-spacing: -.5px;
       line-height: 1
     }
 
-    .readout .big small {
+    .rcell .big small {
       font-size: 13px;
       color: var(--dim);
       font-weight: 700;
       margin-left: 2px
     }
 
-    .readout .split {
-      margin-left: auto;
-      text-align: right;
-      font-size: 12px;
-      color: var(--dim);
-      line-height: 1.5
+    .rcell.reg .big {
+      color: var(--ok)
     }
 
-    .readout .split b {
+    .rcell.dbl .big {
+      color: var(--dbl)
+    }
+
+    .rcell.dbl:not(.zero) {
+      border-color: var(--dbl)
+    }
+
+    .rcell.zero .big {
+      color: var(--faint)
+    }
+
+    .readout .rsub {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      color: var(--dim);
+      line-height: 1.4;
+      padding: 0 3px
+    }
+
+    .readout .rsub b {
       color: var(--txt);
       font-weight: 700
     }
 
-    .readout .split .d {
-      color: var(--dbl)
-    }
-
-    .readout .split .o {
+    .readout .rsub .o {
       color: var(--off)
     }
 
-    .readout .split .k {
+    .readout .rsub .k {
       color: var(--desk)
     }
 
@@ -1835,8 +1862,15 @@
       <h1>Feuille de temps</h1><span class="wkmini mono" id="wkMini"></span>
     </div>
     <div class="readout">
-      <span class="big mono" id="totVal">0<small>h</small></span>
-      <span class="split mono" id="splitOut"></span>
+      <div class="rcell reg">
+        <span class="rl">Heures régulières</span>
+        <span class="big mono" id="regVal">0<small>h</small></span>
+      </div>
+      <div class="rcell dbl zero" id="dblCell">
+        <span class="rl">Temps double ×2</span>
+        <span class="big mono" id="dblVal">0<small>h</small></span>
+      </div>
+      <div class="rsub mono" id="splitOut"></div>
     </div>
     <div class="rail" id="rail"></div>
   </header>
@@ -1960,7 +1994,8 @@
       rows.push('<row r="' + r + '">' + xc('A', r, 'SEMAINE DE', 1) + xc('B', r, data.semaine, 1) + xc('C', r, '', 1) + xc('D', r, '', 1) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':D' + r); r++;
       rows.push('<row r="' + r + '"></row>'); r++;
       rows.push('<row r="' + r + '" ht="22" customHeight="1">' + xc('A', r, 'JOUR', 2) + xc('B', r, 'CONTROLE', 2) + xc('C', r, 'HEURE', 2) + xc('D', r, 'TYPE DE TRAVAILLE', 2) + xc('E', r, 'ADDRESSE', 2) + '</row>'); r++;
-      let work = 0, offh = 0;
+      /* heures séparées : régulières / temps double (heures brutes, avant ×2) / absences */
+      let regh = 0, dblh = 0, offh = 0;
       for (const day of DAYS) {
         const de = orderDay(data.entries.filter(e => e.jour === day));
         const n = Math.max(1, de.length); const start = r;
@@ -1971,8 +2006,10 @@
              or Excel silently strips the zeros */
           const isn = ctrl !== '' && /^\d+$/.test(String(ctrl)) && !/^0\d/.test(String(ctrl));
           if (isNum(e.heures)) {
-            const h = parseFloat(e.heures) * (e.mult === 2 ? 2 : 1);
-            if (isOff(e.type)) offh += h; else work += h;
+            const h = parseFloat(e.heures);
+            if (isOff(e.type)) offh += h;
+            else if (e.mult === 2) dblh += h;
+            else regh += h;
           }
           /* férié / congé rows carry the motif in ADDRESSE so payroll sees why */
           const addr = isOff(e.type) ? (e.adresse || '') : (e.adresse || '');
@@ -1980,12 +2017,16 @@
         }
         if (n > 1) merges.push('A' + start + ':A' + (r - 1));
       }
-      const wt = round2(work), ot = round2(offh), tt = round2(work + offh);
-      if (ot > 0) {
-        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, 'Heures travaillées', 3) + xc('C', r, '', 3) + xc('D', r, wt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
-        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, 'Férié / congé', 3) + xc('C', r, '', 3) + xc('D', r, ot, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
-      }
-      rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, "Total d'heures", 3) + xc('C', r, '', 3) + xc('D', r, tt, 3, true) + xc('E', r, '', 0) + '</row>'); merges.push('B' + r + ':C' + r); r++;
+      const rt = round2(regh), dt = round2(dblh), ot = round2(offh), tt = round2(regh + dblh * 2 + offh);
+      /* une ligne de total = libellé fusionné B:C + valeur en D, une case chacune */
+      const totRow = (label, val) => {
+        rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, label, 3) + xc('C', r, '', 3) + xc('D', r, val, 3, true) + xc('E', r, '', 0) + '</row>');
+        merges.push('B' + r + ':C' + r); r++;
+      };
+      totRow('Heures régulières', rt);
+      totRow('Heures temps double (×2)', dt);
+      if (ot > 0) totRow('Férié / congé', ot);
+      totRow("Total d'heures", tt);
 
       /* ---- bloc KILOMÉTRAGE : relevés d'odomètre et distance par jour ----
              Placé après les totaux d'heures, sur la même grille A:E. ---- */
@@ -2276,11 +2317,17 @@
 
     /* ====================== RENDER ====================== */
     const $ = id => document.getElementById(id);
+    /* en-tête : une case pour les heures régulières, une case pour les heures ×2,
+       jamais additionnées entre elles. Le total (×2 compté double), les absences
+       et le kilométrage passent sur la ligne du dessous. */
     function paintTotals() {
       const t = splitTotals();
-      $('totVal').innerHTML = t.tot + '<small>h</small>';
+      $('regVal').innerHTML = t.reg + '<small>h</small>';
+      $('dblVal').innerHTML = t.dbl + '<small>h</small>';
+      $('dblCell').classList.toggle('zero', !t.dbl);
       const km = kmTotal();
-      $('splitOut').innerHTML = 'rég <b>' + t.reg + '</b> h · <span class="d">×2 <b>' + t.dbl + '</b> h</span>' +
+      $('splitOut').innerHTML = 'total <b>' + t.tot + '</b> h' +
+        (t.dbl ? ' <span title="les heures ×2 comptent double">(×2 inclus)</span>' : '') +
         (t.off ? ' · <span class="o">abs <b>' + t.off + '</b> h</span>' : '') +
         (km ? ' · <span class="k">km <b>' + km + '</b></span>' : '');
     }
@@ -2591,6 +2638,14 @@
     function askGeo() {
       if (geoAsked || _geo || !navigator.geolocation) return;
       geoAsked = true; // une seule invite par session, jamais bloquante
+      /* permission déjà refusée : ne pas rouvrir d'invite qui volerait le focus au champ */
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({name: 'geolocation'}).then(p => {
+          if (p.state !== 'denied') getGeo();
+        }, getGeo);
+      } else getGeo();
+    }
+    function getGeo() {
       try {
         navigator.geolocation.getCurrentPosition(
           p => {
@@ -2846,18 +2901,27 @@
       }
       return out + (on ? '</b>' : '');
     }
+    /* Position dans le viewport VISIBLE, pas dans la page : quand le clavier mobile
+       est ouvert, visualViewport rétrécit et peut être décalé (offsetTop) par rapport
+       au viewport de mise en page. Avant, on mélangeait la hauteur visible avec des
+       coordonnées de mise en page, et la liste pouvait atterrir derrière le clavier.
+       On ne se sert plus de `bottom` (relatif au viewport de mise en page) : tout
+       est placé avec `top`, et la hauteur est plafonnée à 320 px. */
     function acPos(input) {
-      const d = aDrop(), r = input.getBoundingClientRect();
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      const below = vh - r.bottom - 8, above = r.top - 8;
-      const h = Math.min(320, d.scrollHeight || 320);
-      d.style.left = r.left + 'px'; d.style.width = r.width + 'px';
-      if (below >= h || below >= above) {
-        d.style.top = (r.bottom + 6) + 'px'; d.style.bottom = 'auto';
-        d.style.maxHeight = Math.max(140, below) + 'px';
+      const d = aDrop(), r = input.getBoundingClientRect(), vv = window.visualViewport;
+      const vTop = vv ? vv.offsetTop : 0;
+      const vBot = vTop + (vv ? vv.height : window.innerHeight);
+      const below = vBot - r.bottom - 8, above = r.top - vTop - 8;
+      d.style.left = r.left + 'px'; d.style.width = r.width + 'px'; d.style.bottom = 'auto';
+      d.style.maxHeight = '320px';
+      const want = Math.min(320, d.scrollHeight || 320);
+      if (below >= want || below >= above) {
+        d.style.maxHeight = Math.max(120, Math.min(320, below)) + 'px';
+        d.style.top = (r.bottom + 6) + 'px';
       } else {
-        d.style.top = 'auto'; d.style.bottom = (vh - r.top + 6) + 'px';
-        d.style.maxHeight = Math.max(140, above) + 'px';
+        const mh = Math.max(120, Math.min(320, above));
+        d.style.maxHeight = mh + 'px';
+        d.style.top = Math.max(vTop + 8, r.top - 6 - Math.min(want, mh)) + 'px';
       }
     }
     function acClose() {
@@ -3051,6 +3115,11 @@
     document.addEventListener('click', () => acClose());
     document.addEventListener('scroll', () => acCurrent && acPos(acCurrent), true);
     window.addEventListener('resize', () => acCurrent && acPos(acCurrent));
+    /* ouverture/fermeture du clavier : repositionner la liste */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => acCurrent && acPos(acCurrent));
+      window.visualViewport.addEventListener('scroll', () => acCurrent && acPos(acCurrent));
+    }
 
     function typeSelect(cur) {
       const o = t => '<option' + (t === cur ? ' selected' : '') + '>' + t + '</option>';
