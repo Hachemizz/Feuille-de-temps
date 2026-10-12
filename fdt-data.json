@@ -2,49 +2,148 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-09-28",
+    "weekstart": "2026-10-05",
     "entries": [
       {
-        "id": 1791157715839.3662,
+        "id": 1791823085598.9438,
+        "jour": "Mardi",
+        "controle": "222823",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "144-...... 130 ontario E"
+      },
+      {
+        "id": 1791823543762.149,
+        "jour": "Mercredi",
+        "controle": "222824",
+        "heures": "8",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "61-71-.....152 Ontario E"
+      },
+      {
+        "id": 1791823986865.1409,
+        "jour": "Lundi",
+        "controle": "222825",
+        "heures": "9",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "1525-........1530-1540 Sanguin MTL"
+      },
+      {
+        "id": 1791824741913.3057,
         "jour": "Jeudi",
-        "controle": "222822",
-        "heures": "",
+        "controle": "222765",
+        "heures": "8",
         "mult": 1,
-        "type": "Appel de service",
-        "adresse": "11555 Rue Saint-Évariste"
+        "type": "Inspection",
+        "adresse": "250 boul maisonneuve E "
       },
       {
-        "id": 1791157777864.501,
-        "jour": "Mercredi",
-        "controle": "222822",
-        "heures": "",
+        "id": 1791824776047.993,
+        "jour": "Vendredi",
+        "controle": "222765",
+        "heures": "8",
         "mult": 1,
-        "type": "Appel de service",
-        "adresse": "11555 Rue Saint-Évariste"
+        "type": "Inspection",
+        "adresse": "250 boul maisonneuve E "
       },
       {
-        "id": 1791157774857.1726,
-        "jour": "Mercredi",
-        "controle": "222821",
-        "heures": "",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "5710 sallaberry"
+        "id": 1791825033735.215,
+        "jour": "Lundi",
+        "controle": "222766",
+        "heures": "3",
+        "mult": 2,
+        "type": "Inspection",
+        "adresse": "5500 6eme avenue MTL"
       },
       {
-        "id": 1791157829420.387,
-        "jour": "Mercredi",
-        "controle": "222819",
-        "heures": "",
-        "mult": 1,
-        "type": "Appel de service",
-        "adresse": "7135 fielding"
+        "id": 1791825314057.5413,
+        "jour": "Vendredi",
+        "controle": "222767",
+        "heures": "3",
+        "mult": 2,
+        "type": "Inspection",
+        "adresse": "4837 vezina Mtl "
       }
     ],
     "notes": {},
     "km": {}
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-10-05",
+      "entries": [
+        {
+          "id": 1791823085598.9438,
+          "jour": "Mardi",
+          "controle": "222823",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "144-...... 130 ontario E"
+        },
+        {
+          "id": 1791823543762.149,
+          "jour": "Mercredi",
+          "controle": "222824",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "61-71-.....152 Ontario E"
+        },
+        {
+          "id": 1791823986865.1409,
+          "jour": "Lundi",
+          "controle": "222825",
+          "heures": "9",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "1525-........1530-1540 Sanguin MTL"
+        },
+        {
+          "id": 1791824741913.3057,
+          "jour": "Jeudi",
+          "controle": "222765",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "250 boul maisonneuve E "
+        },
+        {
+          "id": 1791824776047.993,
+          "jour": "Vendredi",
+          "controle": "222765",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "250 boul maisonneuve E "
+        },
+        {
+          "id": 1791825033735.215,
+          "jour": "Lundi",
+          "controle": "222766",
+          "heures": "3",
+          "mult": 2,
+          "type": "Inspection",
+          "adresse": "5500 6eme avenue MTL"
+        },
+        {
+          "id": 1791825314057.5413,
+          "jour": "Vendredi",
+          "controle": "222767",
+          "heures": "3",
+          "mult": 2,
+          "type": "Inspection",
+          "adresse": "4837 vezina Mtl "
+        }
+      ],
+      "notes": {},
+      "km": {}
+    },
     {
       "nom": "Hachemi",
       "code": "64",
