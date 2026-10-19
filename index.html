@@ -769,7 +769,56 @@
       font-size: 11px;
       color: var(--faint);
       margin-left: auto;
-      font-weight: 600
+      font-weight: 600;
+      white-space: nowrap;
+      flex: 0 0 auto
+    }
+
+    /* « Arrondir à 8 h » — juste après le nom du jour */
+    .r8btn {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--line2);
+      background: transparent;
+      color: var(--dim);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: inherit;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: border-color .15s var(--ease), color .15s var(--ease), background .15s var(--ease)
+    }
+
+    .r8btn:active {
+      border-color: var(--desk);
+      color: var(--desk)
+    }
+
+    @media(hover:hover) {
+      .r8btn:hover {
+        border-color: var(--desk);
+        color: var(--desk)
+      }
+    }
+
+    .r8btn.on {
+      border-color: var(--desk);
+      color: var(--desk);
+      background: rgba(57, 198, 217, .12)
+    }
+
+    .r8btn.dis:not(.on) {
+      opacity: .45
+    }
+
+    .holtag {
+      min-width: 0
     }
 
     .holtag {
@@ -1098,7 +1147,7 @@
 
     .addrow {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto;
       gap: 8px
     }
 
@@ -1151,26 +1200,6 @@
       color: var(--off)
     }
 
-    /* bouton « 3 entrées partageant 8 h » */
-    .addday.grp {
-      color: var(--desk);
-      padding: 12px 15px;
-      white-space: nowrap
-    }
-
-    .addday.grp:active {
-      border-color: var(--desk);
-      color: var(--desk)
-    }
-
-    @media(hover:hover) {
-      .addday.grp:hover {
-        border-color: var(--desk);
-        color: var(--desk);
-        background: rgba(57, 198, 217, .08)
-      }
-    }
-
     .flag.g {
       color: var(--desk)
     }
@@ -1186,6 +1215,7 @@
 
     /* lien « Ajouter une note » toujours visible sous chaque entrée */
     .addnote {
+      display: block;
       margin-top: 9px;
       border: none;
       background: transparent;
@@ -1994,6 +2024,7 @@
       left: '<path d="M15 18 9 12l6-6"/>',
       right: '<path d="m9 18 6-6-6-6"/>',
       plus: '<path d="M12 5v14M5 12h14"/>',
+      check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
       cal: '<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
       layers: '<path d="M3 7.5 12 3l9 4.5-9 4.5Z"/><path d="m3 12.5 9 4.5 9-4.5"/><path d="m3 17 9 4.5L21 17"/>',
       cloud: '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 11.2 3.9 3.9 0 0 0 6.5 19Z"/>',
@@ -2057,7 +2088,9 @@
       /* heures séparées : régulières / temps double (heures brutes, avant ×2) / absences */
       let regh = 0, dblh = 0, offh = 0;
       for (const day of DAYS) {
-        const de = orderDay(data.entries.filter(e => e.jour === day));
+        const de = orderDay(data.entries.filter(e => e.jour === day), data.r8);
+        /* jour arrondi à 8 h : une seule case HEURE « 8H », fusionnée sur ses entrées */
+        const rset = de.filter(x => inRnd(x, data.r8));
         const n = Math.max(1, de.length); const start = r;
         for (let i = 0; i < n; i++) {
           const e = de[i] || {}; const lab = i === 0 ? day : '';
@@ -2065,7 +2098,8 @@
           /* numeric export only if pure digits AND no leading zero — "0064" must stay text
              or Excel silently strips the zeros */
           const isn = ctrl !== '' && /^\d+$/.test(String(ctrl)) && !/^0\d/.test(String(ctrl));
-          if (isNum(e.heures)) {
+          if (rset.length && e === rset[0]) regh += R8_H;
+          else if (!inRnd(e, data.r8) && isNum(e.heures)) {
             const h = parseFloat(e.heures);
             if (isOff(e.type)) offh += h;
             else if (e.mult === 2) dblh += h;
@@ -2078,16 +2112,10 @@
           const addrTxt = [addr, nt].filter(Boolean).join('\n');
           const nl = addrTxt ? addrTxt.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length / 58)), 0) : 1;
           const rht = Math.min(170, Math.max(20, nl * 12 + 6));
-          rows.push('<row r="' + r + '" ht="' + rht + '" customHeight="1">' + xc('A', r, lab, 2) + xc('B', r, ctrl, 3, isn) + xc('C', r, heureLabel(e), 3) + xc('D', r, e.type || '', 3) + xc('E', r, addrTxt, 4) + '</row>'); r++;
+          rows.push('<row r="' + r + '" ht="' + rht + '" customHeight="1">' + xc('A', r, lab, 2) + xc('B', r, ctrl, 3, isn) + xc('C', r, (rset.length && e === rset[0]) ? (R8_H + 'H') : (inRnd(e, data.r8) ? '' : heureLabel(e)), 3) + xc('D', r, e.type || '', 3) + xc('E', r, addrTxt, 4) + '</row>'); r++;
         }
         if (n > 1) merges.push('A' + start + ':A' + (r - 1));
-        /* heures partagées : une seule case HEURE fusionnée sur le groupe */
-        for (let a = 0; a < de.length;) {
-          let b = a;
-          if (de[a].grp) while (b + 1 < de.length && de[b + 1].grp === de[a].grp) b++;
-          if (b > a) merges.push('C' + (start + a) + ':C' + (start + b));
-          a = b + 1;
-        }
+        if (rset.length > 1) {const a0 = start + de.indexOf(rset[0]); merges.push('C' + a0 + ':C' + (a0 + rset.length - 1))}
       }
       const rt = round2(regh), dt = round2(dblh), ot = round2(offh), tt = round2(regh + dblh * 2 + offh);
       /* une ligne de total = libellé fusionné B:C + valeur en D, une case chacune */
@@ -2181,7 +2209,7 @@
               : t === 'Réparations' ? 't-rep' : 't-call';
     }
     const DEF_OFF_HRS = '8';
-    const GRP_N = 3, GRP_H = '8';   // « 3 entrées pour 8 h »
+    const R8_H = 8; // « Arrondir à 8 h » : durée comptée pour un jour arrondi
     const NOTE_MAX = 600;
     const LS_CUR = 'fdt_current', LS_ARCH = 'fdt_weeks';
     let state = load();
@@ -2190,7 +2218,7 @@
     const noteOpen = new Set(); // entrées dont le champ note est ouvert mais encore vide
 
     function monday(d) {const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0, 0, 0, 0); return x}
-    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}, km: {}}}
+    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}, km: {}, r8: {}}}
     /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser.
        Migration : une note de jour (ancien format) est rattachée à la 1re entrée
        du jour. Si le jour n'a aucune entrée, elle reste dans w.notes (orpheline)
@@ -2218,10 +2246,18 @@
           ? first.note + '\n' + t : t;
         delete w.notes[d];
       });
-      /* un groupe d'heures partagées d'un seul membre n'a plus de sens */
-      const gc = {};
-      w.entries.forEach(e => {if (e.grp) gc[e.grp] = (gc[e.grp] || 0) + 1});
-      w.entries.forEach(e => {if (e.grp && gc[e.grp] < 2) delete e.grp});
+      /* jours arrondis à 8 h : {jour: true} */
+      if (!w.r8 || typeof w.r8 !== 'object' || Array.isArray(w.r8)) w.r8 = {};
+      /* ancien format « groupe de 3 · 8 h » (entrées avec .grp) : on retire le
+         groupe ; s'il portait 8 h, le jour devient simplement « arrondi à 8 h » */
+      w.entries.forEach(e => {
+        if (!e.grp) return;
+        const head = w.entries.find(x => x.grp === e.grp);
+        if (head === e && String(e.heures) === '8' && DAYS.indexOf(e.jour) >= 0) w.r8[e.jour] = true;
+        delete e.grp;
+      });
+      DAYS.forEach(d => {if (w.r8[d] !== true) delete w.r8[d]});
+      Object.keys(w.r8).forEach(k => {if (DAYS.indexOf(k) < 0) delete w.r8[k]});
       return w;
     }
     function load() {try {const c = localStorage.getItem(LS_CUR); if (c) return normWeek(JSON.parse(c))} catch (e) { } return blankWeek()}
@@ -2273,21 +2309,19 @@
     /* ---- Appel de service temps double : toujours en fin de journée ----
        Partition stable — tout le reste garde son ordre de saisie.
        S'applique à une liste DÉJÀ filtrée par jour, donc l'isolation par jour tient. */
-    function orderDay(list) {
-      /* un groupe d'heures partagées voyage d'un bloc : c'est son 1er membre
-         (celui qui porte les heures) qui décide s'il va en fin de journée */
-      const head = {};
-      list.forEach(e => {if (e.grp && !head[e.grp]) head[e.grp] = e});
-      const last = e => {const h = e.grp ? head[e.grp] : e; return h.type === 'Appel de service' && h.mult === 2};
+    function orderDay(list, r8) {
+      if (r8 === undefined) r8 = state.r8;
       const keep = [], tail = [];
-      for (const e of list) (last(e) ? tail : keep).push(e);
-      /* membres d'un même groupe toujours côte à côte (la case Heure est fusionnée) */
-      const all = keep.concat(tail), out = [], done = new Set();
+      for (const e of list) ((e.type === 'Appel de service' && e.mult === 2) ? tail : keep).push(e);
+      const all = keep.concat(tail);
+      /* jour arrondi à 8 h : les entrées arrondies restent côte à côte, à la
+         place de la 1re (la case HEURE « 8H » est fusionnée sur elles) */
+      const mem = all.filter(e => inRnd(e, r8));
+      if (mem.length < 2) return all;
+      const out = []; let placed = false;
       for (const e of all) {
-        if (!e.grp) {out.push(e); continue}
-        if (done.has(e.grp)) continue;
-        done.add(e.grp);
-        all.forEach(x => {if (x.grp === e.grp) out.push(x)});
+        if (!inRnd(e, r8)) out.push(e);
+        else if (!placed) {placed = true; mem.forEach(m => out.push(m))}
       }
       return out;
     }
@@ -2352,13 +2386,33 @@
       return DAYS.find(d => state.entries.some(e => e.jour === d) || hasNote(d)) || 'Lundi';
     }
     const isNum = v => v !== '' && v != null && !isNaN(parseFloat(v));
-    function entryHrs(e) {return isNum(e.heures) ? parseFloat(e.heures) * (e.mult === 2 ? 2 : 1) : 0}
-    function dayHrs(day) {return state.entries.filter(e => e.jour === day).reduce((a, e) => a + entryHrs(e), 0)}
     /* EPSILON guards the 1.005-style float edge cases */
     function round2(n) {return Math.round((n + Number.EPSILON) * 100) / 100}
-    function splitTotals() {
-      let reg = 0, dbl = 0, off = 0;
-      for (const e of state.entries) {
+
+    /* ---- « Arrondir à 8 h » : option par jour (state.r8[jour] = true) ----
+       Le jour compte pour 8 h en tout, quel que soit le nombre d'entrées
+       (aucun nombre imposé). Les heures saisies sont conservées, simplement
+       ignorées : retirer l'option les restaure. Sont exclues de l'arrondi les
+       absences (Férié, Congé…) et les entrées en temps double (×2), qui gardent
+       leurs propres heures. Le total de 8 h est porté par la 1re entrée
+       arrondie du jour ; dans l'Excel, la case HEURE « 8H » est fusionnée sur
+       toutes les entrées arrondies. */
+    const inRnd = (e, r8) => !!(r8 && r8[e.jour]) && !isOff(e.type) && e.mult !== 2;
+    const inRound = e => inRnd(e, state.r8);
+    const isRounded = day => !!(state.r8 && state.r8[day]);
+    const roundSet = day => state.entries.filter(e => e.jour === day && inRound(e));
+    const roundHead = e => state.entries.find(x => x.jour === e.jour && inRound(x));
+    const isMember = e => inRound(e) && roundHead(e) !== e; // arrondie, mais n'apporte pas les 8 h
+    function entryHrs(e) {
+      if (inRound(e)) return roundHead(e) === e ? R8_H : 0;
+      return isNum(e.heures) ? parseFloat(e.heures) * (e.mult === 2 ? 2 : 1) : 0;
+    }
+    function dayHrs(day) {return state.entries.filter(e => e.jour === day).reduce((a, e) => a + entryHrs(e), 0)}
+    /* heures d'une semaine (état courant ou semaine archivée) */
+    function sumHours(entries, r8) {
+      let reg = 0, dbl = 0, off = 0; const seen = {};
+      for (const e of entries) {
+        if (inRnd(e, r8)) {if (!seen[e.jour]) {seen[e.jour] = 1; reg += R8_H} continue}
         if (!isNum(e.heures)) continue;
         const h = parseFloat(e.heures);
         if (isOff(e.type)) off += h;
@@ -2367,27 +2421,19 @@
       }
       return {reg: round2(reg), dbl: round2(dbl), off: round2(off), tot: round2(reg + dbl * 2 + off)};
     }
-    function incompleteCount() {return state.entries.filter(e => !isNum(e.heures) && !isMember(e)).length}
-
-    /* ---- heures partagées : plusieurs entrées d'un même jour, un seul total ----
-       Ex. mardi : travail annulé + bureau + réparations = 8 h en tout.
-       Les heures sont portées par le 1er membre du groupe ; les autres restent
-       vides, donc rien n'est compté deux fois. Dans l'Excel, la case HEURE est
-       fusionnée sur toutes les lignes du groupe. */
-    function grpMembers(e) {return e.grp ? state.entries.filter(x => x.grp === e.grp) : []}
-    function grpHead(e) {return e.grp ? (state.entries.find(x => x.grp === e.grp) || e) : e}
-    function isMember(e) {return !!e.grp && grpHead(e) !== e}
-    /* sortir un membre du groupe : si c'est le porteur des heures, elles passent au suivant */
-    function leaveGroup(e) {
-      if (!e.grp) return;
-      const g = e.grp, mem = state.entries.filter(x => x.grp === g);
-      if (mem[0] === e && mem.length > 1) {
-        mem[1].heures = e.heures; mem[1].mult = e.mult;
-        e.heures = ''; e.mult = 1;
-      }
-      delete e.grp;
-      const left = state.entries.filter(x => x.grp === g);
-      if (left.length === 1) delete left[0].grp;
+    function splitTotals() {return sumHours(state.entries, state.r8)}
+    function incompleteCount() {return state.entries.filter(e => !isNum(e.heures) && !inRound(e)).length}
+    /* ce que l'utilisateur avait saisi dans les entrées arrondies (pour l'afficher) */
+    function typedRound(day) {
+      const s = roundSet(day).filter(e => isNum(e.heures));
+      return s.length ? round2(s.reduce((a, e) => a + parseFloat(e.heures), 0)) : null;
+    }
+    function toggleRound(day) {
+      if (!state.r8) state.r8 = {};
+      if (isRounded(day)) {delete state.r8[day]; save(); render(); toast('Arrondi retiré · heures saisies restaurées'); return}
+      if (!state.entries.some(e => e.jour === day && !isOff(e.type) && e.mult !== 2)) {toast('Ajoutez d\'abord une entrée de travail'); return}
+      state.r8[day] = true; activeDay = day; save(); render();
+      toast(day + ' arrondi à ' + R8_H + ' h');
     }
 
     /* ====================== FOCUS PRESERVATION ======================
@@ -2480,11 +2526,19 @@
         const dt = round2(dayHrs(day));
         const hol = ferieFor(dateOfDay(day));
         const hasOff = de.some(e => isOff(e.type));
+        const rnd = isRounded(day), canRnd = state.entries.some(e => e.jour === day && !isOff(e.type) && e.mult !== 2);
+        const typed = rnd ? typedRound(day) : round2(state.entries.filter(e => e.jour === day && !isOff(e.type) && e.mult !== 2 && isNum(e.heures)).reduce((a, e) => a + parseFloat(e.heures), 0));
+        const r8tip = rnd
+          ? 'Jour arrondi à ' + R8_H + ' h (case HEURE fusionnée « ' + R8_H + 'H » dans l\'Excel). Toucher pour retirer.'
+          : 'Compter ce jour comme ' + R8_H + ' h en tout, peu importe le nombre d\'entrées' + (typed ? ' (saisi : ' + typed + ' h)' : '');
         grp.innerHTML = '<div class="dayhead"><span class="bar"></span><span class="name">' + day + '</span>' +
+          '<button class="r8btn' + (rnd ? ' on' : '') + (canRnd ? '' : ' dis') + '" type="button" aria-pressed="' + rnd + '" title="' + escAttr(r8tip) + '">' +
+          (rnd ? ico('check', 13) + '<span>Arrondi ' + R8_H + ' h</span>' : '<span>Arrondir à ' + R8_H + ' h</span>') + '</button>' +
           (hol ? '<button class="holtag' + (hasOff ? ' done' : '') + '" type="button"' + (hasOff ? ' disabled' : '') + '>' + esc(hol) + '</button>' : '') +
           (de.length ? '<span class="tot mono">' + dt + ' h · ' + de.length + '</span>' : '') + '</div>';
         const ht = grp.querySelector('.holtag');
         if (ht && !hasOff) ht.onclick = () => addOff(day, 'Férié', hol);
+        grp.querySelector('.r8btn').onclick = () => toggleRound(day);
         de.forEach(e => grp.appendChild(entryEl(e)));
         const row = document.createElement('div'); row.className = 'addrow';
         const add = document.createElement('button'); add.className = 'addday'; add.type = 'button';
@@ -2494,11 +2548,7 @@
         addO.innerHTML = ico('plus', 17) + '<span>Congé</span>';
         addO.title = 'Journée fériée ou congé';
         addO.onclick = () => addOff(day, hol ? 'Férié' : 'Congé', hol);
-        const addG = document.createElement('button'); addG.className = 'addday grp'; addG.type = 'button';
-        addG.innerHTML = ico('layers', 17) + '<span>' + GRP_N + ' · ' + GRP_H + ' h</span>';
-        addG.title = GRP_N + " entrées qui se partagent " + GRP_H + " h (une seule case d'heures dans l'Excel)";
-        addG.onclick = () => addGroup(day);
-        row.appendChild(add); row.appendChild(addG); row.appendChild(addO);
+        row.appendChild(add); row.appendChild(addO);
         grp.appendChild(row);
         if (hasDayNote(day)) grp.appendChild(notesEl(day)); // note orpheline seulement
         grp.appendChild(kmEl(day));
@@ -2674,21 +2724,6 @@
       toast((type || 'Congé') + ' ajouté · ' + DEF_OFF_HRS + ' h');
     }
 
-    /* trois entrées (par défaut) qui se partagent 8 h : le 1er membre porte les heures */
-    function addGroup(day) {
-      const g = 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      for (let i = 0; i < GRP_N; i++) {
-        const e = {
-          id: Date.now() + Math.random(), jour: day, controle: '',
-          heures: i === 0 ? GRP_H : '', mult: 1, type: 'Inspection', adresse: '', grp: g
-        };
-        if (i === 0) absorbDayNote(day, e);
-        state.entries.push(e);
-      }
-      activeDay = day; save(); render();
-      toast(GRP_N + ' entrées · ' + GRP_H + ' h partagées');
-    }
-
     /* ====================== ADDRESS AUTOCOMPLETE ======================
        Objectif : la sensation Google/Apple Maps sans clé d'API (la page est
        statique et publique — une clé Google Places ou Apple MapKit y serait
@@ -2726,8 +2761,48 @@
       st: 'saint', 'st.': 'saint', ste: 'sainte', 'ste.': 'sainte', boul: 'boulevard',
       'boul.': 'boulevard', bd: 'boulevard', blvd: 'boulevard', av: 'avenue', 'av.': 'avenue',
       ave: 'avenue', ch: 'chemin', 'ch.': 'chemin', mtee: 'montée', pl: 'place', crois: 'croissant',
-      terr: 'terrasse', imp: 'impasse', o: 'ouest', e: 'est'
+      terr: 'terrasse', imp: 'impasse', o: 'ouest', e: 'est', rte: 'route'
     };
+    /* « 1234 Sherbrooke St W », « Decarie Blvd » : ordre anglais (type après le nom).
+       Les sources sont françaises — on remet le type devant : « 1234 rue Sherbrooke ouest ». */
+    const EN_TYPE = {st: 'rue', street: 'rue', ave: 'avenue', avenue: 'avenue', blvd: 'boulevard',
+      boulevard: 'boulevard', rd: 'chemin', road: 'chemin', cres: 'croissant', crescent: 'croissant'};
+    const EN_DIR = {w: 'ouest', west: 'ouest', e: 'est', east: 'est', n: 'nord', north: 'nord', s: 'sud', south: 'sud'};
+    const FR_TYPE = /^(rue|boulevard|boul|bd|avenue|av|chemin|ch|place|pl|montee|mtee|croissant|terrasse|impasse|route|rte|rang|autoroute|promenade)$/;
+    function englishOrder(q) {
+      const m = /^(\d+[A-Za-z]?\s+)?(.+?)\s+(st|street|ave|avenue|blvd|boulevard|rd|road|cres|crescent)\.?(?:\s+(w|e|n|s|west|east|north|south)\.?)?\s*$/i.exec(q.trim());
+      if (!m) return null;
+      const first = norm(m[2]).split(' ')[0];
+      if (!first || FR_TYPE.test(first)) return null;        // déjà à la française
+      return (m[1] || '') + EN_TYPE[m[3].toLowerCase()] + ' ' + m[2] + (m[4] ? ' ' + EN_DIR[m[4].toLowerCase()] : '');
+    }
+    /* Adresses Québec (/suggest) est sensible aux accents : « decarie » ne trouve rien,
+       « décarie » oui. On restaure les accents des mots courants, et on apprend ceux de
+       tout ce qu'on a déjà vu (historique, résultats des sources). */
+    const ACC = {}, _learn = {};
+    ('décarie montée côte québec montréal lévis édouard rené lévesque thérèse geneviève hélène frédéric andré françois ' +
+      'théodore rivière rivières jérôme châteauguay rosemère prévost adèle bélanger crémazie métropolitain métropolitaine ' +
+      'sauvé paré lépine émile école église collège château marché hôpital université père frère mère cégep île îles hôtel ' +
+      'gaétan désiré évangéline hervé léonard benoît rémi mélanie gérard hébert léger légaré métivier bélair béliveau ' +
+      'brébeuf fréchette gérin léveillé péladeau péloquin rhéaume séguin sévigny thérien valère nérée bédard')
+      .split(' ').forEach(w => {ACC[w.normalize('NFD').replace(/[\u0300-\u036f]/g, '')] = w});
+    function learnAccents(text) {
+      (text || '').split(/[\s,()'’\-]+/).forEach(w => {
+        if (w.length < 3 || !/[À-ÿ]/.test(w)) return;
+        const k = w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (!_learn[k]) _learn[k] = w.toLowerCase();
+      });
+    }
+    /* renvoie la requête avec accents restaurés, ou null si rien ne change */
+    function accentize(q) {
+      let ch = false;
+      const out = q.replace(/[A-Za-z]{3,}/g, w => {
+        const a = _learn[w.toLowerCase()] || ACC[w.toLowerCase()];
+        if (a && a !== w.toLowerCase()) {ch = true; return a}
+        return w;
+      });
+      return ch ? out : null;
+    }
 
     var _hist = null;
     let acTimer, acCurrent = null, acCtl = null, acSeq = 0, acIdx = -1, acItems = [];
@@ -2739,7 +2814,12 @@
       return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]+/g, ' ').trim()
     }
-    function expandQ(q) {return q.trim().split(/\s+/).map(w => ABBR[w.toLowerCase()] || w).join(' ')}
+    function expandQ(q) {
+      q = englishOrder(q) || q.trim();
+      /* « St-Denis », « Ste-Catherine », « St. Laurent » → Saint-…, Sainte-… */
+      q = q.replace(/(^|\s)(ste?)[-.]\s*(?=[A-Za-zÀ-ÿ])/gi, (m, sp, t) => sp + (t.toLowerCase() === 'st' ? 'saint-' : 'sainte-'));
+      return q.split(/\s+/).map(w => ABBR[w.toLowerCase()] || w).join(' ');
+    }
     function doorNum(q) {const m = /^\s*(\d+)/.exec(q); return m ? m[1] : ''}
     function startsWithNum(label, num) {return num ? norm(label).indexOf(num + ' ') === 0 : false}
     function boroughSwap(q) {
@@ -2840,6 +2920,7 @@
       Object.keys(f).forEach(k => {if (!m.has(k)) m.set(k, f[k].v)});
       _hist = [...m.entries()].map(([k, v]) => ({k, v, s: frecency(f[k]), p: !!f[k]}))
         .sort((a, b) => b.s - a.s);
+      _hist.forEach(h => learnAccents(h.v));
       return _hist;
     }
     function histToSug(h) {
@@ -2971,8 +3052,19 @@
        Plus le score est bas, plus haut dans la liste.                    */
     const SRC_BASE = {hist: 0, aq: 2, osm: 5};
     const FAR_KM = 60;   // au-delà, ce n'est plus un appel de service plausible
-    function scoreSug(x, num) {
+    /* qualité de correspondance : chaque mot tapé est-il le début d'un mot du libellé ?
+       « 250 ontar » → « 250 Rue Ontario Est » passe devant « 25 Rue Hontario… » */
+    function textBonus(x, q) {
+      const qt = norm(expandQ(q)).split(' ').filter(Boolean);
+      if (!qt.length) return 0;
+      const lt = norm(x.label).split(' ');
+      let hits = 0;
+      qt.forEach(t => {if (lt.some(w => w.indexOf(t) === 0)) hits++});
+      return -(hits === qt.length ? 8 : 0) - 4 * hits / qt.length;
+    }
+    function scoreSug(x, num, q) {
       let s = SRC_BASE[x.src] == null ? 8 : SRC_BASE[x.src];
+      if (q) s += textBonus(x, q);
       if (num && startsWithNum(x.label, num)) s -= 40;
       if (x.src === 'hist') s -= Math.min(30, (x.pick ? 12 : 5) + (x.score || 0) * 6);
       if (x.approx) s += 6;
@@ -3019,7 +3111,7 @@
         }
         seen.set(k, x); all.push(x);
       });
-      all.forEach(x => {x._s = scoreSug(x, num)});
+      all.forEach(x => {x._s = scoreSug(x, num, q)});
       all.sort((a, b) => a._s - b._s);
       return all.slice(0, AC_MAX);
     }
@@ -3103,7 +3195,7 @@
       if (!list.length) {
         const e = document.createElement('div');
         e.className = 'addr-none';
-        e.textContent = o.busy ? 'Recherche…' : 'Aucune adresse trouvée';
+        e.textContent = o.msg || (o.busy ? 'Recherche…' : 'Aucune adresse trouvée');
         d.appendChild(e);
       }
       list.forEach(sg => {
@@ -3153,6 +3245,15 @@
       acCache.set(k, v);
       if (acCache.size > AC_CACHE_MAX) acCache.delete(acCache.keys().next().value);
     }
+    /* chaque source a son propre délai : une source lente ne bloque plus les autres */
+    const SRC_TIMEOUT = 5000;
+    function limited(fn, sig, ms) {
+      const c = new AbortController();
+      const t = setTimeout(() => c.abort(), ms);
+      const onAbort = () => c.abort();
+      sig.addEventListener('abort', onAbort);
+      return fn(c.signal).finally(() => {clearTimeout(t); sig.removeEventListener('abort', onAbort)});
+    }
     async function acFetch(q, input, onSelect) {
       if (acCtl) acCtl.abort();
       acCtl = new AbortController();
@@ -3161,33 +3262,55 @@
       const cached = cacheGet(key);
       if (cached) {acLastQ = q; acLastList = cached; acPaint(cached, input, onSelect, q); return}
 
-      const hist = histMatch(q, 3, norm(q));
+      const qx = expandQ(q);                  // st → saint, boul → boulevard, « Sherbrooke St W » → « rue Sherbrooke ouest »
+      const hist = histMatch(qx, 3, norm(q));
       const num = doorNum(q);
       if (/^\d+$/.test(q.trim())) {           // un numéro seul ne vaut pas un appel réseau
         acPaint(hist, input, onSelect, q, {head: hist.length ? 'Récentes' : ''});
         return;
       }
       setBusy(true);
-      const qx = expandQ(q);                  // st → saint, boul → boulevard, …
+      const qa = accentize(qx);               // « decarie » → « décarie » (AQ /suggest est sensible aux accents)
+      const jobs = [['sg', s => aqSuggest(qx, s)], ['fa', s => aqFind(qx, s)], ['ph', s => photonQuery(qx, s)]];
+      if (qa) jobs.push(['sa', s => aqSuggest(qa, s)]);
+      const parts = {sg: [], fa: [], ph: [], sa: []};
+      let settled = 0, failed = 0, lastSig = '';
+      const gather = () => mergeSug([hist, parts.sa, parts.sg, parts.fa, parts.ph], q);
       try {
-        const res = await Promise.allSettled([aqSuggest(qx, sig), aqFind(qx, sig), photonQuery(qx, sig)]);
+        await Promise.all(jobs.map(([k, fn]) => limited(fn, sig, SRC_TIMEOUT).then(
+          v => {parts[k] = v; v.forEach(x => learnAccents(x.label + ' ' + (x.sub || '')))},
+          () => {failed++}
+        ).then(() => {
+          settled++;
+          if (seq !== acSeq || settled === jobs.length) return;
+          /* affichage progressif : dès qu'une source répond, sans attendre les autres */
+          const part = gather(), psig = part.map(x => x.full).join('|');
+          if (part.length && psig !== lastSig) {lastSig = psig; acPaint(part, input, onSelect, q, {busy: true})}
+        })));
         if (seq !== acSeq) return;            // une frappe plus récente a pris le relais
-        const [sg, fa, ph] = res.map(r => r.status === 'fulfilled' ? r.value : []);
-        let list = mergeSug([hist, sg, fa, ph], q);
+        let list = gather();
+        if (failed === jobs.length) {         // aucune source n'a répondu (hors ligne, sous-sol…)
+          setBusy(false);
+          acPaint(hist, input, onSelect, q, {
+            head: hist.length ? 'Hors ligne · historique' : '',
+            msg: 'Réseau indisponible — saisissez l\'adresse à la main'
+          });
+          return;                             // et surtout pas de mise en cache d'un échec
+        }
         // 2e passe : arrondissement de Montréal en fin de requête → réessayer sur "Montréal"
         if (num && !list.some(x => startsWithNum(x.label, num))) {
           const alt = boroughSwap(qx);
           if (alt) {
             let more = [];
-            try {more = await aqFind(alt, sig)} catch (e) { }
+            try {more = await limited(s => aqFind(alt, s), sig, SRC_TIMEOUT)} catch (e) { }
             if (seq !== acSeq) return;
             more = more.filter(x => startsWithNum(x.label, num)); // sinon la 2e passe pollue
             more.forEach(x => {x.keep = true});                   // déjà validés : exemptés du filtre de pertinence
-            if (more.length) list = mergeSug([hist, more, sg, fa, ph], q);
+            if (more.length) list = mergeSug([hist, more, parts.sa, parts.sg, parts.fa, parts.ph], q);
           }
         }
         setBusy(false);
-        cacheSet(key, list);
+        if (failed === 0) cacheSet(key, list); // un résultat partiel ne reste pas en cache
         acLastQ = q; acLastList = list;
         acPaint(list, input, onSelect, q);
       } catch (e) {
@@ -3300,13 +3423,14 @@
       const cls = typeCls(e.type);
       /* champ note visible si l'entrée en a une, ou si on vient de l'ouvrir */
       const showNote = !!entryNote(e) || noteOpen.has(e.id);
-      const member = isMember(e); // membre d'un groupe d'heures partagées (n'a pas ses propres heures)
-      const gflag = e.grp
+      const rnd = inRound(e);          // jour arrondi à 8 h : les heures de l'entrée ne comptent plus
+      const member = isMember(e);      // arrondie, mais c'est la 1re entrée qui porte les 8 h
+      const gflag = rnd
         ? (member
-          ? '<span class="flag g">Inclus dans les ' + escAttr(grpHead(e).heures || '…') + ' h ↑</span>'
-          : '<span class="flag g">' + grpMembers(e).length + ' entrées · heures partagées</span>')
+          ? '<span class="flag g">Inclus dans les ' + R8_H + ' h ↑</span>'
+          : '<span class="flag g">Jour arrondi à ' + R8_H + ' h</span>')
         : '';
-      card.className = 'entry ' + cls + (isNum(e.heures) || member ? '' : ' incomplete');
+      card.className = 'entry ' + cls + (isNum(e.heures) || rnd ? '' : ' incomplete');
       card.dataset.eid = e.id; // ancre pour la restauration du focus après render()
       card.innerHTML =
         '<div class="tools">' +
@@ -3316,8 +3440,8 @@
         '</div>' +
         '<div class="r1' + (off ? ' solo' : '') + '">' +
         (off ? '' : '<div class="mini"><label>Contrôle</label><input class="f-ctrl" type="text" name="controle" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" value="' + escAttr(e.controle) + '"></div>') +
-        '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" type="text" name="heures" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="' + (member ? '↑ ' + escAttr(grpHead(e).heures) : '0') + '"' + (member ? ' disabled' : '') + ' value="' + escAttr(e.heures) + '">' +
-        (off || member ? '' : '<div class="x2' + (e.mult === 2 ? ' on' : '') + '" role="button" tabindex="0" aria-label="Temps double" aria-pressed="' + (e.mult === 2) + '">×2</div>') +
+        '<div class="mini"><label>Heures</label><div class="hrwrap"><input class="f-hr mono" type="text" name="heures" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" placeholder="' + (member ? '↑ ' + R8_H : '0') + '"' + (rnd ? ' disabled' : '') + ' value="' + (rnd ? (member ? '' : R8_H) : escAttr(e.heures)) + '">' +
+        (off ? '' : '<div class="x2' + (e.mult === 2 ? ' on' : '') + '" role="button" tabindex="0" aria-label="Temps double" aria-pressed="' + (e.mult === 2) + '">×2</div>') +
         '</div></div>' +
         '</div>' +
         '<div class="r2">' +
@@ -3339,13 +3463,10 @@
           : (isCxl(e.type) ? '<span class="flag c">Annulé — non exécuté</span>' : '') +
           (e.mult === 2 ? '<span class="flag">Temps double</span>' : '')) + gflag;
       card.querySelector('.del').onclick = () => {
-        /* instantané complet : supprimer le porteur des heures les transfère au
-           membre suivant, l'annulation doit tout remettre tel quel */
-        const snap = JSON.stringify(state.entries), jour = e.jour;
-        leaveGroup(e);
-        state.entries.splice(state.entries.indexOf(e), 1); save(); render();
+        const idx = state.entries.indexOf(e), jour = e.jour;
+        state.entries.splice(idx, 1); save(); render();
         toastAction('Entrée supprimée', 'Annuler', () => {
-          state.entries = JSON.parse(snap);
+          state.entries.splice(Math.min(idx, state.entries.length), 0, e);
           focusDay = jour; save(); render();
         });
       };
@@ -3354,7 +3475,6 @@
           id: Date.now() + Math.random(), jour: e.jour, controle: e.controle,
           heures: off ? e.heures : '', mult: 1, type: e.type, adresse: e.adresse
         }; // note volontairement non copiée : elle décrit cette visite-là
-        if (e.grp) copy.grp = e.grp; // dupliquer dans un groupe = un membre de plus, sans heures
         const idx = state.entries.indexOf(e); state.entries.splice(idx + 1, 0, copy); focusDay = e.jour; save(); render();
       };
       const ctrl = card.querySelector('.f-ctrl');
@@ -3369,7 +3489,6 @@
       }
       card.querySelector('.f-type').onchange = ev => {
         const nt = ev.target.value;
-        if (isOff(nt)) leaveGroup(e); // une absence ne partage pas ses heures
         if (isOff(nt) && !isOff(e.type)) {
           // switching to an absence: contrôle/adresse/×2 no longer apply
           e.mult = 1; e.controle = ''; e.adresse = '';
@@ -3381,7 +3500,7 @@
         if (nt === OFFICE && !(e.adresse || '').trim()) e.adresse = OFFICE_ADDR;
         e.type = nt; save(); render();
       };
-      card.querySelector('.f-day').onchange = ev => {leaveGroup(e); e.jour = ev.target.value; save(); render()};
+      card.querySelector('.f-day').onchange = ev => {e.jour = ev.target.value; save(); render()};
       const motif = card.querySelector('.f-motif');
       if (motif) motif.oninput = ev => {e.adresse = ev.target.value; save()};
       const addr = card.querySelector('.f-addr');
@@ -3419,7 +3538,7 @@
       archive(); activeDay = null;
       const a = getArch(); const found = a.find(w => w.weekstart === key);
       state = found ? normWeek(JSON.parse(JSON.stringify(found)))
-        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}, km: {}};
+        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}, km: {}, r8: {}};
       save(); render();
     }
     function weekStep(delta) {
@@ -3490,7 +3609,7 @@
       const wr = weekRange();
       const data = {
         nom: state.nom || '', code: state.code || '', semaine: wr.label,
-        entries: state.entries, notes: state.notes || {}, km: state.km || {}
+        entries: state.entries, notes: state.notes || {}, km: state.km || {}, r8: state.r8 || {}
       };
       const bytes = genXlsx(data);
       const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -3527,12 +3646,7 @@
       if (!a.length) {list.innerHTML = '<div class="empty">Aucune semaine enregistrée.<br>Les semaines avec des entrées apparaîtront ici.</div>'; return }
       a.forEach((w) => {
         const s = new Date(w.weekstart + 'T00:00:00'); const e = new Date(s); e.setDate(e.getDate() + 6);
-        let t = 0, o = 0;
-        for (const en of w.entries) {
-          if (!isNum(en.heures)) continue;
-          const h = parseFloat(en.heures) * (en.mult === 2 ? 2 : 1);
-          t += h; if (isOff(en.type)) o += h;
-        }
+        const sh = sumHours(w.entries, w.r8), t = sh.tot, o = sh.off;
         const nn = w.entries.filter(en => String(en.note || '').trim()).length +
           DAYS.filter(d => String((w.notes || {})[d] || '').trim()).length;
         let kt = 0;
