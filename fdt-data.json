@@ -2,76 +2,204 @@
   "current": {
     "nom": "Hachemi",
     "code": "64",
-    "weekstart": "2026-10-05",
+    "weekstart": "2026-10-26",
     "entries": [
       {
-        "id": 1791823085598.9438,
-        "jour": "Mardi",
-        "controle": "222823",
-        "heures": "8",
-        "mult": 1,
-        "type": "Inspection",
-        "adresse": "144-...... 130 ontario E"
+        "id": 1793564114233.4163,
+        "jour": "Samedi",
+        "controle": "224341",
+        "heures": "3",
+        "mult": 2,
+        "type": "Appel de service",
+        "adresse": "8440 boulevard Lacordaire, Montréal QC"
       },
       {
-        "id": 1791823543762.149,
+        "id": 1793564751295.6375,
+        "jour": "Vendredi",
+        "controle": "224342",
+        "heures": "8",
+        "mult": 1,
+        "type": "Réparations",
+        "adresse": "8355 Rue Labarre, Montréal QC"
+      },
+      {
+        "id": 1793564802026.7253,
         "jour": "Mercredi",
-        "controle": "222824",
-        "heures": "8",
+        "controle": "",
+        "heures": "",
         "mult": 1,
-        "type": "Inspection",
-        "adresse": "61-71-.....152 Ontario E"
+        "type": "Au bureau",
+        "adresse": "Bureau"
       },
       {
-        "id": 1791823986865.1409,
-        "jour": "Lundi",
-        "controle": "222825",
-        "heures": "9",
+        "id": 1793564803369.2634,
+        "jour": "Mercredi",
+        "controle": "224336",
+        "heures": "6",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "1525-........1530-1540 Sanguin MTL"
+        "adresse": "6225 boulevard Taschereau, Brossard QC"
       },
       {
-        "id": 1791824741913.3057,
+        "id": 1793568706154.7476,
         "jour": "Jeudi",
-        "controle": "222765",
-        "heures": "8",
+        "controle": "224337",
+        "heures": "",
         "mult": 1,
         "type": "Inspection",
-        "adresse": "250 boul maisonneuve E "
+        "adresse": "7115 de laniviet"
       },
       {
-        "id": 1791824776047.993,
+        "id": 1793568707279.7512,
+        "jour": "Jeudi",
+        "controle": "224338",
+        "heures": "",
+        "mult": 1,
+        "type": "Inspection",
+        "adresse": "2235 Rue Saint-Jacques, Montréal QC"
+      },
+      {
+        "id": 1793568828172.5125,
         "jour": "Vendredi",
-        "controle": "222765",
-        "heures": "8",
+        "controle": "224339",
+        "heures": "3",
         "mult": 1,
-        "type": "Inspection",
-        "adresse": "250 boul maisonneuve E "
+        "type": "Appel de service",
+        "adresse": "1571 Rue Saint-André, Montréal QC"
       },
       {
-        "id": 1791825033735.215,
+        "id": 1793568868035.1953,
         "jour": "Lundi",
-        "controle": "222766",
-        "heures": "3",
-        "mult": 2,
+        "controle": "224335",
+        "heures": "8",
+        "mult": 1,
         "type": "Inspection",
-        "adresse": "5500 6eme avenue MTL"
+        "adresse": "4520 promenade Paton, Laval QC"
       },
       {
-        "id": 1791825314057.5413,
-        "jour": "Vendredi",
-        "controle": "222767",
-        "heures": "3",
-        "mult": 2,
+        "id": 1793569049207.1436,
+        "jour": "Mardi",
+        "controle": "",
+        "heures": "",
+        "mult": 1,
         "type": "Inspection",
-        "adresse": "4837 vezina Mtl "
+        "adresse": "",
+        "note": "J'ai effecutue 4 appels jai deja depose les papiers "
       }
     ],
     "notes": {},
-    "km": {}
+    "km": {},
+    "r8": {
+      "Mercredi": true,
+      "Jeudi": true,
+      "Mardi": true
+    },
+    "ot": {
+      "ag": 9,
+      "bq": 0
+    }
   },
   "weeks": [
+    {
+      "nom": "Hachemi",
+      "code": "64",
+      "weekstart": "2026-10-26",
+      "entries": [
+        {
+          "id": 1793564114233.4163,
+          "jour": "Samedi",
+          "controle": "224341",
+          "heures": "3",
+          "mult": 2,
+          "type": "Appel de service",
+          "adresse": "8440 boulevard Lacordaire, Montréal QC"
+        },
+        {
+          "id": 1793564751295.6375,
+          "jour": "Vendredi",
+          "controle": "224342",
+          "heures": "8",
+          "mult": 1,
+          "type": "Réparations",
+          "adresse": "8355 Rue Labarre, Montréal QC"
+        },
+        {
+          "id": 1793564802026.7253,
+          "jour": "Mercredi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Au bureau",
+          "adresse": "Bureau"
+        },
+        {
+          "id": 1793564803369.2634,
+          "jour": "Mercredi",
+          "controle": "224336",
+          "heures": "6",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "6225 boulevard Taschereau, Brossard QC"
+        },
+        {
+          "id": 1793568706154.7476,
+          "jour": "Jeudi",
+          "controle": "224337",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "7115 de laniviet"
+        },
+        {
+          "id": 1793568707279.7512,
+          "jour": "Jeudi",
+          "controle": "224338",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "2235 Rue Saint-Jacques, Montréal QC"
+        },
+        {
+          "id": 1793568828172.5125,
+          "jour": "Vendredi",
+          "controle": "224339",
+          "heures": "3",
+          "mult": 1,
+          "type": "Appel de service",
+          "adresse": "1571 Rue Saint-André, Montréal QC"
+        },
+        {
+          "id": 1793568868035.1953,
+          "jour": "Lundi",
+          "controle": "224335",
+          "heures": "8",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "4520 promenade Paton, Laval QC"
+        },
+        {
+          "id": 1793569049207.1436,
+          "jour": "Mardi",
+          "controle": "",
+          "heures": "",
+          "mult": 1,
+          "type": "Inspection",
+          "adresse": "",
+          "note": "J'ai effecutue 4 appels jai deja depose les papiers "
+        }
+      ],
+      "notes": {},
+      "km": {},
+      "r8": {
+        "Mercredi": true,
+        "Jeudi": true,
+        "Mardi": true
+      },
+      "ot": {
+        "ag": 9,
+        "bq": 0
+      }
+    },
     {
       "nom": "Hachemi",
       "code": "64",
@@ -142,7 +270,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -187,7 +317,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -278,7 +410,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -377,7 +511,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -485,7 +621,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -584,7 +722,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -719,7 +859,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -791,7 +933,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -845,7 +989,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -935,7 +1081,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -1097,7 +1245,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -1142,7 +1292,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -1250,7 +1402,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -1349,7 +1503,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     },
     {
       "nom": "Hachemi",
@@ -1511,7 +1667,9 @@
         }
       ],
       "notes": {},
-      "km": {}
+      "km": {},
+      "ot": {},
+      "r8": {}
     }
   ]
 }
