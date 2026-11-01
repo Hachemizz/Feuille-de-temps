@@ -1943,6 +1943,56 @@
       display: none
     }
 
+    /* ---------- popup heures supp. (> 40 h) ---------- */
+    .otrow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .otquick {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .otquick button {
+      flex: 1;
+      border: 1px solid var(--line2);
+      background: var(--card);
+      color: var(--dim);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer
+    }
+
+    .otquick button:active {
+      background: var(--card2)
+    }
+
+    .othint {
+      font-size: 12px;
+      margin-top: 9px;
+      min-height: 16px;
+      color: var(--faint)
+    }
+
+    .othint.ok {
+      color: var(--ok)
+    }
+
+    .othint.bad {
+      color: var(--warn)
+    }
+
+    .bkbtn:disabled {
+      opacity: .45;
+      cursor: default
+    }
+
   </style>
 </head>
 
@@ -2007,6 +2057,29 @@
         Personal access tokens → Fine-grained tokens → Generate new token →
         Repository: Feuille-de-temps → Permissions → Contents: <b>Read and write</b> → Generate
       </p>
+    </div>
+  </div>
+
+  <div class="sheet-backdrop" id="otSheet">
+    <div class="sheet">
+      <div class="grip"></div>
+      <h2>Heures supplémentaires</h2>
+      <p class="setup-info" id="otInfo"></p>
+      <div class="otrow">
+        <div class="fld"><label>Agence (h)</label>
+          <input id="otAg" class="mono" type="text" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true"></div>
+        <div class="fld"><label>Banque (h)</label>
+          <input id="otBq" class="mono" type="text" inputmode="decimal" autocomplete="off" data-1p-ignore data-lpignore="true"></div>
+      </div>
+      <div class="otquick">
+        <button type="button" id="otAllAg">Tout agence</button>
+        <button type="button" id="otAllBq">Tout banque</button>
+      </div>
+      <div class="othint" id="otHint"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="bkbtn" id="otCancel" type="button" style="flex:1">Annuler</button>
+        <button class="bkbtn ok" id="otOk" type="button" style="flex:1">Générer l'Excel</button>
+      </div>
     </div>
   </div>
 
@@ -2123,9 +2196,15 @@
         rows.push('<row r="' + r + '" ht="20" customHeight="1">' + xc('A', r, '', 0) + xc('B', r, label, 3) + xc('C', r, '', 3) + xc('D', r, val, 3, true) + xc('E', r, '', 0) + '</row>');
         merges.push('B' + r + ':C' + r); r++;
       };
-      totRow('Heures régulières', rt);
+      /* > 40 h : le surplus sort des heures régulières et passe en agence / banque */
+      const sup = data.ot, supT = sup ? round2(sup.ag + sup.bq) : 0;
+      totRow('Heures régulières', supT ? round2(Math.max(0, rt - supT)) : rt);
       totRow('Heures temps double (×2)', dt);
       if (ot > 0) totRow('Férié / congé', ot);
+      if (supT) {
+        totRow('Heures supp. — agence', sup.ag);
+        totRow('Heures supp. — banque', sup.bq);
+      }
       totRow("Total d'heures", tt);
 
       /* ---- bloc KILOMÉTRAGE : relevés d'odomètre et distance par jour ----
@@ -2218,7 +2297,7 @@
     const noteOpen = new Set(); // entrées dont le champ note est ouvert mais encore vide
 
     function monday(d) {const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0, 0, 0, 0); return x}
-    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}, km: {}, r8: {}}}
+    function blankWeek() {return {nom: 'Hachemi', code: '64', weekstart: iso(monday(new Date())), entries: [], notes: {}, km: {}, r8: {}, ot: {}}}
     /* anciennes sauvegardes (et JSON importés) n'ont pas de notes → normaliser.
        Migration : une note de jour (ancien format) est rattachée à la 1re entrée
        du jour. Si le jour n'a aucune entrée, elle reste dans w.notes (orpheline)
@@ -2227,6 +2306,8 @@
       if (!w || typeof w !== 'object') return w;
       if (!w.notes || typeof w.notes !== 'object' || Array.isArray(w.notes)) w.notes = {};
       if (!Array.isArray(w.entries)) w.entries = [];
+      /* heures supp. : {ag: agence, bq: banque} — absent des anciennes sauvegardes */
+      if (!w.ot || typeof w.ot !== 'object' || Array.isArray(w.ot)) w.ot = {};
       /* kilométrage : {jour: {s: odomètre début, e: odomètre fin}} — absent des
          anciennes sauvegardes et des JSON importés avant cette version. */
       if (!w.km || typeof w.km !== 'object' || Array.isArray(w.km)) w.km = {};
@@ -3538,7 +3619,7 @@
       archive(); activeDay = null;
       const a = getArch(); const found = a.find(w => w.weekstart === key);
       state = found ? normWeek(JSON.parse(JSON.stringify(found)))
-        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}, km: {}, r8: {}};
+        : {nom: state.nom, code: state.code, weekstart: key, entries: [], notes: {}, km: {}, r8: {}, ot: {}};
       save(); render();
     }
     function weekStep(delta) {
@@ -3602,14 +3683,71 @@
     document.addEventListener('click', () => {if (calOpen()) closeCal()});
     document.addEventListener('keydown', e => {if (e.key === 'Escape' && calOpen()) closeCal()});
 
+    /* ====================== HEURES SUPP. (> 40 h) ======================
+       Seuil sur le total de la semaine (×2 compté double, absences incluses).
+       Le surplus est réparti entre agence et banque ; la somme doit être exacte.
+       La répartition est mémorisée avec la semaine (state.ot). */
+    const OT_CAP = 40;
+    function otSurplus(t) {return round2(Math.max(0, t.tot - OT_CAP))}
+    /* répartition mémorisée, ramenée au surplus actuel */
+    function otSplit(sur) {
+      const o = state.ot || {};
+      let ag = isNum(o.ag) ? parseFloat(o.ag) : sur;
+      ag = round2(Math.min(sur, Math.max(0, ag)));
+      return {ag, bq: round2(sur - ag)};
+    }
+    function askOT(tot, sur) {
+      return new Promise(res => {
+        const sh = $('otSheet'), ag = $('otAg'), bq = $('otBq'), ok = $('otOk'), hint = $('otHint');
+        const s = otSplit(sur);
+        $('otInfo').innerHTML = 'Total de la semaine : <b>' + tot + ' h</b> — <b>' + sur +
+          ' h</b> au-delà de ' + OT_CAP + ' h à répartir.';
+        ag.value = s.ag; bq.value = s.bq;
+        const check = () => {
+          const a = parseFloat(ag.value), b = parseFloat(bq.value);
+          const valid = isNum(ag.value) && isNum(bq.value) && a >= 0 && b >= 0 && Math.abs(a + b - sur) < 0.005;
+          ok.disabled = !valid;
+          hint.className = 'othint ' + (valid ? 'ok' : 'bad');
+          hint.textContent = valid
+            ? 'Agence ' + round2(a) + ' h + banque ' + round2(b) + ' h = ' + sur + ' h'
+            : 'La somme doit faire exactement ' + sur + ' h';
+          return valid;
+        };
+        const sync = (src, dst) => {
+          const v = src.value.replace(',', '.');
+          if (v !== src.value) src.value = v;
+          if (isNum(v)) dst.value = round2(Math.max(0, sur - parseFloat(v)));
+          check();
+        };
+        ag.oninput = () => sync(ag, bq);
+        bq.oninput = () => sync(bq, ag);
+        $('otAllAg').onclick = () => {ag.value = sur; bq.value = 0; check()};
+        $('otAllBq').onclick = () => {ag.value = 0; bq.value = sur; check()};
+        const done = v => {sh.classList.remove('show'); res(v)};
+        ok.onclick = () => {
+          if (!check()) return;
+          const a = round2(parseFloat(ag.value));
+          state.ot = {ag: a, bq: round2(sur - a)}; save();
+          done(true);
+        };
+        $('otCancel').onclick = () => done(false);
+        sh.onclick = e => {if (e.target === sh) done(false)};
+        check();
+        sh.classList.add('show');
+      });
+    }
+
     /* ====================== EXPORT ====================== */
     async function exportXlsx() {
       const anyNote = DAYS.some(hasNote);
       if (!state.entries.length && !anyNote && !hasKm()) {toast('Aucune entrée à exporter'); return }
+      const t = splitTotals(), sur = otSurplus(t);
+      if (sur > 0 && !(await askOT(t.tot, sur))) return;
       const wr = weekRange();
       const data = {
         nom: state.nom || '', code: state.code || '', semaine: wr.label,
-        entries: state.entries, notes: state.notes || {}, km: state.km || {}, r8: state.r8 || {}
+        entries: state.entries, notes: state.notes || {}, km: state.km || {}, r8: state.r8 || {},
+        ot: sur > 0 ? otSplit(sur) : null
       };
       const bytes = genXlsx(data);
       const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
