@@ -2198,7 +2198,8 @@
       };
       /* > 40 h : le surplus sort des heures régulières et passe en agence / banque */
       const sup = data.ot, supT = sup ? round2(sup.ag + sup.bq) : 0;
-      totRow('Heures régulières', supT ? round2(Math.max(0, rt - supT)) : rt);
+      /* semaine > 40 h : les heures régulières affichent le plafond, 40 */
+      totRow('Heures régulières', supT ? OT_CAP : rt);
       totRow('Heures temps double (×2)', dt);
       if (ot > 0) totRow('Férié / congé', ot);
       if (supT) {
